@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<CyXmlSerializer>
+<!--This file is machine generated and read. It is not intended to be edited by hand.-->
+<!--Due to this, there is no schema for this file.-->
+<CyGuid_2867d519-54d2-4c01-9830-c51cb08bc3dd type_name="CyDesigner.Common.ProjMgmt.Model.CyPrjMgmtWorkspaceSerialize" version="5" xml_contents_version="3" name="Interrupts.Bundle01" persistent="Interrupts.Bundle01.cywrk" platform="NOT_USED">
+<current_project name=".\INTERRUPTS.cydsn\INTERRUPTS.cyprj" />
+<wrkspc_folders />
+<files />
+<projects>
+<v>.\GPIO_IRQ.cydsn\GPIO_IRQ.cyprj</v>
+<v>.\Timer_Interrupt.cydsn\Timer_Interrupt.cyprj</v>
+<v>.\Interrupt_Priority.cydsn\Interrupt_Priority.cyprj</v>
+<v>.\Nested_Interrupts.cydsn\Nested_Interrupts.cyprj</v>
+<v>.\Critical_Section.cydsn\Critical_Section.cyprj</v>
+<v>.\INTERRUPTS.cydsn\INTERRUPTS.cyprj</v>
+<v>.\BootSequence.cydsn\BootSequence.cyprj</v>
+</projects>
+<workspace_id v="a6287764-6472-4b75-af89-1ba511f6f800" />
+<WriteAppVersionLastSavedWith v="4.1.0.3210" />
+<WriteAppMarketingVersionLastSavedWith v="4.1 Update 1" />
+<CyGuid_dcbd9771-0334-43dc-9cc3-fe99dc3c5316 type_name="CyDesigner.Common.ProjMgmt.Model.CyPrjMgmtWorkspaceSerialize+CyPrjDependencyList" version="4">
+<wrkspc_dependencies />
+</CyGuid_dcbd9771-0334-43dc-9cc3-fe99dc3c5316>
+<CyGuid_63b68103-67f5-4406-8da6-5c8625765b82 type_name="CyDesigner.Common.ProjMgmt.Model.CyPrjMgmtWorkspaceSerialize+CyIgnoredSystemDepsList" version="1">
+<wrkspc_dependencies />
+</CyGuid_63b68103-67f5-4406-8da6-5c8625765b82>
+</CyGuid_2867d519-54d2-4c01-9830-c51cb08bc3dd>
+</CyXmlSerializer>

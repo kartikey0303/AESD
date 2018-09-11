@@ -1,0 +1,11 @@
+net ClockBlock_HFClk
+	term   ":m0s8clockblockcell.hfclk"
+	switch ":m0s8clockblockcell.hfclk==>:interrupt_19.clock"
+	term   ":interrupt_19.clock"
+end ClockBlock_HFClk
+net Net_6
+	term   ":m0s8tcpwmcell_0.interrupt"
+	switch ":m0s8tcpwmcell_0.interrupt==>:interrupt_idmux_19.in_0"
+	switch ":interrupt_idmux_19.interrupt_idmux_19__out==>:interrupt_19.interrupt"
+	term   ":interrupt_19.interrupt"
+end Net_6

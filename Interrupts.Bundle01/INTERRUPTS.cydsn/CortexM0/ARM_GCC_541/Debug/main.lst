@@ -1,0 +1,596 @@
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccLqlFHQ.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.cpu cortex-m0
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 0
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"main.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.GPIO_ISR,"ax",%progbits
+  20              		.align	2
+  21              		.global	GPIO_ISR
+  22              		.code	16
+  23              		.thumb_func
+  24              		.type	GPIO_ISR, %function
+  25              	GPIO_ISR:
+  26              	.LFB1:
+  27              		.file 1 "main.c"
+   1:main.c        **** #include "t_GPIO.h"
+   2:main.c        **** #include "t_udtypes.h"
+   3:main.c        **** 
+   4:main.c        **** void GPIO_ISR(void);
+   5:main.c        **** 
+   6:main.c        **** int main(void)
+   7:main.c        **** {
+   8:main.c        ****     GPIO_WRITE_PIN(GPIO_PRT0_DR,7,1); 
+   9:main.c        ****     GPIO_SET_MODE(GPIO_PRT0_PC,7,GPIO_DM_RES_UP); //P0[7] into Resistive Pull Up Mode
+  10:main.c        ****     GPIO_SET_MODE(GPIO_PRT0_PC,6,GPIO_DM_STRONG); //P0[6] into Strong Mode
+  11:main.c        ****     //To enable the Global Interrupts
+  12:main.c        ****     __asm("CPSIE I");  //To clear PRIMASK (Enable Interrupts)
+  13:main.c        ****     
+  14:main.c        **** 	//TO Disable IRQ0 interrupt
+  15:main.c        **** 	//Required because Interrupt cannot be configured
+  16:main.c        ****     (*(t_reg32*)0xE000E180)=0x00000001; 
+  17:main.c        ****     
+  18:main.c        ****     (*(t_reg32*)(0x20000040u))=(t_reg32) (&GPIO_ISR);
+  19:main.c        ****     
+  20:main.c        ****     //To configure P0[7]'s rising edge as the source of interrupt
+  21:main.c        ****     (*(t_reg32*)(0x4004000C))=((*(t_reg32*)(0x4004000C))&(~((t_uint32)0x03u <<(0x07u*0x02u))))|((t_
+  22:main.c        ****     
+  23:main.c        ****     //To assign priority to IRQ0. Priority=3
+  24:main.c        ****     (*(t_reg32*)0xE000E400)= ((*(t_reg32*)0xE000E400) & ((t_uint32)(~(0xC0)))) |((t_uint32)(0x03u<<
+  25:main.c        ****     
+  26:main.c        ****     //To enable interrupt request IRQ0
+  27:main.c        ****     (*(t_reg32*) (0xE000E100))=0x01u;
+  28:main.c        **** 	
+  29:main.c        ****     for(;;)
+  30:main.c        ****     {
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccLqlFHQ.s 			page 2
+
+
+  31:main.c        ****        
+  32:main.c        ****     }
+  33:main.c        **** }
+  34:main.c        **** 
+  35:main.c        **** /*
+  36:main.c        ****  *	Function Name - GPIO_ISR
+  37:main.c        ****  *	Function 	  - Interrupt Service Routine for the Port 0
+  38:main.c        ****  * 	Detail		  - Whenever we press and release the button this function is called
+  39:main.c        **** */
+  40:main.c        **** void GPIO_ISR(void)
+  41:main.c        **** {
+  28              		.loc 1 41 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		@ link register save eliminated.
+  42:main.c        ****     t_uint32 i;
+  43:main.c        ****     unsigned char mask_status= (unsigned char)((*((t_reg32*)(0x40040010u))&(1UL<<0x07u))>>0x07u);
+  33              		.loc 1 43 0
+  34 0000 0C4B     		ldr	r3, .L3
+  35 0002 1B68     		ldr	r3, [r3]
+  36 0004 DB09     		lsrs	r3, r3, #7
+  37              	.LVL0:
+  44:main.c        ****     if(mask_status==0x01u)
+  38              		.loc 1 44 0
+  39 0006 DA07     		lsls	r2, r3, #31
+  40 0008 12D5     		bpl	.L1
+  45:main.c        ****     {
+  46:main.c        **** 		//Clear the interrupt
+  47:main.c        ****         *((t_reg32*)(0x40040010u))=(mask_status<<0x07u);
+  41              		.loc 1 47 0
+  42 000a DB01     		lsls	r3, r3, #7
+  43              	.LVL1:
+  44 000c 8022     		movs	r2, #128
+  45 000e 1340     		ands	r3, r2
+  46 0010 084A     		ldr	r2, .L3
+  47 0012 1360     		str	r3, [r2]
+  48:main.c        **** 		
+  49:main.c        **** 		//Read the 6th pin - i.e. LED RED
+  50:main.c        ****         i=GPIO_READ_PIN(GPIO_PRT0_PS,6);
+  48              		.loc 1 50 0
+  49 0014 084B     		ldr	r3, .L3+4
+  50 0016 1A68     		ldr	r2, [r3]
+  51 0018 9209     		lsrs	r2, r2, #6
+  52 001a 0123     		movs	r3, #1
+  53 001c 1A40     		ands	r2, r3
+  54              	.LVL2:
+  51:main.c        **** 		
+  52:main.c        **** 		//Write invert of LED RED
+  53:main.c        ****         GPIO_WRITE_PIN(GPIO_PRT0_DR,6,~i);
+  55              		.loc 1 53 0
+  56 001e 0748     		ldr	r0, .L3+8
+  57 0020 0168     		ldr	r1, [r0]
+  58 0022 3F33     		adds	r3, r3, #63
+  59 0024 9943     		bics	r1, r3
+  60 0026 D243     		mvns	r2, r2
+  61              	.LVL3:
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccLqlFHQ.s 			page 3
+
+
+  62 0028 9201     		lsls	r2, r2, #6
+  63              	.LVL4:
+  64 002a 1340     		ands	r3, r2
+  65 002c 0B43     		orrs	r3, r1
+  66 002e 0360     		str	r3, [r0]
+  67              	.L1:
+  54:main.c        ****     }
+  55:main.c        **** }...
+  68              		.loc 1 55 0
+  69              		@ sp needed
+  70 0030 7047     		bx	lr
+  71              	.L4:
+  72 0032 C046     		.align	2
+  73              	.L3:
+  74 0034 10000440 		.word	1074003984
+  75 0038 04000440 		.word	1074003972
+  76 003c 00000440 		.word	1074003968
+  77              		.cfi_endproc
+  78              	.LFE1:
+  79              		.size	GPIO_ISR, .-GPIO_ISR
+  80              		.section	.text.main,"ax",%progbits
+  81              		.align	2
+  82              		.global	main
+  83              		.code	16
+  84              		.thumb_func
+  85              		.type	main, %function
+  86              	main:
+  87              	.LFB0:
+   7:main.c        **** {
+  88              		.loc 1 7 0
+  89              		.cfi_startproc
+  90              		@ Volatile: function does not return.
+  91              		@ args = 0, pretend = 0, frame = 0
+  92              		@ frame_needed = 0, uses_anonymous_args = 0
+  93              		@ link register save eliminated.
+   8:main.c        ****     GPIO_WRITE_PIN(GPIO_PRT0_DR,7,1); 
+  94              		.loc 1 8 0
+  95 0000 154A     		ldr	r2, .L7
+  96 0002 1168     		ldr	r1, [r2]
+  97 0004 8023     		movs	r3, #128
+  98 0006 0B43     		orrs	r3, r1
+  99 0008 1360     		str	r3, [r2]
+   9:main.c        ****     GPIO_SET_MODE(GPIO_PRT0_PC,7,GPIO_DM_RES_UP); //P0[7] into Resistive Pull Up Mode
+ 100              		.loc 1 9 0
+ 101 000a 144A     		ldr	r2, .L7+4
+ 102 000c 1168     		ldr	r1, [r2]
+ 103 000e 144B     		ldr	r3, .L7+8
+ 104 0010 0B40     		ands	r3, r1
+ 105 0012 8021     		movs	r1, #128
+ 106 0014 C903     		lsls	r1, r1, #15
+ 107 0016 0B43     		orrs	r3, r1
+ 108 0018 1360     		str	r3, [r2]
+  10:main.c        ****     GPIO_SET_MODE(GPIO_PRT0_PC,6,GPIO_DM_STRONG); //P0[6] into Strong Mode
+ 109              		.loc 1 10 0
+ 110 001a 1168     		ldr	r1, [r2]
+ 111 001c 114B     		ldr	r3, .L7+12
+ 112 001e 0B40     		ands	r3, r1
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccLqlFHQ.s 			page 4
+
+
+ 113 0020 C021     		movs	r1, #192
+ 114 0022 4903     		lsls	r1, r1, #13
+ 115 0024 0B43     		orrs	r3, r1
+ 116 0026 1360     		str	r3, [r2]
+  12:main.c        ****     __asm("CPSIE I");  //To clear PRIMASK (Enable Interrupts)
+ 117              		.loc 1 12 0
+ 118              		.syntax divided
+ 119              	@ 12 "main.c" 1
+ 120 0028 62B6     		CPSIE I
+ 121              	@ 0 "" 2
+  16:main.c        ****     (*(t_reg32*)0xE000E180)=0x00000001; 
+ 122              		.loc 1 16 0
+ 123              		.thumb
+ 124              		.syntax unified
+ 125 002a 0122     		movs	r2, #1
+ 126 002c 0E4B     		ldr	r3, .L7+16
+ 127 002e 1A60     		str	r2, [r3]
+  18:main.c        ****     (*(t_reg32*)(0x20000040u))=(t_reg32) (&GPIO_ISR);
+ 128              		.loc 1 18 0
+ 129 0030 0E4B     		ldr	r3, .L7+20
+ 130 0032 0F49     		ldr	r1, .L7+24
+ 131 0034 1960     		str	r1, [r3]
+  21:main.c        ****     (*(t_reg32*)(0x4004000C))=((*(t_reg32*)(0x4004000C))&(~((t_uint32)0x03u <<(0x07u*0x02u))))|((t_
+ 132              		.loc 1 21 0
+ 133 0036 0F49     		ldr	r1, .L7+28
+ 134 0038 0868     		ldr	r0, [r1]
+ 135 003a 0F4B     		ldr	r3, .L7+32
+ 136 003c 0340     		ands	r3, r0
+ 137 003e 8020     		movs	r0, #128
+ 138 0040 C001     		lsls	r0, r0, #7
+ 139 0042 0343     		orrs	r3, r0
+ 140 0044 0B60     		str	r3, [r1]
+  24:main.c        ****     (*(t_reg32*)0xE000E400)= ((*(t_reg32*)0xE000E400) & ((t_uint32)(~(0xC0)))) |((t_uint32)(0x03u<<
+ 141              		.loc 1 24 0
+ 142 0046 0D49     		ldr	r1, .L7+36
+ 143 0048 0868     		ldr	r0, [r1]
+ 144 004a C023     		movs	r3, #192
+ 145 004c 0343     		orrs	r3, r0
+ 146 004e 0B60     		str	r3, [r1]
+  27:main.c        ****     (*(t_reg32*) (0xE000E100))=0x01u;
+ 147              		.loc 1 27 0
+ 148 0050 0B4B     		ldr	r3, .L7+40
+ 149 0052 1A60     		str	r2, [r3]
+ 150              	.L6:
+ 151 0054 FEE7     		b	.L6
+ 152              	.L8:
+ 153 0056 C046     		.align	2
+ 154              	.L7:
+ 155 0058 00000440 		.word	1074003968
+ 156 005c 08000440 		.word	1074003976
+ 157 0060 FFFF1FFF 		.word	-14680065
+ 158 0064 FFFFE3FF 		.word	-1835009
+ 159 0068 80E100E0 		.word	-536813184
+ 160 006c 40000020 		.word	536870976
+ 161 0070 00000000 		.word	GPIO_ISR
+ 162 0074 0C000440 		.word	1074003980
+ 163 0078 FF3FFFFF 		.word	-49153
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccLqlFHQ.s 			page 5
+
+
+ 164 007c 00E400E0 		.word	-536812544
+ 165 0080 00E100E0 		.word	-536813312
+ 166              		.cfi_endproc
+ 167              	.LFE0:
+ 168              		.size	main, .-main
+ 169              		.text
+ 170              	.Letext0:
+ 171              		.file 2 "t_udtypes.h"
+ 172              		.section	.debug_info,"",%progbits
+ 173              	.Ldebug_info0:
+ 174 0000 99000000 		.4byte	0x99
+ 175 0004 0400     		.2byte	0x4
+ 176 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 177 000a 04       		.byte	0x4
+ 178 000b 01       		.uleb128 0x1
+ 179 000c 83000000 		.4byte	.LASF5
+ 180 0010 0C       		.byte	0xc
+ 181 0011 2C000000 		.4byte	.LASF6
+ 182 0015 4A000000 		.4byte	.LASF7
+ 183 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 184 001d 00000000 		.4byte	0
+ 185 0021 00000000 		.4byte	.Ldebug_line0
+ 186 0025 02       		.uleb128 0x2
+ 187 0026 11010000 		.4byte	.LASF0
+ 188 002a 02       		.byte	0x2
+ 189 002b 0F       		.byte	0xf
+ 190 002c 37000000 		.4byte	0x37
+ 191 0030 03       		.uleb128 0x3
+ 192 0031 04       		.byte	0x4
+ 193 0032 07       		.byte	0x7
+ 194 0033 00000000 		.4byte	.LASF2
+ 195 0037 04       		.uleb128 0x4
+ 196 0038 30000000 		.4byte	0x30
+ 197 003c 02       		.uleb128 0x2
+ 198 003d 41000000 		.4byte	.LASF1
+ 199 0041 02       		.byte	0x2
+ 200 0042 10       		.byte	0x10
+ 201 0043 30000000 		.4byte	0x30
+ 202 0047 03       		.uleb128 0x3
+ 203 0048 01       		.byte	0x1
+ 204 0049 08       		.byte	0x8
+ 205 004a 33000000 		.4byte	.LASF3
+ 206 004e 05       		.uleb128 0x5
+ 207 004f 23000000 		.4byte	.LASF8
+ 208 0053 01       		.byte	0x1
+ 209 0054 28       		.byte	0x28
+ 210 0055 00000000 		.4byte	.LFB1
+ 211 0059 40000000 		.4byte	.LFE1-.LFB1
+ 212 005d 01       		.uleb128 0x1
+ 213 005e 9C       		.byte	0x9c
+ 214 005f 80000000 		.4byte	0x80
+ 215 0063 06       		.uleb128 0x6
+ 216 0064 6900     		.ascii	"i\000"
+ 217 0066 01       		.byte	0x1
+ 218 0067 2A       		.byte	0x2a
+ 219 0068 3C000000 		.4byte	0x3c
+ 220 006c 00000000 		.4byte	.LLST0
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccLqlFHQ.s 			page 6
+
+
+ 221 0070 07       		.uleb128 0x7
+ 222 0071 12000000 		.4byte	.LASF4
+ 223 0075 01       		.byte	0x1
+ 224 0076 2B       		.byte	0x2b
+ 225 0077 47000000 		.4byte	0x47
+ 226 007b 21000000 		.4byte	.LLST1
+ 227 007f 00       		.byte	0
+ 228 0080 08       		.uleb128 0x8
+ 229 0081 1E000000 		.4byte	.LASF9
+ 230 0085 01       		.byte	0x1
+ 231 0086 06       		.byte	0x6
+ 232 0087 95000000 		.4byte	0x95
+ 233 008b 00000000 		.4byte	.LFB0
+ 234 008f 84000000 		.4byte	.LFE0-.LFB0
+ 235 0093 01       		.uleb128 0x1
+ 236 0094 9C       		.byte	0x9c
+ 237 0095 09       		.uleb128 0x9
+ 238 0096 04       		.byte	0x4
+ 239 0097 05       		.byte	0x5
+ 240 0098 696E7400 		.ascii	"int\000"
+ 241 009c 00       		.byte	0
+ 242              		.section	.debug_abbrev,"",%progbits
+ 243              	.Ldebug_abbrev0:
+ 244 0000 01       		.uleb128 0x1
+ 245 0001 11       		.uleb128 0x11
+ 246 0002 01       		.byte	0x1
+ 247 0003 25       		.uleb128 0x25
+ 248 0004 0E       		.uleb128 0xe
+ 249 0005 13       		.uleb128 0x13
+ 250 0006 0B       		.uleb128 0xb
+ 251 0007 03       		.uleb128 0x3
+ 252 0008 0E       		.uleb128 0xe
+ 253 0009 1B       		.uleb128 0x1b
+ 254 000a 0E       		.uleb128 0xe
+ 255 000b 55       		.uleb128 0x55
+ 256 000c 17       		.uleb128 0x17
+ 257 000d 11       		.uleb128 0x11
+ 258 000e 01       		.uleb128 0x1
+ 259 000f 10       		.uleb128 0x10
+ 260 0010 17       		.uleb128 0x17
+ 261 0011 00       		.byte	0
+ 262 0012 00       		.byte	0
+ 263 0013 02       		.uleb128 0x2
+ 264 0014 16       		.uleb128 0x16
+ 265 0015 00       		.byte	0
+ 266 0016 03       		.uleb128 0x3
+ 267 0017 0E       		.uleb128 0xe
+ 268 0018 3A       		.uleb128 0x3a
+ 269 0019 0B       		.uleb128 0xb
+ 270 001a 3B       		.uleb128 0x3b
+ 271 001b 0B       		.uleb128 0xb
+ 272 001c 49       		.uleb128 0x49
+ 273 001d 13       		.uleb128 0x13
+ 274 001e 00       		.byte	0
+ 275 001f 00       		.byte	0
+ 276 0020 03       		.uleb128 0x3
+ 277 0021 24       		.uleb128 0x24
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccLqlFHQ.s 			page 7
+
+
+ 278 0022 00       		.byte	0
+ 279 0023 0B       		.uleb128 0xb
+ 280 0024 0B       		.uleb128 0xb
+ 281 0025 3E       		.uleb128 0x3e
+ 282 0026 0B       		.uleb128 0xb
+ 283 0027 03       		.uleb128 0x3
+ 284 0028 0E       		.uleb128 0xe
+ 285 0029 00       		.byte	0
+ 286 002a 00       		.byte	0
+ 287 002b 04       		.uleb128 0x4
+ 288 002c 35       		.uleb128 0x35
+ 289 002d 00       		.byte	0
+ 290 002e 49       		.uleb128 0x49
+ 291 002f 13       		.uleb128 0x13
+ 292 0030 00       		.byte	0
+ 293 0031 00       		.byte	0
+ 294 0032 05       		.uleb128 0x5
+ 295 0033 2E       		.uleb128 0x2e
+ 296 0034 01       		.byte	0x1
+ 297 0035 3F       		.uleb128 0x3f
+ 298 0036 19       		.uleb128 0x19
+ 299 0037 03       		.uleb128 0x3
+ 300 0038 0E       		.uleb128 0xe
+ 301 0039 3A       		.uleb128 0x3a
+ 302 003a 0B       		.uleb128 0xb
+ 303 003b 3B       		.uleb128 0x3b
+ 304 003c 0B       		.uleb128 0xb
+ 305 003d 27       		.uleb128 0x27
+ 306 003e 19       		.uleb128 0x19
+ 307 003f 11       		.uleb128 0x11
+ 308 0040 01       		.uleb128 0x1
+ 309 0041 12       		.uleb128 0x12
+ 310 0042 06       		.uleb128 0x6
+ 311 0043 40       		.uleb128 0x40
+ 312 0044 18       		.uleb128 0x18
+ 313 0045 9742     		.uleb128 0x2117
+ 314 0047 19       		.uleb128 0x19
+ 315 0048 01       		.uleb128 0x1
+ 316 0049 13       		.uleb128 0x13
+ 317 004a 00       		.byte	0
+ 318 004b 00       		.byte	0
+ 319 004c 06       		.uleb128 0x6
+ 320 004d 34       		.uleb128 0x34
+ 321 004e 00       		.byte	0
+ 322 004f 03       		.uleb128 0x3
+ 323 0050 08       		.uleb128 0x8
+ 324 0051 3A       		.uleb128 0x3a
+ 325 0052 0B       		.uleb128 0xb
+ 326 0053 3B       		.uleb128 0x3b
+ 327 0054 0B       		.uleb128 0xb
+ 328 0055 49       		.uleb128 0x49
+ 329 0056 13       		.uleb128 0x13
+ 330 0057 02       		.uleb128 0x2
+ 331 0058 17       		.uleb128 0x17
+ 332 0059 00       		.byte	0
+ 333 005a 00       		.byte	0
+ 334 005b 07       		.uleb128 0x7
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccLqlFHQ.s 			page 8
+
+
+ 335 005c 34       		.uleb128 0x34
+ 336 005d 00       		.byte	0
+ 337 005e 03       		.uleb128 0x3
+ 338 005f 0E       		.uleb128 0xe
+ 339 0060 3A       		.uleb128 0x3a
+ 340 0061 0B       		.uleb128 0xb
+ 341 0062 3B       		.uleb128 0x3b
+ 342 0063 0B       		.uleb128 0xb
+ 343 0064 49       		.uleb128 0x49
+ 344 0065 13       		.uleb128 0x13
+ 345 0066 02       		.uleb128 0x2
+ 346 0067 17       		.uleb128 0x17
+ 347 0068 00       		.byte	0
+ 348 0069 00       		.byte	0
+ 349 006a 08       		.uleb128 0x8
+ 350 006b 2E       		.uleb128 0x2e
+ 351 006c 00       		.byte	0
+ 352 006d 3F       		.uleb128 0x3f
+ 353 006e 19       		.uleb128 0x19
+ 354 006f 03       		.uleb128 0x3
+ 355 0070 0E       		.uleb128 0xe
+ 356 0071 3A       		.uleb128 0x3a
+ 357 0072 0B       		.uleb128 0xb
+ 358 0073 3B       		.uleb128 0x3b
+ 359 0074 0B       		.uleb128 0xb
+ 360 0075 27       		.uleb128 0x27
+ 361 0076 19       		.uleb128 0x19
+ 362 0077 49       		.uleb128 0x49
+ 363 0078 13       		.uleb128 0x13
+ 364 0079 8701     		.uleb128 0x87
+ 365 007b 19       		.uleb128 0x19
+ 366 007c 11       		.uleb128 0x11
+ 367 007d 01       		.uleb128 0x1
+ 368 007e 12       		.uleb128 0x12
+ 369 007f 06       		.uleb128 0x6
+ 370 0080 40       		.uleb128 0x40
+ 371 0081 18       		.uleb128 0x18
+ 372 0082 9742     		.uleb128 0x2117
+ 373 0084 19       		.uleb128 0x19
+ 374 0085 00       		.byte	0
+ 375 0086 00       		.byte	0
+ 376 0087 09       		.uleb128 0x9
+ 377 0088 24       		.uleb128 0x24
+ 378 0089 00       		.byte	0
+ 379 008a 0B       		.uleb128 0xb
+ 380 008b 0B       		.uleb128 0xb
+ 381 008c 3E       		.uleb128 0x3e
+ 382 008d 0B       		.uleb128 0xb
+ 383 008e 03       		.uleb128 0x3
+ 384 008f 08       		.uleb128 0x8
+ 385 0090 00       		.byte	0
+ 386 0091 00       		.byte	0
+ 387 0092 00       		.byte	0
+ 388              		.section	.debug_loc,"",%progbits
+ 389              	.Ldebug_loc0:
+ 390              	.LLST0:
+ 391 0000 1E000000 		.4byte	.LVL2
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccLqlFHQ.s 			page 9
+
+
+ 392 0004 28000000 		.4byte	.LVL3
+ 393 0008 0100     		.2byte	0x1
+ 394 000a 52       		.byte	0x52
+ 395 000b 28000000 		.4byte	.LVL3
+ 396 000f 2A000000 		.4byte	.LVL4
+ 397 0013 0400     		.2byte	0x4
+ 398 0015 72       		.byte	0x72
+ 399 0016 00       		.sleb128 0
+ 400 0017 20       		.byte	0x20
+ 401 0018 9F       		.byte	0x9f
+ 402 0019 00000000 		.4byte	0
+ 403 001d 00000000 		.4byte	0
+ 404              	.LLST1:
+ 405 0021 06000000 		.4byte	.LVL0
+ 406 0025 0C000000 		.4byte	.LVL1
+ 407 0029 0500     		.2byte	0x5
+ 408 002b 73       		.byte	0x73
+ 409 002c 00       		.sleb128 0
+ 410 002d 31       		.byte	0x31
+ 411 002e 1A       		.byte	0x1a
+ 412 002f 9F       		.byte	0x9f
+ 413 0030 00000000 		.4byte	0
+ 414 0034 00000000 		.4byte	0
+ 415              		.section	.debug_aranges,"",%progbits
+ 416 0000 24000000 		.4byte	0x24
+ 417 0004 0200     		.2byte	0x2
+ 418 0006 00000000 		.4byte	.Ldebug_info0
+ 419 000a 04       		.byte	0x4
+ 420 000b 00       		.byte	0
+ 421 000c 0000     		.2byte	0
+ 422 000e 0000     		.2byte	0
+ 423 0010 00000000 		.4byte	.LFB1
+ 424 0014 40000000 		.4byte	.LFE1-.LFB1
+ 425 0018 00000000 		.4byte	.LFB0
+ 426 001c 84000000 		.4byte	.LFE0-.LFB0
+ 427 0020 00000000 		.4byte	0
+ 428 0024 00000000 		.4byte	0
+ 429              		.section	.debug_ranges,"",%progbits
+ 430              	.Ldebug_ranges0:
+ 431 0000 00000000 		.4byte	.LFB1
+ 432 0004 40000000 		.4byte	.LFE1
+ 433 0008 00000000 		.4byte	.LFB0
+ 434 000c 84000000 		.4byte	.LFE0
+ 435 0010 00000000 		.4byte	0
+ 436 0014 00000000 		.4byte	0
+ 437              		.section	.debug_line,"",%progbits
+ 438              	.Ldebug_line0:
+ 439 0000 5D000000 		.section	.debug_str,"MS",%progbits,1
+ 439      02002C00 
+ 439      00000201 
+ 439      FB0E0D00 
+ 439      01010101 
+ 440              	.LASF2:
+ 441 0000 6C6F6E67 		.ascii	"long unsigned int\000"
+ 441      20756E73 
+ 441      69676E65 
+ 441      6420696E 
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccLqlFHQ.s 			page 10
+
+
+ 441      7400
+ 442              	.LASF4:
+ 443 0012 6D61736B 		.ascii	"mask_status\000"
+ 443      5F737461 
+ 443      74757300 
+ 444              	.LASF9:
+ 445 001e 6D61696E 		.ascii	"main\000"
+ 445      00
+ 446              	.LASF8:
+ 447 0023 4750494F 		.ascii	"GPIO_ISR\000"
+ 447      5F495352 
+ 447      00
+ 448              	.LASF6:
+ 449 002c 6D61696E 		.ascii	"main.c\000"
+ 449      2E6300
+ 450              	.LASF3:
+ 451 0033 756E7369 		.ascii	"unsigned char\000"
+ 451      676E6564 
+ 451      20636861 
+ 451      7200
+ 452              	.LASF1:
+ 453 0041 745F7569 		.ascii	"t_uint32\000"
+ 453      6E743332 
+ 453      00
+ 454              	.LASF7:
+ 455 004a 443A5C44 		.ascii	"D:\\Development\\AESD\\Interrupts.Bundle01\\INTERRU"
+ 455      6576656C 
+ 455      6F706D65 
+ 455      6E745C41 
+ 455      4553445C 
+ 456 0079 5054532E 		.ascii	"PTS.cydsn\000"
+ 456      63796473 
+ 456      6E00
+ 457              	.LASF5:
+ 458 0083 474E5520 		.ascii	"GNU C11 5.4.1 20160609 (release) [ARM/embedded-5-br"
+ 458      43313120 
+ 458      352E342E 
+ 458      31203230 
+ 458      31363036 
+ 459 00b6 616E6368 		.ascii	"anch revision 237715] -mcpu=cortex-m0 -mthumb -g -O"
+ 459      20726576 
+ 459      6973696F 
+ 459      6E203233 
+ 459      37373135 
+ 460 00e9 67202D66 		.ascii	"g -ffunction-sections -ffat-lto-objects\000"
+ 460      66756E63 
+ 460      74696F6E 
+ 460      2D736563 
+ 460      74696F6E 
+ 461              	.LASF0:
+ 462 0111 745F7265 		.ascii	"t_reg32\000"
+ 462      67333200 
+ 463              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 5.4.1 20160609 (release) [ARM/embedded-5-bran

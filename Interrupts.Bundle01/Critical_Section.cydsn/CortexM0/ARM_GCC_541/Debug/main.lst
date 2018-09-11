@@ -1,0 +1,853 @@
+ARM GAS  C:\Users\Mahe\AppData\Local\Temp\ccS5dkAx.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.cpu cortex-m0
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 0
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"main.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.IND_ISR,"ax",%progbits
+  20              		.align	2
+  21              		.global	IND_ISR
+  22              		.code	16
+  23              		.thumb_func
+  24              		.type	IND_ISR, %function
+  25              	IND_ISR:
+  26              	.LFB35:
+  27              		.file 1 "main.c"
+   1:main.c        **** #include <project.h>
+   2:main.c        **** CY_ISR_PROTO(IND_ISR);
+   3:main.c        **** int main()
+   4:main.c        **** {   
+   5:main.c        ****     CyGlobalIntEnable; /* Enable global interrupts. */
+   6:main.c        ****     TCPWM_Start();
+   7:main.c        ****     isr_1_StartEx(IND_ISR);
+   8:main.c        ****     uint8 InterruptState;
+   9:main.c        **** for(;;)
+  10:main.c        ****     {    
+  11:main.c        ****         InterruptState=CyEnterCriticalSection();
+  12:main.c        ****         Pin_LED_Write(0);
+  13:main.c        ****         CyDelay(5200);
+  14:main.c        ****         CyExitCriticalSection(InterruptState);
+  15:main.c        ****         Pin_LED_Write(1);
+  16:main.c        ****         CyDelay(5200);
+  17:main.c        ****     }
+  18:main.c        **** }
+  19:main.c        **** 
+  20:main.c        **** CY_ISR(IND_ISR)
+  21:main.c        **** {
+  28              		.loc 1 21 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32 0000 10B5     		push	{r4, lr}
+  33              		.cfi_def_cfa_offset 8
+  34              		.cfi_offset 4, -8
+  35              		.cfi_offset 14, -4
+  22:main.c        ****     TCPWM_ClearInterrupt(TCPWM_INTR_MASK_TC);
+ARM GAS  C:\Users\Mahe\AppData\Local\Temp\ccS5dkAx.s 			page 2
+
+
+  36              		.loc 1 22 0
+  37 0002 0120     		movs	r0, #1
+  38 0004 FFF7FEFF 		bl	TCPWM_ClearInterrupt
+  39              	.LVL0:
+  23:main.c        ****     Pin_LED_1_Write(0);
+  40              		.loc 1 23 0
+  41 0008 0020     		movs	r0, #0
+  42 000a FFF7FEFF 		bl	Pin_LED_1_Write
+  43              	.LVL1:
+  24:main.c        ****     CyDelay(500);
+  44              		.loc 1 24 0
+  45 000e FA20     		movs	r0, #250
+  46 0010 4000     		lsls	r0, r0, #1
+  47 0012 FFF7FEFF 		bl	CyDelay
+  48              	.LVL2:
+  25:main.c        ****     Pin_LED_1_Write(1);
+  49              		.loc 1 25 0
+  50 0016 0120     		movs	r0, #1
+  51 0018 FFF7FEFF 		bl	Pin_LED_1_Write
+  52              	.LVL3:
+  26:main.c        ****     
+  27:main.c        **** }...
+  53              		.loc 1 27 0
+  54              		@ sp needed
+  55 001c 10BD     		pop	{r4, pc}
+  56              		.cfi_endproc
+  57              	.LFE35:
+  58              		.size	IND_ISR, .-IND_ISR
+  59 001e C046     		.section	.text.main,"ax",%progbits
+  60              		.align	2
+  61              		.global	main
+  62              		.code	16
+  63              		.thumb_func
+  64              		.type	main, %function
+  65              	main:
+  66              	.LFB34:
+   4:main.c        **** {   
+  67              		.loc 1 4 0
+  68              		.cfi_startproc
+  69              		@ args = 0, pretend = 0, frame = 0
+  70              		@ frame_needed = 0, uses_anonymous_args = 0
+  71 0000 70B5     		push	{r4, r5, r6, lr}
+  72              		.cfi_def_cfa_offset 16
+  73              		.cfi_offset 4, -16
+  74              		.cfi_offset 5, -12
+  75              		.cfi_offset 6, -8
+  76              		.cfi_offset 14, -4
+   5:main.c        ****     CyGlobalIntEnable; /* Enable global interrupts. */
+  77              		.loc 1 5 0
+  78              		.syntax divided
+  79              	@ 5 "main.c" 1
+  80 0002 62B6     		CPSIE   i
+  81              	@ 0 "" 2
+   6:main.c        ****     TCPWM_Start();
+  82              		.loc 1 6 0
+  83              		.thumb
+  84              		.syntax unified
+ARM GAS  C:\Users\Mahe\AppData\Local\Temp\ccS5dkAx.s 			page 3
+
+
+  85 0004 FFF7FEFF 		bl	TCPWM_Start
+  86              	.LVL4:
+   7:main.c        ****     isr_1_StartEx(IND_ISR);
+  87              		.loc 1 7 0
+  88 0008 0B48     		ldr	r0, .L4
+  89 000a FFF7FEFF 		bl	isr_1_StartEx
+  90              	.LVL5:
+  91              	.L3:
+  11:main.c        ****         InterruptState=CyEnterCriticalSection();
+  92              		.loc 1 11 0 discriminator 1
+  93 000e FFF7FEFF 		bl	CyEnterCriticalSection
+  94              	.LVL6:
+  95 0012 0500     		movs	r5, r0
+  96              	.LVL7:
+  12:main.c        ****         Pin_LED_Write(0);
+  97              		.loc 1 12 0 discriminator 1
+  98 0014 0020     		movs	r0, #0
+  99 0016 FFF7FEFF 		bl	Pin_LED_Write
+ 100              	.LVL8:
+  13:main.c        ****         CyDelay(5200);
+ 101              		.loc 1 13 0 discriminator 1
+ 102 001a 084C     		ldr	r4, .L4+4
+ 103 001c 2000     		movs	r0, r4
+ 104 001e FFF7FEFF 		bl	CyDelay
+ 105              	.LVL9:
+  14:main.c        ****         CyExitCriticalSection(InterruptState);
+ 106              		.loc 1 14 0 discriminator 1
+ 107 0022 2800     		movs	r0, r5
+ 108 0024 FFF7FEFF 		bl	CyExitCriticalSection
+ 109              	.LVL10:
+  15:main.c        ****         Pin_LED_Write(1);
+ 110              		.loc 1 15 0 discriminator 1
+ 111 0028 0120     		movs	r0, #1
+ 112 002a FFF7FEFF 		bl	Pin_LED_Write
+ 113              	.LVL11:
+  16:main.c        ****         CyDelay(5200);
+ 114              		.loc 1 16 0 discriminator 1
+ 115 002e 2000     		movs	r0, r4
+ 116 0030 FFF7FEFF 		bl	CyDelay
+ 117              	.LVL12:
+ 118 0034 EBE7     		b	.L3
+ 119              	.L5:
+ 120 0036 C046     		.align	2
+ 121              	.L4:
+ 122 0038 00000000 		.word	IND_ISR
+ 123 003c 50140000 		.word	5200
+ 124              		.cfi_endproc
+ 125              	.LFE34:
+ 126              		.size	main, .-main
+ 127              		.text
+ 128              	.Letext0:
+ 129              		.file 2 "Generated_Source\\PSoC4/cytypes.h"
+ 130              		.file 3 "Generated_Source\\PSoC4/TCPWM.h"
+ 131              		.file 4 "Generated_Source\\PSoC4/Pin_LED_1.h"
+ 132              		.file 5 "Generated_Source\\PSoC4/CyLib.h"
+ 133              		.file 6 "Generated_Source\\PSoC4/isr_1.h"
+ 134              		.file 7 "Generated_Source\\PSoC4/Pin_LED.h"
+ARM GAS  C:\Users\Mahe\AppData\Local\Temp\ccS5dkAx.s 			page 4
+
+
+ 135              		.section	.debug_info,"",%progbits
+ 136              	.Ldebug_info0:
+ 137 0000 0B020000 		.4byte	0x20b
+ 138 0004 0400     		.2byte	0x4
+ 139 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 140 000a 04       		.byte	0x4
+ 141 000b 01       		.uleb128 0x1
+ 142 000c 47010000 		.4byte	.LASF24
+ 143 0010 0C       		.byte	0xc
+ 144 0011 EC010000 		.4byte	.LASF25
+ 145 0015 1F000000 		.4byte	.LASF26
+ 146 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 147 001d 00000000 		.4byte	0
+ 148 0021 00000000 		.4byte	.Ldebug_line0
+ 149 0025 02       		.uleb128 0x2
+ 150 0026 01       		.byte	0x1
+ 151 0027 06       		.byte	0x6
+ 152 0028 1F020000 		.4byte	.LASF0
+ 153 002c 02       		.uleb128 0x2
+ 154 002d 01       		.byte	0x1
+ 155 002e 08       		.byte	0x8
+ 156 002f B1000000 		.4byte	.LASF1
+ 157 0033 02       		.uleb128 0x2
+ 158 0034 02       		.byte	0x2
+ 159 0035 05       		.byte	0x5
+ 160 0036 F8010000 		.4byte	.LASF2
+ 161 003a 02       		.uleb128 0x2
+ 162 003b 02       		.byte	0x2
+ 163 003c 07       		.byte	0x7
+ 164 003d 0C000000 		.4byte	.LASF3
+ 165 0041 02       		.uleb128 0x2
+ 166 0042 04       		.byte	0x4
+ 167 0043 05       		.byte	0x5
+ 168 0044 0A020000 		.4byte	.LASF4
+ 169 0048 02       		.uleb128 0x2
+ 170 0049 04       		.byte	0x4
+ 171 004a 07       		.byte	0x7
+ 172 004b BF000000 		.4byte	.LASF5
+ 173 004f 02       		.uleb128 0x2
+ 174 0050 08       		.byte	0x8
+ 175 0051 05       		.byte	0x5
+ 176 0052 DE010000 		.4byte	.LASF6
+ 177 0056 02       		.uleb128 0x2
+ 178 0057 08       		.byte	0x8
+ 179 0058 07       		.byte	0x7
+ 180 0059 9A000000 		.4byte	.LASF7
+ 181 005d 03       		.uleb128 0x3
+ 182 005e 04       		.byte	0x4
+ 183 005f 05       		.byte	0x5
+ 184 0060 696E7400 		.ascii	"int\000"
+ 185 0064 02       		.uleb128 0x2
+ 186 0065 04       		.byte	0x4
+ 187 0066 07       		.byte	0x7
+ 188 0067 01010000 		.4byte	.LASF8
+ 189 006b 04       		.uleb128 0x4
+ 190 006c D1000000 		.4byte	.LASF9
+ 191 0070 02       		.byte	0x2
+ARM GAS  C:\Users\Mahe\AppData\Local\Temp\ccS5dkAx.s 			page 5
+
+
+ 192 0071 D201     		.2byte	0x1d2
+ 193 0073 2C000000 		.4byte	0x2c
+ 194 0077 04       		.uleb128 0x4
+ 195 0078 E3000000 		.4byte	.LASF10
+ 196 007c 02       		.byte	0x2
+ 197 007d D401     		.2byte	0x1d4
+ 198 007f 48000000 		.4byte	0x48
+ 199 0083 02       		.uleb128 0x2
+ 200 0084 04       		.byte	0x4
+ 201 0085 04       		.byte	0x4
+ 202 0086 94000000 		.4byte	.LASF11
+ 203 008a 02       		.uleb128 0x2
+ 204 008b 08       		.byte	0x8
+ 205 008c 04       		.byte	0x4
+ 206 008d D7000000 		.4byte	.LASF12
+ 207 0091 02       		.uleb128 0x2
+ 208 0092 01       		.byte	0x1
+ 209 0093 08       		.byte	0x8
+ 210 0094 F3010000 		.4byte	.LASF13
+ 211 0098 02       		.uleb128 0x2
+ 212 0099 08       		.byte	0x8
+ 213 009a 04       		.byte	0x4
+ 214 009b 13020000 		.4byte	.LASF14
+ 215 009f 02       		.uleb128 0x2
+ 216 00a0 04       		.byte	0x4
+ 217 00a1 07       		.byte	0x7
+ 218 00a2 D5010000 		.4byte	.LASF15
+ 219 00a6 05       		.uleb128 0x5
+ 220 00a7 02020000 		.4byte	.LASF27
+ 221 00ab 01       		.byte	0x1
+ 222 00ac 14       		.byte	0x14
+ 223 00ad 00000000 		.4byte	.LFB35
+ 224 00b1 1E000000 		.4byte	.LFE35-.LFB35
+ 225 00b5 01       		.uleb128 0x1
+ 226 00b6 9C       		.byte	0x9c
+ 227 00b7 06010000 		.4byte	0x106
+ 228 00bb 06       		.uleb128 0x6
+ 229 00bc 08000000 		.4byte	.LVL0
+ 230 00c0 B4010000 		.4byte	0x1b4
+ 231 00c4 CE000000 		.4byte	0xce
+ 232 00c8 07       		.uleb128 0x7
+ 233 00c9 01       		.uleb128 0x1
+ 234 00ca 50       		.byte	0x50
+ 235 00cb 01       		.uleb128 0x1
+ 236 00cc 31       		.byte	0x31
+ 237 00cd 00       		.byte	0
+ 238 00ce 06       		.uleb128 0x6
+ 239 00cf 0E000000 		.4byte	.LVL1
+ 240 00d3 C0010000 		.4byte	0x1c0
+ 241 00d7 E1000000 		.4byte	0xe1
+ 242 00db 07       		.uleb128 0x7
+ 243 00dc 01       		.uleb128 0x1
+ 244 00dd 50       		.byte	0x50
+ 245 00de 01       		.uleb128 0x1
+ 246 00df 30       		.byte	0x30
+ 247 00e0 00       		.byte	0
+ 248 00e1 06       		.uleb128 0x6
+ARM GAS  C:\Users\Mahe\AppData\Local\Temp\ccS5dkAx.s 			page 6
+
+
+ 249 00e2 16000000 		.4byte	.LVL2
+ 250 00e6 CB010000 		.4byte	0x1cb
+ 251 00ea F6000000 		.4byte	0xf6
+ 252 00ee 07       		.uleb128 0x7
+ 253 00ef 01       		.uleb128 0x1
+ 254 00f0 50       		.byte	0x50
+ 255 00f1 03       		.uleb128 0x3
+ 256 00f2 0A       		.byte	0xa
+ 257 00f3 F401     		.2byte	0x1f4
+ 258 00f5 00       		.byte	0
+ 259 00f6 08       		.uleb128 0x8
+ 260 00f7 1C000000 		.4byte	.LVL3
+ 261 00fb C0010000 		.4byte	0x1c0
+ 262 00ff 07       		.uleb128 0x7
+ 263 0100 01       		.uleb128 0x1
+ 264 0101 50       		.byte	0x50
+ 265 0102 01       		.uleb128 0x1
+ 266 0103 31       		.byte	0x31
+ 267 0104 00       		.byte	0
+ 268 0105 00       		.byte	0
+ 269 0106 09       		.uleb128 0x9
+ 270 0107 DE000000 		.4byte	.LASF28
+ 271 010b 01       		.byte	0x1
+ 272 010c 03       		.byte	0x3
+ 273 010d 5D000000 		.4byte	0x5d
+ 274 0111 00000000 		.4byte	.LFB34
+ 275 0115 40000000 		.4byte	.LFE34-.LFB34
+ 276 0119 01       		.uleb128 0x1
+ 277 011a 9C       		.byte	0x9c
+ 278 011b B4010000 		.4byte	0x1b4
+ 279 011f 0A       		.uleb128 0xa
+ 280 0120 75000000 		.4byte	.LASF29
+ 281 0124 01       		.byte	0x1
+ 282 0125 08       		.byte	0x8
+ 283 0126 6B000000 		.4byte	0x6b
+ 284 012a 01       		.uleb128 0x1
+ 285 012b 55       		.byte	0x55
+ 286 012c 0B       		.uleb128 0xb
+ 287 012d 08000000 		.4byte	.LVL4
+ 288 0131 D6010000 		.4byte	0x1d6
+ 289 0135 06       		.uleb128 0x6
+ 290 0136 0E000000 		.4byte	.LVL5
+ 291 013a E2010000 		.4byte	0x1e2
+ 292 013e 4C010000 		.4byte	0x14c
+ 293 0142 07       		.uleb128 0x7
+ 294 0143 01       		.uleb128 0x1
+ 295 0144 50       		.byte	0x50
+ 296 0145 05       		.uleb128 0x5
+ 297 0146 03       		.byte	0x3
+ 298 0147 00000000 		.4byte	IND_ISR
+ 299 014b 00       		.byte	0
+ 300 014c 0B       		.uleb128 0xb
+ 301 014d 12000000 		.4byte	.LVL6
+ 302 0151 ED010000 		.4byte	0x1ed
+ 303 0155 06       		.uleb128 0x6
+ 304 0156 1A000000 		.4byte	.LVL8
+ 305 015a F8010000 		.4byte	0x1f8
+ARM GAS  C:\Users\Mahe\AppData\Local\Temp\ccS5dkAx.s 			page 7
+
+
+ 306 015e 68010000 		.4byte	0x168
+ 307 0162 07       		.uleb128 0x7
+ 308 0163 01       		.uleb128 0x1
+ 309 0164 50       		.byte	0x50
+ 310 0165 01       		.uleb128 0x1
+ 311 0166 30       		.byte	0x30
+ 312 0167 00       		.byte	0
+ 313 0168 06       		.uleb128 0x6
+ 314 0169 22000000 		.4byte	.LVL9
+ 315 016d CB010000 		.4byte	0x1cb
+ 316 0171 7C010000 		.4byte	0x17c
+ 317 0175 07       		.uleb128 0x7
+ 318 0176 01       		.uleb128 0x1
+ 319 0177 50       		.byte	0x50
+ 320 0178 02       		.uleb128 0x2
+ 321 0179 74       		.byte	0x74
+ 322 017a 00       		.sleb128 0
+ 323 017b 00       		.byte	0
+ 324 017c 06       		.uleb128 0x6
+ 325 017d 28000000 		.4byte	.LVL10
+ 326 0181 03020000 		.4byte	0x203
+ 327 0185 90010000 		.4byte	0x190
+ 328 0189 07       		.uleb128 0x7
+ 329 018a 01       		.uleb128 0x1
+ 330 018b 50       		.byte	0x50
+ 331 018c 02       		.uleb128 0x2
+ 332 018d 75       		.byte	0x75
+ 333 018e 00       		.sleb128 0
+ 334 018f 00       		.byte	0
+ 335 0190 06       		.uleb128 0x6
+ 336 0191 2E000000 		.4byte	.LVL11
+ 337 0195 F8010000 		.4byte	0x1f8
+ 338 0199 A3010000 		.4byte	0x1a3
+ 339 019d 07       		.uleb128 0x7
+ 340 019e 01       		.uleb128 0x1
+ 341 019f 50       		.byte	0x50
+ 342 01a0 01       		.uleb128 0x1
+ 343 01a1 31       		.byte	0x31
+ 344 01a2 00       		.byte	0
+ 345 01a3 08       		.uleb128 0x8
+ 346 01a4 34000000 		.4byte	.LVL12
+ 347 01a8 CB010000 		.4byte	0x1cb
+ 348 01ac 07       		.uleb128 0x7
+ 349 01ad 01       		.uleb128 0x1
+ 350 01ae 50       		.byte	0x50
+ 351 01af 02       		.uleb128 0x2
+ 352 01b0 74       		.byte	0x74
+ 353 01b1 00       		.sleb128 0
+ 354 01b2 00       		.byte	0
+ 355 01b3 00       		.byte	0
+ 356 01b4 0C       		.uleb128 0xc
+ 357 01b5 1C010000 		.4byte	.LASF16
+ 358 01b9 1C010000 		.4byte	.LASF16
+ 359 01bd 03       		.byte	0x3
+ 360 01be 4701     		.2byte	0x147
+ 361 01c0 0D       		.uleb128 0xd
+ 362 01c1 84000000 		.4byte	.LASF17
+ARM GAS  C:\Users\Mahe\AppData\Local\Temp\ccS5dkAx.s 			page 8
+
+
+ 363 01c5 84000000 		.4byte	.LASF17
+ 364 01c9 04       		.byte	0x4
+ 365 01ca 33       		.byte	0x33
+ 366 01cb 0D       		.uleb128 0xd
+ 367 01cc 39020000 		.4byte	.LASF18
+ 368 01d0 39020000 		.4byte	.LASF18
+ 369 01d4 05       		.byte	0x5
+ 370 01d5 D9       		.byte	0xd9
+ 371 01d6 0C       		.uleb128 0xc
+ 372 01d7 00000000 		.4byte	.LASF19
+ 373 01db 00000000 		.4byte	.LASF19
+ 374 01df 03       		.byte	0x3
+ 375 01e0 3201     		.2byte	0x132
+ 376 01e2 0D       		.uleb128 0xd
+ 377 01e3 2B020000 		.4byte	.LASF20
+ 378 01e7 2B020000 		.4byte	.LASF20
+ 379 01eb 06       		.byte	0x6
+ 380 01ec 18       		.byte	0x18
+ 381 01ed 0D       		.uleb128 0xd
+ 382 01ee EA000000 		.4byte	.LASF21
+ 383 01f2 EA000000 		.4byte	.LASF21
+ 384 01f6 05       		.byte	0x5
+ 385 01f7 E5       		.byte	0xe5
+ 386 01f8 0D       		.uleb128 0xd
+ 387 01f9 0E010000 		.4byte	.LASF22
+ 388 01fd 0E010000 		.4byte	.LASF22
+ 389 0201 07       		.byte	0x7
+ 390 0202 33       		.byte	0x33
+ 391 0203 0D       		.uleb128 0xd
+ 392 0204 31010000 		.4byte	.LASF23
+ 393 0208 31010000 		.4byte	.LASF23
+ 394 020c 05       		.byte	0x5
+ 395 020d E6       		.byte	0xe6
+ 396 020e 00       		.byte	0
+ 397              		.section	.debug_abbrev,"",%progbits
+ 398              	.Ldebug_abbrev0:
+ 399 0000 01       		.uleb128 0x1
+ 400 0001 11       		.uleb128 0x11
+ 401 0002 01       		.byte	0x1
+ 402 0003 25       		.uleb128 0x25
+ 403 0004 0E       		.uleb128 0xe
+ 404 0005 13       		.uleb128 0x13
+ 405 0006 0B       		.uleb128 0xb
+ 406 0007 03       		.uleb128 0x3
+ 407 0008 0E       		.uleb128 0xe
+ 408 0009 1B       		.uleb128 0x1b
+ 409 000a 0E       		.uleb128 0xe
+ 410 000b 55       		.uleb128 0x55
+ 411 000c 17       		.uleb128 0x17
+ 412 000d 11       		.uleb128 0x11
+ 413 000e 01       		.uleb128 0x1
+ 414 000f 10       		.uleb128 0x10
+ 415 0010 17       		.uleb128 0x17
+ 416 0011 00       		.byte	0
+ 417 0012 00       		.byte	0
+ 418 0013 02       		.uleb128 0x2
+ 419 0014 24       		.uleb128 0x24
+ARM GAS  C:\Users\Mahe\AppData\Local\Temp\ccS5dkAx.s 			page 9
+
+
+ 420 0015 00       		.byte	0
+ 421 0016 0B       		.uleb128 0xb
+ 422 0017 0B       		.uleb128 0xb
+ 423 0018 3E       		.uleb128 0x3e
+ 424 0019 0B       		.uleb128 0xb
+ 425 001a 03       		.uleb128 0x3
+ 426 001b 0E       		.uleb128 0xe
+ 427 001c 00       		.byte	0
+ 428 001d 00       		.byte	0
+ 429 001e 03       		.uleb128 0x3
+ 430 001f 24       		.uleb128 0x24
+ 431 0020 00       		.byte	0
+ 432 0021 0B       		.uleb128 0xb
+ 433 0022 0B       		.uleb128 0xb
+ 434 0023 3E       		.uleb128 0x3e
+ 435 0024 0B       		.uleb128 0xb
+ 436 0025 03       		.uleb128 0x3
+ 437 0026 08       		.uleb128 0x8
+ 438 0027 00       		.byte	0
+ 439 0028 00       		.byte	0
+ 440 0029 04       		.uleb128 0x4
+ 441 002a 16       		.uleb128 0x16
+ 442 002b 00       		.byte	0
+ 443 002c 03       		.uleb128 0x3
+ 444 002d 0E       		.uleb128 0xe
+ 445 002e 3A       		.uleb128 0x3a
+ 446 002f 0B       		.uleb128 0xb
+ 447 0030 3B       		.uleb128 0x3b
+ 448 0031 05       		.uleb128 0x5
+ 449 0032 49       		.uleb128 0x49
+ 450 0033 13       		.uleb128 0x13
+ 451 0034 00       		.byte	0
+ 452 0035 00       		.byte	0
+ 453 0036 05       		.uleb128 0x5
+ 454 0037 2E       		.uleb128 0x2e
+ 455 0038 01       		.byte	0x1
+ 456 0039 3F       		.uleb128 0x3f
+ 457 003a 19       		.uleb128 0x19
+ 458 003b 03       		.uleb128 0x3
+ 459 003c 0E       		.uleb128 0xe
+ 460 003d 3A       		.uleb128 0x3a
+ 461 003e 0B       		.uleb128 0xb
+ 462 003f 3B       		.uleb128 0x3b
+ 463 0040 0B       		.uleb128 0xb
+ 464 0041 27       		.uleb128 0x27
+ 465 0042 19       		.uleb128 0x19
+ 466 0043 11       		.uleb128 0x11
+ 467 0044 01       		.uleb128 0x1
+ 468 0045 12       		.uleb128 0x12
+ 469 0046 06       		.uleb128 0x6
+ 470 0047 40       		.uleb128 0x40
+ 471 0048 18       		.uleb128 0x18
+ 472 0049 9742     		.uleb128 0x2117
+ 473 004b 19       		.uleb128 0x19
+ 474 004c 01       		.uleb128 0x1
+ 475 004d 13       		.uleb128 0x13
+ 476 004e 00       		.byte	0
+ARM GAS  C:\Users\Mahe\AppData\Local\Temp\ccS5dkAx.s 			page 10
+
+
+ 477 004f 00       		.byte	0
+ 478 0050 06       		.uleb128 0x6
+ 479 0051 898201   		.uleb128 0x4109
+ 480 0054 01       		.byte	0x1
+ 481 0055 11       		.uleb128 0x11
+ 482 0056 01       		.uleb128 0x1
+ 483 0057 31       		.uleb128 0x31
+ 484 0058 13       		.uleb128 0x13
+ 485 0059 01       		.uleb128 0x1
+ 486 005a 13       		.uleb128 0x13
+ 487 005b 00       		.byte	0
+ 488 005c 00       		.byte	0
+ 489 005d 07       		.uleb128 0x7
+ 490 005e 8A8201   		.uleb128 0x410a
+ 491 0061 00       		.byte	0
+ 492 0062 02       		.uleb128 0x2
+ 493 0063 18       		.uleb128 0x18
+ 494 0064 9142     		.uleb128 0x2111
+ 495 0066 18       		.uleb128 0x18
+ 496 0067 00       		.byte	0
+ 497 0068 00       		.byte	0
+ 498 0069 08       		.uleb128 0x8
+ 499 006a 898201   		.uleb128 0x4109
+ 500 006d 01       		.byte	0x1
+ 501 006e 11       		.uleb128 0x11
+ 502 006f 01       		.uleb128 0x1
+ 503 0070 31       		.uleb128 0x31
+ 504 0071 13       		.uleb128 0x13
+ 505 0072 00       		.byte	0
+ 506 0073 00       		.byte	0
+ 507 0074 09       		.uleb128 0x9
+ 508 0075 2E       		.uleb128 0x2e
+ 509 0076 01       		.byte	0x1
+ 510 0077 3F       		.uleb128 0x3f
+ 511 0078 19       		.uleb128 0x19
+ 512 0079 03       		.uleb128 0x3
+ 513 007a 0E       		.uleb128 0xe
+ 514 007b 3A       		.uleb128 0x3a
+ 515 007c 0B       		.uleb128 0xb
+ 516 007d 3B       		.uleb128 0x3b
+ 517 007e 0B       		.uleb128 0xb
+ 518 007f 49       		.uleb128 0x49
+ 519 0080 13       		.uleb128 0x13
+ 520 0081 8701     		.uleb128 0x87
+ 521 0083 19       		.uleb128 0x19
+ 522 0084 11       		.uleb128 0x11
+ 523 0085 01       		.uleb128 0x1
+ 524 0086 12       		.uleb128 0x12
+ 525 0087 06       		.uleb128 0x6
+ 526 0088 40       		.uleb128 0x40
+ 527 0089 18       		.uleb128 0x18
+ 528 008a 9742     		.uleb128 0x2117
+ 529 008c 19       		.uleb128 0x19
+ 530 008d 01       		.uleb128 0x1
+ 531 008e 13       		.uleb128 0x13
+ 532 008f 00       		.byte	0
+ 533 0090 00       		.byte	0
+ARM GAS  C:\Users\Mahe\AppData\Local\Temp\ccS5dkAx.s 			page 11
+
+
+ 534 0091 0A       		.uleb128 0xa
+ 535 0092 34       		.uleb128 0x34
+ 536 0093 00       		.byte	0
+ 537 0094 03       		.uleb128 0x3
+ 538 0095 0E       		.uleb128 0xe
+ 539 0096 3A       		.uleb128 0x3a
+ 540 0097 0B       		.uleb128 0xb
+ 541 0098 3B       		.uleb128 0x3b
+ 542 0099 0B       		.uleb128 0xb
+ 543 009a 49       		.uleb128 0x49
+ 544 009b 13       		.uleb128 0x13
+ 545 009c 02       		.uleb128 0x2
+ 546 009d 18       		.uleb128 0x18
+ 547 009e 00       		.byte	0
+ 548 009f 00       		.byte	0
+ 549 00a0 0B       		.uleb128 0xb
+ 550 00a1 898201   		.uleb128 0x4109
+ 551 00a4 00       		.byte	0
+ 552 00a5 11       		.uleb128 0x11
+ 553 00a6 01       		.uleb128 0x1
+ 554 00a7 31       		.uleb128 0x31
+ 555 00a8 13       		.uleb128 0x13
+ 556 00a9 00       		.byte	0
+ 557 00aa 00       		.byte	0
+ 558 00ab 0C       		.uleb128 0xc
+ 559 00ac 2E       		.uleb128 0x2e
+ 560 00ad 00       		.byte	0
+ 561 00ae 3F       		.uleb128 0x3f
+ 562 00af 19       		.uleb128 0x19
+ 563 00b0 3C       		.uleb128 0x3c
+ 564 00b1 19       		.uleb128 0x19
+ 565 00b2 6E       		.uleb128 0x6e
+ 566 00b3 0E       		.uleb128 0xe
+ 567 00b4 03       		.uleb128 0x3
+ 568 00b5 0E       		.uleb128 0xe
+ 569 00b6 3A       		.uleb128 0x3a
+ 570 00b7 0B       		.uleb128 0xb
+ 571 00b8 3B       		.uleb128 0x3b
+ 572 00b9 05       		.uleb128 0x5
+ 573 00ba 00       		.byte	0
+ 574 00bb 00       		.byte	0
+ 575 00bc 0D       		.uleb128 0xd
+ 576 00bd 2E       		.uleb128 0x2e
+ 577 00be 00       		.byte	0
+ 578 00bf 3F       		.uleb128 0x3f
+ 579 00c0 19       		.uleb128 0x19
+ 580 00c1 3C       		.uleb128 0x3c
+ 581 00c2 19       		.uleb128 0x19
+ 582 00c3 6E       		.uleb128 0x6e
+ 583 00c4 0E       		.uleb128 0xe
+ 584 00c5 03       		.uleb128 0x3
+ 585 00c6 0E       		.uleb128 0xe
+ 586 00c7 3A       		.uleb128 0x3a
+ 587 00c8 0B       		.uleb128 0xb
+ 588 00c9 3B       		.uleb128 0x3b
+ 589 00ca 0B       		.uleb128 0xb
+ 590 00cb 00       		.byte	0
+ARM GAS  C:\Users\Mahe\AppData\Local\Temp\ccS5dkAx.s 			page 12
+
+
+ 591 00cc 00       		.byte	0
+ 592 00cd 00       		.byte	0
+ 593              		.section	.debug_aranges,"",%progbits
+ 594 0000 24000000 		.4byte	0x24
+ 595 0004 0200     		.2byte	0x2
+ 596 0006 00000000 		.4byte	.Ldebug_info0
+ 597 000a 04       		.byte	0x4
+ 598 000b 00       		.byte	0
+ 599 000c 0000     		.2byte	0
+ 600 000e 0000     		.2byte	0
+ 601 0010 00000000 		.4byte	.LFB35
+ 602 0014 1E000000 		.4byte	.LFE35-.LFB35
+ 603 0018 00000000 		.4byte	.LFB34
+ 604 001c 40000000 		.4byte	.LFE34-.LFB34
+ 605 0020 00000000 		.4byte	0
+ 606 0024 00000000 		.4byte	0
+ 607              		.section	.debug_ranges,"",%progbits
+ 608              	.Ldebug_ranges0:
+ 609 0000 00000000 		.4byte	.LFB35
+ 610 0004 1E000000 		.4byte	.LFE35
+ 611 0008 00000000 		.4byte	.LFB34
+ 612 000c 40000000 		.4byte	.LFE34
+ 613 0010 00000000 		.4byte	0
+ 614 0014 00000000 		.4byte	0
+ 615              		.section	.debug_line,"",%progbits
+ 616              	.Ldebug_line0:
+ 617 0000 C6000000 		.section	.debug_str,"MS",%progbits,1
+ 617      02007E00 
+ 617      00000201 
+ 617      FB0E0D00 
+ 617      01010101 
+ 618              	.LASF19:
+ 619 0000 54435057 		.ascii	"TCPWM_Start\000"
+ 619      4D5F5374 
+ 619      61727400 
+ 620              	.LASF3:
+ 621 000c 73686F72 		.ascii	"short unsigned int\000"
+ 621      7420756E 
+ 621      7369676E 
+ 621      65642069 
+ 621      6E7400
+ 622              	.LASF26:
+ 623 001f 433A5C55 		.ascii	"C:\\Users\\Mahe\\Documents\\PSoC Creator\\Workspace"
+ 623      73657273 
+ 623      5C4D6168 
+ 623      655C446F 
+ 623      63756D65 
+ 624 004d 30315C41 		.ascii	"01\\Aug_16th_AESD\\Critical_Section.cydsn\000"
+ 624      75675F31 
+ 624      3674685F 
+ 624      41455344 
+ 624      5C437269 
+ 625              	.LASF29:
+ 626 0075 496E7465 		.ascii	"InterruptState\000"
+ 626      72727570 
+ 626      74537461 
+ 626      746500
+ARM GAS  C:\Users\Mahe\AppData\Local\Temp\ccS5dkAx.s 			page 13
+
+
+ 627              	.LASF17:
+ 628 0084 50696E5F 		.ascii	"Pin_LED_1_Write\000"
+ 628      4C45445F 
+ 628      315F5772 
+ 628      69746500 
+ 629              	.LASF11:
+ 630 0094 666C6F61 		.ascii	"float\000"
+ 630      7400
+ 631              	.LASF7:
+ 632 009a 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 632      206C6F6E 
+ 632      6720756E 
+ 632      7369676E 
+ 632      65642069 
+ 633              	.LASF1:
+ 634 00b1 756E7369 		.ascii	"unsigned char\000"
+ 634      676E6564 
+ 634      20636861 
+ 634      7200
+ 635              	.LASF5:
+ 636 00bf 6C6F6E67 		.ascii	"long unsigned int\000"
+ 636      20756E73 
+ 636      69676E65 
+ 636      6420696E 
+ 636      7400
+ 637              	.LASF9:
+ 638 00d1 75696E74 		.ascii	"uint8\000"
+ 638      3800
+ 639              	.LASF12:
+ 640 00d7 646F7562 		.ascii	"double\000"
+ 640      6C6500
+ 641              	.LASF28:
+ 642 00de 6D61696E 		.ascii	"main\000"
+ 642      00
+ 643              	.LASF10:
+ 644 00e3 75696E74 		.ascii	"uint32\000"
+ 644      333200
+ 645              	.LASF21:
+ 646 00ea 4379456E 		.ascii	"CyEnterCriticalSection\000"
+ 646      74657243 
+ 646      72697469 
+ 646      63616C53 
+ 646      65637469 
+ 647              	.LASF8:
+ 648 0101 756E7369 		.ascii	"unsigned int\000"
+ 648      676E6564 
+ 648      20696E74 
+ 648      00
+ 649              	.LASF22:
+ 650 010e 50696E5F 		.ascii	"Pin_LED_Write\000"
+ 650      4C45445F 
+ 650      57726974 
+ 650      6500
+ 651              	.LASF16:
+ 652 011c 54435057 		.ascii	"TCPWM_ClearInterrupt\000"
+ 652      4D5F436C 
+ 652      65617249 
+ARM GAS  C:\Users\Mahe\AppData\Local\Temp\ccS5dkAx.s 			page 14
+
+
+ 652      6E746572 
+ 652      72757074 
+ 653              	.LASF23:
+ 654 0131 43794578 		.ascii	"CyExitCriticalSection\000"
+ 654      69744372 
+ 654      69746963 
+ 654      616C5365 
+ 654      6374696F 
+ 655              	.LASF24:
+ 656 0147 474E5520 		.ascii	"GNU C11 5.4.1 20160609 (release) [ARM/embedded-5-br"
+ 656      43313120 
+ 656      352E342E 
+ 656      31203230 
+ 656      31363036 
+ 657 017a 616E6368 		.ascii	"anch revision 237715] -mcpu=cortex-m0 -mthumb -g -O"
+ 657      20726576 
+ 657      6973696F 
+ 657      6E203233 
+ 657      37373135 
+ 658 01ad 67202D66 		.ascii	"g -ffunction-sections -ffat-lto-objects\000"
+ 658      66756E63 
+ 658      74696F6E 
+ 658      2D736563 
+ 658      74696F6E 
+ 659              	.LASF15:
+ 660 01d5 73697A65 		.ascii	"sizetype\000"
+ 660      74797065 
+ 660      00
+ 661              	.LASF6:
+ 662 01de 6C6F6E67 		.ascii	"long long int\000"
+ 662      206C6F6E 
+ 662      6720696E 
+ 662      7400
+ 663              	.LASF25:
+ 664 01ec 6D61696E 		.ascii	"main.c\000"
+ 664      2E6300
+ 665              	.LASF13:
+ 666 01f3 63686172 		.ascii	"char\000"
+ 666      00
+ 667              	.LASF2:
+ 668 01f8 73686F72 		.ascii	"short int\000"
+ 668      7420696E 
+ 668      7400
+ 669              	.LASF27:
+ 670 0202 494E445F 		.ascii	"IND_ISR\000"
+ 670      49535200 
+ 671              	.LASF4:
+ 672 020a 6C6F6E67 		.ascii	"long int\000"
+ 672      20696E74 
+ 672      00
+ 673              	.LASF14:
+ 674 0213 6C6F6E67 		.ascii	"long double\000"
+ 674      20646F75 
+ 674      626C6500 
+ 675              	.LASF0:
+ 676 021f 7369676E 		.ascii	"signed char\000"
+ 676      65642063 
+ARM GAS  C:\Users\Mahe\AppData\Local\Temp\ccS5dkAx.s 			page 15
+
+
+ 676      68617200 
+ 677              	.LASF20:
+ 678 022b 6973725F 		.ascii	"isr_1_StartEx\000"
+ 678      315F5374 
+ 678      61727445 
+ 678      7800
+ 679              	.LASF18:
+ 680 0239 43794465 		.ascii	"CyDelay\000"
+ 680      6C617900 
+ 681              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 5.4.1 20160609 (release) [ARM/embedded-5-bran
