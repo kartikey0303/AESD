@@ -1,0 +1,2113 @@
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccz9CRYC.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.cpu cortex-m0
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 0
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"t_CLOCK.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.t_DelayCycles,"ax",%progbits
+  20              		.align	2
+  21              		.global	t_DelayCycles
+  22              		.code	16
+  23              		.thumb_func
+  24              		.type	t_DelayCycles, %function
+  25              	t_DelayCycles:
+  26              	.LFB4:
+  27              		.file 1 "t_CLOCK.c"
+   1:t_CLOCK.c     **** /* ========================================
+   2:t_CLOCK.c     ****  * Name : Clock Basic
+   3:t_CLOCK.c     ****  * Date : 17.09.18
+   4:t_CLOCK.c     ****  * Author : Kartikey Agrawal
+   5:t_CLOCK.c     ****  * Details : Source file for Clocking
+   6:t_CLOCK.c     ****  * 			 Refer to Architecture Technical Reference Manual for futher details
+   7:t_CLOCK.c     ****  * https://drive.google.com/file/d/0B3i9TBs6C1vTdnVqTFlRdkxKeTRFY0tnaFZoVHBrVnJtY1E0/view?usp=drive
+   8:t_CLOCK.c     **** */
+   9:t_CLOCK.c     **** 
+  10:t_CLOCK.c     **** #include "t_CLOCK.h"
+  11:t_CLOCK.c     **** 
+  12:t_CLOCK.c     **** //setting default frequency as 48MHz
+  13:t_CLOCK.c     **** t_uint32 t_sys_freq = 48000000;
+  14:t_CLOCK.c     **** const t_reg8 t_ImoFreqMhz2Reg[46] = {
+  15:t_CLOCK.c     ****             /*  3 MHz */ 0x03u,  /*  4 MHz */ 0x04u,  /*  5 MHz */ 0x05u,  /*  6 MHz */ 0x06u,
+  16:t_CLOCK.c     ****             /*  7 MHz */ 0x07u,  /*  8 MHz */ 0x08u,  /*  9 MHz */ 0x09u,  /* 10 MHz */ 0x0Au,
+  17:t_CLOCK.c     ****             /* 11 MHz */ 0x0Bu,  /* 12 MHz */ 0x0Cu,  /* 13 MHz */ 0x0Eu,  /* 14 MHz */ 0x0Fu,
+  18:t_CLOCK.c     ****             /* 15 MHz */ 0x10u,  /* 16 MHz */ 0x11u,  /* 17 MHz */ 0x12u,  /* 18 MHz */ 0x13u,
+  19:t_CLOCK.c     ****             /* 19 MHz */ 0x14u,  /* 20 MHz */ 0x15u,  /* 21 MHz */ 0x16u,  /* 22 MHz */ 0x17u,
+  20:t_CLOCK.c     ****             /* 23 MHz */ 0x18u,  /* 24 MHz */ 0x19u,  /* 25 MHz */ 0x1Bu,  /* 26 MHz */ 0x1Cu,
+  21:t_CLOCK.c     ****             /* 27 MHz */ 0x1Du,  /* 28 MHz */ 0x1Eu,  /* 29 MHz */ 0x1Fu,  /* 30 MHz */ 0x20u,
+  22:t_CLOCK.c     ****             /* 31 MHz */ 0x21u,  /* 32 MHz */ 0x22u,  /* 33 MHz */ 0x23u,  /* 34 MHz */ 0x25u,
+  23:t_CLOCK.c     ****             /* 35 MHz */ 0x26u,  /* 36 MHz */ 0x27u,  /* 37 MHz */ 0x28u,  /* 38 MHz */ 0x29u,
+  24:t_CLOCK.c     ****             /* 39 MHz */ 0x2Au,  /* 40 MHz */ 0x2Bu,  /* 41 MHz */ 0x2Eu,  /* 42 MHz */ 0x2Fu,
+  25:t_CLOCK.c     ****             /* 43 MHz */ 0x30u,  /* 44 MHz */ 0x31u,  /* 45 MHz */ 0x32u,  /* 46 MHz */ 0x33u,
+  26:t_CLOCK.c     ****             /* 47 MHz */ 0x34u,  /* 48 MHz */ 0x35u };
+  27:t_CLOCK.c     **** 
+  28:t_CLOCK.c     **** 
+  29:t_CLOCK.c     **** /*
+  30:t_CLOCK.c     ****  * Name :       t_ClkWriteHfclkDirect()
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccz9CRYC.s 			page 2
+
+
+  31:t_CLOCK.c     ****  * Function :   Select between source for High Frequency Clock 1) IMO 2)External Clock
+  32:t_CLOCK.c     ****  * Paramaters : t_clkselect
+  33:t_CLOCK.c     ****  * Details :    The value of "cycles" is stored in R0 where it is decremented 
+  34:t_CLOCK.c     ****  *				writen in assembly language
+  35:t_CLOCK.c     **** */
+  36:t_CLOCK.c     **** void t_ClkWriteHfclkDirect(t_uint32 t_clkselect)
+  37:t_CLOCK.c     **** {
+  38:t_CLOCK.c     **** 	t_uint8 t_interruptState = t_EnterCriticalSection();
+  39:t_CLOCK.c     **** 	
+  40:t_CLOCK.c     **** 	(*(t_reg32*)REG_CLK_SELECT) = (*(t_reg32 *) 0x400b0100u)& ~((( t_uint32 ) 0x07u) |(t_clkselect & (
+  41:t_CLOCK.c     **** 	
+  42:t_CLOCK.c     ****     t_ExitCriticalSection(t_interruptState);
+  43:t_CLOCK.c     **** }
+  44:t_CLOCK.c     **** 
+  45:t_CLOCK.c     **** /*
+  46:t_CLOCK.c     ****  * Name :       t_ClkWriteSysclkDiv()
+  47:t_CLOCK.c     ****  * Function :   To divide the high frequency clock to get the required clock frequency
+  48:t_CLOCK.c     ****  * Paramaters : t_divider
+  49:t_CLOCK.c     ****  * Details :    0x400b0100u = CLK_SELECT -> refer Register_Technical Reference manual
+  50:t_CLOCK.c     **** */
+  51:t_CLOCK.c     **** void t_ClkWriteSysClkDiv(t_uint32 t_divider)
+  52:t_CLOCK.c     **** {
+  53:t_CLOCK.c     ****     t_uint8  t_interruptState = t_EnterCriticalSection();
+  54:t_CLOCK.c     ****     t_uint8 t_Sys_Clk_Div[8]={1,2,4,8,16,32,64,128};
+  55:t_CLOCK.c     **** 	
+  56:t_CLOCK.c     **** 	//21,20,19 clear and set that bit
+  57:t_CLOCK.c     ****     (*(t_reg32 *) REG_CLK_SELECT) = ((*(t_reg32 *) REG_CLK_SELECT) & ((t_uint32)(~(t_uint32)((t_uin
+  58:t_CLOCK.c     ****     t_sys_freq = t_sys_freq / t_Sys_Clk_Div[t_divider];
+  59:t_CLOCK.c     ****     t_ExitCriticalSection(t_interruptState);
+  60:t_CLOCK.c     **** 	
+  61:t_CLOCK.c     **** }
+  62:t_CLOCK.c     **** 
+  63:t_CLOCK.c     **** /*
+  64:t_CLOCK.c     ****  * Name :       t_Delay_ms
+  65:t_CLOCK.c     ****  * Function :   To provide delay in Milli-seconds
+  66:t_CLOCK.c     ****  * Paramaters : t_time_ms
+  67:t_CLOCK.c     ****  * Details :    
+  68:t_CLOCK.c     **** */
+  69:t_CLOCK.c     **** void t_Delay_ms(t_uint32 t_time_ms)
+  70:t_CLOCK.c     **** {
+  71:t_CLOCK.c     **** 	//MHz to KHz andn delay for that time
+  72:t_CLOCK.c     **** 	t_DelayCycles(t_time_ms *(t_sys_freq/1000u));
+  73:t_CLOCK.c     **** }
+  74:t_CLOCK.c     **** 
+  75:t_CLOCK.c     **** /*
+  76:t_CLOCK.c     ****  * Name :       t_Delay_us
+  77:t_CLOCK.c     ****  * Function :   To provide delay in Micro-seconds
+  78:t_CLOCK.c     ****  * Paramaters : t_time_us
+  79:t_CLOCK.c     ****  * Details :    
+  80:t_CLOCK.c     **** */
+  81:t_CLOCK.c     **** void t_Delay_us(t_uint32 t_time_us)
+  82:t_CLOCK.c     **** {
+  83:t_CLOCK.c     ****    t_DelayCycles(t_time_us *(t_sys_freq/1000000u));
+  84:t_CLOCK.c     **** }
+  85:t_CLOCK.c     **** 
+  86:t_CLOCK.c     **** /*
+  87:t_CLOCK.c     ****  * Name :       t_DelayCycles
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccz9CRYC.s 			page 3
+
+
+  88:t_CLOCK.c     ****  * Function :   To give a delay of "cycles" Cycles
+  89:t_CLOCK.c     ****  * Paramaters : cycles - unsigned long
+  90:t_CLOCK.c     ****  * Details :    The value of "cycles" is stored in R0 where it is decremented 
+  91:t_CLOCK.c     ****  *				writen in assembly language
+  92:t_CLOCK.c     **** */
+  93:t_CLOCK.c     **** t_DelayCycles(t_uint32 cycles)
+  94:t_CLOCK.c     **** {
+  28              		.loc 1 94 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		@ link register save eliminated.
+  33              	.LVL0:
+  95:t_CLOCK.c     **** 	asm("LSR R0, #2");
+  34              		.loc 1 95 0
+  35              		.syntax divided
+  36              	@ 95 "t_CLOCK.c" 1
+  37 0000 8008     		LSR R0, #2
+  38              	@ 0 "" 2
+  96:t_CLOCK.c     **** 	asm("BEQ t_CyclesDone");
+  39              		.loc 1 96 0
+  40              	@ 96 "t_CLOCK.c" 1
+  41 0002 01D0     		BEQ t_CyclesDone
+  42              	@ 0 "" 2
+  97:t_CLOCK.c     **** 	asm("t_LOOP: SUB R0, #1");
+  43              		.loc 1 97 0
+  44              	@ 97 "t_CLOCK.c" 1
+  45 0004 0138     		t_LOOP: SUB R0, #1
+  46              	@ 0 "" 2
+  98:t_CLOCK.c     **** 	asm("BNE t_LOOP");
+  47              		.loc 1 98 0
+  48              	@ 98 "t_CLOCK.c" 1
+  49 0006 FDD1     		BNE t_LOOP
+  50              	@ 0 "" 2
+  99:t_CLOCK.c     **** 	asm("t_CyclesDone: BX LR");
+  51              		.loc 1 99 0
+  52              	@ 99 "t_CLOCK.c" 1
+  53 0008 7047     		t_CyclesDone: BX LR
+  54              	@ 0 "" 2
+ 100:t_CLOCK.c     **** }
+  55              		.loc 1 100 0
+  56              		.thumb
+  57              		.syntax unified
+  58              		@ sp needed
+  59 000a 7047     		bx	lr
+  60              		.cfi_endproc
+  61              	.LFE4:
+  62              		.size	t_DelayCycles, .-t_DelayCycles
+  63              		.global	__aeabi_uidiv
+  64              		.section	.text.t_Delay_ms,"ax",%progbits
+  65              		.align	2
+  66              		.global	t_Delay_ms
+  67              		.code	16
+  68              		.thumb_func
+  69              		.type	t_Delay_ms, %function
+  70              	t_Delay_ms:
+  71              	.LFB2:
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccz9CRYC.s 			page 4
+
+
+  70:t_CLOCK.c     **** 	//MHz to KHz andn delay for that time
+  72              		.loc 1 70 0
+  73              		.cfi_startproc
+  74              		@ args = 0, pretend = 0, frame = 0
+  75              		@ frame_needed = 0, uses_anonymous_args = 0
+  76              	.LVL1:
+  77 0000 10B5     		push	{r4, lr}
+  78              		.cfi_def_cfa_offset 8
+  79              		.cfi_offset 4, -8
+  80              		.cfi_offset 14, -4
+  81 0002 0400     		movs	r4, r0
+  72:t_CLOCK.c     **** }
+  82              		.loc 1 72 0
+  83 0004 044B     		ldr	r3, .L3
+  84 0006 1868     		ldr	r0, [r3]
+  85              	.LVL2:
+  86 0008 FA21     		movs	r1, #250
+  87 000a 8900     		lsls	r1, r1, #2
+  88 000c FFF7FEFF 		bl	__aeabi_uidiv
+  89              	.LVL3:
+  90 0010 6043     		muls	r0, r4
+  91 0012 FFF7FEFF 		bl	t_DelayCycles
+  92              	.LVL4:
+  73:t_CLOCK.c     **** 
+  93              		.loc 1 73 0
+  94              		@ sp needed
+  95              	.LVL5:
+  96 0016 10BD     		pop	{r4, pc}
+  97              	.L4:
+  98              		.align	2
+  99              	.L3:
+ 100 0018 00000000 		.word	.LANCHOR0
+ 101              		.cfi_endproc
+ 102              	.LFE2:
+ 103              		.size	t_Delay_ms, .-t_Delay_ms
+ 104              		.section	.text.t_Delay_us,"ax",%progbits
+ 105              		.align	2
+ 106              		.global	t_Delay_us
+ 107              		.code	16
+ 108              		.thumb_func
+ 109              		.type	t_Delay_us, %function
+ 110              	t_Delay_us:
+ 111              	.LFB3:
+  82:t_CLOCK.c     ****    t_DelayCycles(t_time_us *(t_sys_freq/1000000u));
+ 112              		.loc 1 82 0
+ 113              		.cfi_startproc
+ 114              		@ args = 0, pretend = 0, frame = 0
+ 115              		@ frame_needed = 0, uses_anonymous_args = 0
+ 116              	.LVL6:
+ 117 0000 10B5     		push	{r4, lr}
+ 118              		.cfi_def_cfa_offset 8
+ 119              		.cfi_offset 4, -8
+ 120              		.cfi_offset 14, -4
+ 121 0002 0400     		movs	r4, r0
+  83:t_CLOCK.c     **** }
+ 122              		.loc 1 83 0
+ 123 0004 044B     		ldr	r3, .L6
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccz9CRYC.s 			page 5
+
+
+ 124 0006 1868     		ldr	r0, [r3]
+ 125              	.LVL7:
+ 126 0008 0449     		ldr	r1, .L6+4
+ 127 000a FFF7FEFF 		bl	__aeabi_uidiv
+ 128              	.LVL8:
+ 129 000e 6043     		muls	r0, r4
+ 130 0010 FFF7FEFF 		bl	t_DelayCycles
+ 131              	.LVL9:
+  84:t_CLOCK.c     **** 
+ 132              		.loc 1 84 0
+ 133              		@ sp needed
+ 134              	.LVL10:
+ 135 0014 10BD     		pop	{r4, pc}
+ 136              	.L7:
+ 137 0016 C046     		.align	2
+ 138              	.L6:
+ 139 0018 00000000 		.word	.LANCHOR0
+ 140 001c 40420F00 		.word	1000000
+ 141              		.cfi_endproc
+ 142              	.LFE3:
+ 143              		.size	t_Delay_us, .-t_Delay_us
+ 144              		.section	.text.t_EnterCriticalSection,"ax",%progbits
+ 145              		.align	2
+ 146              		.global	t_EnterCriticalSection
+ 147              		.code	16
+ 148              		.thumb_func
+ 149              		.type	t_EnterCriticalSection, %function
+ 150              	t_EnterCriticalSection:
+ 151              	.LFB5:
+ 101:t_CLOCK.c     **** 
+ 102:t_CLOCK.c     **** t_uint8 t_EnterCriticalSection(void)
+ 103:t_CLOCK.c     **** {
+ 152              		.loc 1 103 0
+ 153              		.cfi_startproc
+ 154              		@ args = 0, pretend = 0, frame = 0
+ 155              		@ frame_needed = 0, uses_anonymous_args = 0
+ 156              		@ link register save eliminated.
+ 104:t_CLOCK.c     **** 	//Move from Special to working register
+ 105:t_CLOCK.c     **** 	asm("MRS R0, PRIMASK");
+ 157              		.loc 1 105 0
+ 158              		.syntax divided
+ 159              	@ 105 "t_CLOCK.c" 1
+ 160 0000 EFF31080 		MRS R0, PRIMASK
+ 161              	@ 0 "" 2
+ 106:t_CLOCK.c     **** 	//Disable Interrupt
+ 107:t_CLOCK.c     **** 	asm("CPSID I");
+ 162              		.loc 1 107 0
+ 163              	@ 107 "t_CLOCK.c" 1
+ 164 0004 72B6     		CPSID I
+ 165              	@ 0 "" 2
+ 108:t_CLOCK.c     **** 	//
+ 109:t_CLOCK.c     **** 	asm("BX LR");
+ 166              		.loc 1 109 0
+ 167              	@ 109 "t_CLOCK.c" 1
+ 168 0006 7047     		BX LR
+ 169              	@ 0 "" 2
+ 110:t_CLOCK.c     **** }
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccz9CRYC.s 			page 6
+
+
+ 170              		.loc 1 110 0
+ 171              		.thumb
+ 172              		.syntax unified
+ 173              		@ sp needed
+ 174 0008 7047     		bx	lr
+ 175              		.cfi_endproc
+ 176              	.LFE5:
+ 177              		.size	t_EnterCriticalSection, .-t_EnterCriticalSection
+ 178 000a C046     		.section	.text.t_ExitCriticalSection,"ax",%progbits
+ 179              		.align	2
+ 180              		.global	t_ExitCriticalSection
+ 181              		.code	16
+ 182              		.thumb_func
+ 183              		.type	t_ExitCriticalSection, %function
+ 184              	t_ExitCriticalSection:
+ 185              	.LFB6:
+ 111:t_CLOCK.c     **** 
+ 112:t_CLOCK.c     **** /*
+ 113:t_CLOCK.c     ****  * Name :       t_ExitCriticalSection
+ 114:t_CLOCK.c     ****  * Function :   To exit critical section
+ 115:t_CLOCK.c     ****  * Paramaters : t_IntrStatus -> which sends the value of R0
+ 116:t_CLOCK.c     ****  * Details :    The value of "cycles" is stored in R0 where it is decremented 
+ 117:t_CLOCK.c     ****  *				writen in assembly language
+ 118:t_CLOCK.c     **** */
+ 119:t_CLOCK.c     **** void t_ExitCriticalSection(t_uint8 t_IntrStatus)
+ 120:t_CLOCK.c     **** {
+ 186              		.loc 1 120 0
+ 187              		.cfi_startproc
+ 188              		@ args = 0, pretend = 0, frame = 0
+ 189              		@ frame_needed = 0, uses_anonymous_args = 0
+ 190              		@ link register save eliminated.
+ 191              	.LVL11:
+ 121:t_CLOCK.c     **** 	asm("MSR PRIMASK, R0");
+ 192              		.loc 1 121 0
+ 193              		.syntax divided
+ 194              	@ 121 "t_CLOCK.c" 1
+ 195 0000 80F31088 		MSR PRIMASK, R0
+ 196              	@ 0 "" 2
+ 122:t_CLOCK.c     **** 	asm("BX LR");
+ 197              		.loc 1 122 0
+ 198              	@ 122 "t_CLOCK.c" 1
+ 199 0004 7047     		BX LR
+ 200              	@ 0 "" 2
+ 123:t_CLOCK.c     **** }
+ 201              		.loc 1 123 0
+ 202              		.thumb
+ 203              		.syntax unified
+ 204              		@ sp needed
+ 205 0006 7047     		bx	lr
+ 206              		.cfi_endproc
+ 207              	.LFE6:
+ 208              		.size	t_ExitCriticalSection, .-t_ExitCriticalSection
+ 209              		.section	.text.t_ClkWriteHfclkDirect,"ax",%progbits
+ 210              		.align	2
+ 211              		.global	t_ClkWriteHfclkDirect
+ 212              		.code	16
+ 213              		.thumb_func
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccz9CRYC.s 			page 7
+
+
+ 214              		.type	t_ClkWriteHfclkDirect, %function
+ 215              	t_ClkWriteHfclkDirect:
+ 216              	.LFB0:
+  37:t_CLOCK.c     **** 	t_uint8 t_interruptState = t_EnterCriticalSection();
+ 217              		.loc 1 37 0
+ 218              		.cfi_startproc
+ 219              		@ args = 0, pretend = 0, frame = 0
+ 220              		@ frame_needed = 0, uses_anonymous_args = 0
+ 221              	.LVL12:
+ 222 0000 10B5     		push	{r4, lr}
+ 223              		.cfi_def_cfa_offset 8
+ 224              		.cfi_offset 4, -8
+ 225              		.cfi_offset 14, -4
+  38:t_CLOCK.c     **** 	
+ 226              		.loc 1 38 0
+ 227 0002 FFF7FEFF 		bl	t_EnterCriticalSection
+ 228              	.LVL13:
+  40:t_CLOCK.c     **** 	
+ 229              		.loc 1 40 0
+ 230 0006 044A     		ldr	r2, .L11
+ 231 0008 1368     		ldr	r3, [r2]
+ 232 000a 0721     		movs	r1, #7
+ 233 000c 8B43     		bics	r3, r1
+ 234 000e 1360     		str	r3, [r2]
+  42:t_CLOCK.c     **** }
+ 235              		.loc 1 42 0
+ 236 0010 FFF7FEFF 		bl	t_ExitCriticalSection
+ 237              	.LVL14:
+  43:t_CLOCK.c     **** 
+ 238              		.loc 1 43 0
+ 239              		@ sp needed
+ 240 0014 10BD     		pop	{r4, pc}
+ 241              	.L12:
+ 242 0016 C046     		.align	2
+ 243              	.L11:
+ 244 0018 00010B40 		.word	1074462976
+ 245              		.cfi_endproc
+ 246              	.LFE0:
+ 247              		.size	t_ClkWriteHfclkDirect, .-t_ClkWriteHfclkDirect
+ 248              		.section	.text.t_ClkWriteSysClkDiv,"ax",%progbits
+ 249              		.align	2
+ 250              		.global	t_ClkWriteSysClkDiv
+ 251              		.code	16
+ 252              		.thumb_func
+ 253              		.type	t_ClkWriteSysClkDiv, %function
+ 254              	t_ClkWriteSysClkDiv:
+ 255              	.LFB1:
+  52:t_CLOCK.c     ****     t_uint8  t_interruptState = t_EnterCriticalSection();
+ 256              		.loc 1 52 0
+ 257              		.cfi_startproc
+ 258              		@ args = 0, pretend = 0, frame = 8
+ 259              		@ frame_needed = 0, uses_anonymous_args = 0
+ 260              	.LVL15:
+ 261 0000 30B5     		push	{r4, r5, lr}
+ 262              		.cfi_def_cfa_offset 12
+ 263              		.cfi_offset 4, -12
+ 264              		.cfi_offset 5, -8
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccz9CRYC.s 			page 8
+
+
+ 265              		.cfi_offset 14, -4
+ 266 0002 83B0     		sub	sp, sp, #12
+ 267              		.cfi_def_cfa_offset 24
+ 268 0004 0500     		movs	r5, r0
+  53:t_CLOCK.c     ****     t_uint8 t_Sys_Clk_Div[8]={1,2,4,8,16,32,64,128};
+ 269              		.loc 1 53 0
+ 270 0006 FFF7FEFF 		bl	t_EnterCriticalSection
+ 271              	.LVL16:
+ 272 000a 0400     		movs	r4, r0
+ 273              	.LVL17:
+  54:t_CLOCK.c     **** 	
+ 274              		.loc 1 54 0
+ 275 000c 0822     		movs	r2, #8
+ 276 000e 0D49     		ldr	r1, .L14
+ 277 0010 6846     		mov	r0, sp
+ 278 0012 FFF7FEFF 		bl	memcpy
+ 279              	.LVL18:
+  57:t_CLOCK.c     ****     t_sys_freq = t_sys_freq / t_Sys_Clk_Div[t_divider];
+ 280              		.loc 1 57 0
+ 281 0016 0C48     		ldr	r0, .L14+4
+ 282 0018 0368     		ldr	r3, [r0]
+ 283 001a 9B0D     		lsrs	r3, r3, #22
+ 284 001c 9905     		lsls	r1, r3, #22
+ 285 001e EB04     		lsls	r3, r5, #19
+ 286 0020 E022     		movs	r2, #224
+ 287 0022 9203     		lsls	r2, r2, #14
+ 288 0024 1340     		ands	r3, r2
+ 289 0026 0B43     		orrs	r3, r1
+ 290 0028 0360     		str	r3, [r0]
+  58:t_CLOCK.c     ****     t_ExitCriticalSection(t_interruptState);
+ 291              		.loc 1 58 0
+ 292 002a 6B46     		mov	r3, sp
+ 293 002c 595D     		ldrb	r1, [r3, r5]
+ 294 002e 074D     		ldr	r5, .L14+8
+ 295              	.LVL19:
+ 296 0030 2868     		ldr	r0, [r5]
+ 297 0032 FFF7FEFF 		bl	__aeabi_uidiv
+ 298              	.LVL20:
+ 299 0036 2860     		str	r0, [r5]
+  59:t_CLOCK.c     **** 	
+ 300              		.loc 1 59 0
+ 301 0038 2000     		movs	r0, r4
+ 302 003a FFF7FEFF 		bl	t_ExitCriticalSection
+ 303              	.LVL21:
+  61:t_CLOCK.c     **** 
+ 304              		.loc 1 61 0
+ 305 003e 03B0     		add	sp, sp, #12
+ 306              		@ sp needed
+ 307              	.LVL22:
+ 308 0040 30BD     		pop	{r4, r5, pc}
+ 309              	.L15:
+ 310 0042 C046     		.align	2
+ 311              	.L14:
+ 312 0044 00000000 		.word	.LANCHOR1
+ 313 0048 00010B40 		.word	1074462976
+ 314 004c 00000000 		.word	.LANCHOR0
+ 315              		.cfi_endproc
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccz9CRYC.s 			page 9
+
+
+ 316              	.LFE1:
+ 317              		.size	t_ClkWriteSysClkDiv, .-t_ClkWriteSysClkDiv
+ 318              		.section	.text.t_ClkWriteImoFreq,"ax",%progbits
+ 319              		.align	2
+ 320              		.global	t_ClkWriteImoFreq
+ 321              		.code	16
+ 322              		.thumb_func
+ 323              		.type	t_ClkWriteImoFreq, %function
+ 324              	t_ClkWriteImoFreq:
+ 325              	.LFB7:
+ 124:t_CLOCK.c     **** 
+ 125:t_CLOCK.c     **** 
+ 126:t_CLOCK.c     **** /*
+ 127:t_CLOCK.c     ****  * Name :       t_ClkWriteImoFreq
+ 128:t_CLOCK.c     ****  * Function :   To write frequency
+ 129:t_CLOCK.c     ****  * Paramaters : t_freq -> value of frequency required
+ 130:t_CLOCK.c     ****  * Details :    Clocking algorithm implmentation
+ 131:t_CLOCK.c     ****  *				For details see : 
+ 132:t_CLOCK.c     **** */
+ 133:t_CLOCK.c     **** void t_ClkWriteImoFreq(t_uint8 t_freq)
+ 134:t_CLOCK.c     **** {
+ 326              		.loc 1 134 0
+ 327              		.cfi_startproc
+ 328              		@ args = 0, pretend = 0, frame = 8
+ 329              		@ frame_needed = 0, uses_anonymous_args = 0
+ 330              	.LVL23:
+ 331 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 332              		.cfi_def_cfa_offset 20
+ 333              		.cfi_offset 4, -20
+ 334              		.cfi_offset 5, -16
+ 335              		.cfi_offset 6, -12
+ 336              		.cfi_offset 7, -8
+ 337              		.cfi_offset 14, -4
+ 338 0002 5746     		mov	r7, r10
+ 339 0004 4E46     		mov	r6, r9
+ 340 0006 C0B4     		push	{r6, r7}
+ 341              		.cfi_def_cfa_offset 28
+ 342              		.cfi_offset 9, -28
+ 343              		.cfi_offset 10, -24
+ 344 0008 83B0     		sub	sp, sp, #12
+ 345              		.cfi_def_cfa_offset 40
+ 346 000a 0400     		movs	r4, r0
+ 135:t_CLOCK.c     **** 	t_uint8 t_bgtrim4;
+ 136:t_CLOCK.c     **** 	t_uint8 t_bgtrim5;
+ 137:t_CLOCK.c     **** 	t_uint8 t_newImoTrim2Value;
+ 138:t_CLOCK.c     **** 	t_uint8 t_currentImoTrim2Value;
+ 139:t_CLOCK.c     **** 	t_uint8 t_imoTrim1Value;
+ 140:t_CLOCK.c     **** 	
+ 141:t_CLOCK.c     **** 	//From here on interrupts are disabled
+ 142:t_CLOCK.c     **** 	t_uint8 t_interruptstate = t_EnterCriticalSection();
+ 347              		.loc 1 142 0
+ 348 000c FFF7FEFF 		bl	t_EnterCriticalSection
+ 349              	.LVL24:
+ 350 0010 0190     		str	r0, [sp, #4]
+ 351              	.LVL25:
+ 143:t_CLOCK.c     **** 	
+ 144:t_CLOCK.c     **** 	if((t_freq >= 3u) && (t_freq <= 48u))
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccz9CRYC.s 			page 10
+
+
+ 352              		.loc 1 144 0
+ 353 0012 E31E     		subs	r3, r4, #3
+ 354 0014 DBB2     		uxtb	r3, r3
+ 355 0016 2D2B     		cmp	r3, #45
+ 356 0018 00D9     		bls	.LCB234
+ 357 001a 84E0     		b	.L17	@long jump
+ 358              	.LCB234:
+ 145:t_CLOCK.c     **** 	{
+ 146:t_CLOCK.c     **** 		if(t_freq <= (*(t_reg8*)SFLASH_IMO_MAXF0))
+ 359              		.loc 1 146 0
+ 360 001c 484B     		ldr	r3, .L25
+ 361 001e 1B78     		ldrb	r3, [r3]
+ 362 0020 DBB2     		uxtb	r3, r3
+ 363 0022 9C42     		cmp	r4, r3
+ 364 0024 06D8     		bhi	.L18
+ 147:t_CLOCK.c     **** 		{
+ 148:t_CLOCK.c     **** 			t_bgtrim4 = (*(t_reg8*)SFLASH_IMO_ABS0);
+ 365              		.loc 1 148 0
+ 366 0026 474B     		ldr	r3, .L25+4
+ 367 0028 1B78     		ldrb	r3, [r3]
+ 368 002a DDB2     		uxtb	r5, r3
+ 369              	.LVL26:
+ 149:t_CLOCK.c     **** 			t_bgtrim5 = (*(t_reg8*)SFLASH_IMO_TMPCO0);
+ 370              		.loc 1 149 0
+ 371 002c 464B     		ldr	r3, .L25+8
+ 372 002e 1F78     		ldrb	r7, [r3]
+ 373 0030 FFB2     		uxtb	r7, r7
+ 374              	.LVL27:
+ 375 0032 29E0     		b	.L19
+ 376              	.LVL28:
+ 377              	.L18:
+ 150:t_CLOCK.c     **** 		}
+ 151:t_CLOCK.c     **** 		
+ 152:t_CLOCK.c     **** 		else if(t_freq <= (*(t_reg8*)SFLASH_IMO_MAXF1))
+ 378              		.loc 1 152 0
+ 379 0034 454B     		ldr	r3, .L25+12
+ 380 0036 1B78     		ldrb	r3, [r3]
+ 381 0038 DBB2     		uxtb	r3, r3
+ 382 003a 9C42     		cmp	r4, r3
+ 383 003c 06D8     		bhi	.L20
+ 153:t_CLOCK.c     **** 		{
+ 154:t_CLOCK.c     **** 			t_bgtrim4 = (*(t_reg8*)SFLASH_IMO_ABS1);
+ 384              		.loc 1 154 0
+ 385 003e 444B     		ldr	r3, .L25+16
+ 386 0040 1B78     		ldrb	r3, [r3]
+ 387 0042 DDB2     		uxtb	r5, r3
+ 388              	.LVL29:
+ 155:t_CLOCK.c     **** 			t_bgtrim5 = (*(t_reg8*)SFLASH_IMO_TMPCO1);
+ 389              		.loc 1 155 0
+ 390 0044 434B     		ldr	r3, .L25+20
+ 391 0046 1F78     		ldrb	r7, [r3]
+ 392 0048 FFB2     		uxtb	r7, r7
+ 393              	.LVL30:
+ 394 004a 1DE0     		b	.L19
+ 395              	.LVL31:
+ 396              	.L20:
+ 156:t_CLOCK.c     **** 		}
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccz9CRYC.s 			page 11
+
+
+ 157:t_CLOCK.c     **** 		
+ 158:t_CLOCK.c     **** 		else if(t_freq <= (*(t_reg8*)SFLASH_IMO_MAXF2))
+ 397              		.loc 1 158 0
+ 398 004c 424B     		ldr	r3, .L25+24
+ 399 004e 1B78     		ldrb	r3, [r3]
+ 400 0050 DBB2     		uxtb	r3, r3
+ 401 0052 9C42     		cmp	r4, r3
+ 402 0054 06D8     		bhi	.L21
+ 159:t_CLOCK.c     **** 		{
+ 160:t_CLOCK.c     **** 			t_bgtrim4 = (*(t_reg8*)SFLASH_IMO_ABS2);
+ 403              		.loc 1 160 0
+ 404 0056 414B     		ldr	r3, .L25+28
+ 405 0058 1B78     		ldrb	r3, [r3]
+ 406 005a DDB2     		uxtb	r5, r3
+ 407              	.LVL32:
+ 161:t_CLOCK.c     **** 			t_bgtrim5 = (*(t_reg8*)SFLASH_IMO_TMPCO2);
+ 408              		.loc 1 161 0
+ 409 005c 404B     		ldr	r3, .L25+32
+ 410 005e 1F78     		ldrb	r7, [r3]
+ 411 0060 FFB2     		uxtb	r7, r7
+ 412              	.LVL33:
+ 413 0062 11E0     		b	.L19
+ 414              	.LVL34:
+ 415              	.L21:
+ 162:t_CLOCK.c     **** 		}
+ 163:t_CLOCK.c     **** 		
+ 164:t_CLOCK.c     **** 		else if(t_freq <= (*(t_reg8*)SFLASH_IMO_MAXF3))
+ 416              		.loc 1 164 0
+ 417 0064 3F4B     		ldr	r3, .L25+36
+ 418 0066 1B78     		ldrb	r3, [r3]
+ 419 0068 DBB2     		uxtb	r3, r3
+ 420 006a 9C42     		cmp	r4, r3
+ 421 006c 06D8     		bhi	.L22
+ 165:t_CLOCK.c     **** 		{
+ 166:t_CLOCK.c     **** 			t_bgtrim4 = (*(t_reg8*)SFLASH_IMO_ABS3);
+ 422              		.loc 1 166 0
+ 423 006e 3E4B     		ldr	r3, .L25+40
+ 424 0070 1B78     		ldrb	r3, [r3]
+ 425 0072 DDB2     		uxtb	r5, r3
+ 426              	.LVL35:
+ 167:t_CLOCK.c     **** 			t_bgtrim5 = (*(t_reg8*)SFLASH_IMO_TMPCO3);
+ 427              		.loc 1 167 0
+ 428 0074 3D4B     		ldr	r3, .L25+44
+ 429 0076 1F78     		ldrb	r7, [r3]
+ 430 0078 FFB2     		uxtb	r7, r7
+ 431              	.LVL36:
+ 432 007a 05E0     		b	.L19
+ 433              	.LVL37:
+ 434              	.L22:
+ 168:t_CLOCK.c     **** 		}
+ 169:t_CLOCK.c     **** 		else
+ 170:t_CLOCK.c     **** 		{
+ 171:t_CLOCK.c     **** 			t_bgtrim4 = (*(t_reg8*)SFLASH_IMO_ABS4);
+ 435              		.loc 1 171 0
+ 436 007c 3C4B     		ldr	r3, .L25+48
+ 437 007e 1B78     		ldrb	r3, [r3]
+ 438 0080 DDB2     		uxtb	r5, r3
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccz9CRYC.s 			page 12
+
+
+ 439              	.LVL38:
+ 172:t_CLOCK.c     **** 			t_bgtrim5 = (*(t_reg8*)SFLASH_IMO_TMPCO4);
+ 440              		.loc 1 172 0
+ 441 0082 3C4B     		ldr	r3, .L25+52
+ 442 0084 1F78     		ldrb	r7, [r3]
+ 443 0086 FFB2     		uxtb	r7, r7
+ 444              	.LVL39:
+ 445              	.L19:
+ 173:t_CLOCK.c     **** 		}
+ 174:t_CLOCK.c     **** 		
+ 175:t_CLOCK.c     **** 		t_newImoTrim2Value = t_ImoFreqMhz2Reg[t_freq - 3];
+ 446              		.loc 1 175 0
+ 447 0088 E61E     		subs	r6, r4, #3
+ 448 008a 3B4B     		ldr	r3, .L25+56
+ 449 008c 9B19     		adds	r3, r3, r6
+ 450 008e 1B79     		ldrb	r3, [r3, #4]
+ 451 0090 DBB2     		uxtb	r3, r3
+ 452              	.LVL40:
+ 176:t_CLOCK.c     **** 		t_currentImoTrim2Value =(t_uint32)(*((t_reg32*)REG_CLK_IMO_TRIM2) & 0x3F);
+ 453              		.loc 1 176 0
+ 454 0092 3A4A     		ldr	r2, .L25+60
+ 455 0094 1268     		ldr	r2, [r2]
+ 456 0096 3F21     		movs	r1, #63
+ 457 0098 0A40     		ands	r2, r1
+ 458              	.LVL41:
+ 177:t_CLOCK.c     **** 		
+ 178:t_CLOCK.c     **** 		if(((t_newImoTrim2Value >= 0x30u) && (t_freq >= 43u)&&(t_currentImoTrim2Value >= 43u)))
+ 459              		.loc 1 178 0
+ 460 009a 2F2B     		cmp	r3, #47
+ 461 009c 1CD9     		bls	.L23
+ 462              		.loc 1 178 0 is_stmt 0 discriminator 1
+ 463 009e 2A2C     		cmp	r4, #42
+ 464 00a0 1AD9     		bls	.L23
+ 465              		.loc 1 178 0 discriminator 2
+ 466 00a2 2A2A     		cmp	r2, #42
+ 467 00a4 18D9     		bls	.L23
+ 179:t_CLOCK.c     **** 		{
+ 180:t_CLOCK.c     **** 			//Change CLK_IMO_TRIM2 to a lower frequency 24Mhz
+ 181:t_CLOCK.c     **** 			*(t_reg32*)REG_CLK_IMO_TRIM2 = (t_uint32)t_ImoFreqMhz2Reg[24u - 3];
+ 468              		.loc 1 181 0 is_stmt 1
+ 469 00a6 344B     		ldr	r3, .L25+56
+ 470              	.LVL42:
+ 471 00a8 9946     		mov	r9, r3
+ 472 00aa 5B7E     		ldrb	r3, [r3, #25]
+ 473 00ac DBB2     		uxtb	r3, r3
+ 474 00ae 334A     		ldr	r2, .L25+60
+ 475              	.LVL43:
+ 476 00b0 9246     		mov	r10, r2
+ 477 00b2 1360     		str	r3, [r2]
+ 478              	.LVL44:
+ 182:t_CLOCK.c     **** 			
+ 183:t_CLOCK.c     **** 			//Apply TRIM1, 
+ 184:t_CLOCK.c     **** 			t_imoTrim1Value = (t_uint8) (((t_uint8 *)SFLASH_IMO_TRIM_BASE)[t_freq-3]);
+ 479              		.loc 1 184 0
+ 480 00b4 2F4B     		ldr	r3, .L25+52
+ 481 00b6 E318     		adds	r3, r4, r3
+ 482 00b8 1A78     		ldrb	r2, [r3]
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccz9CRYC.s 			page 13
+
+
+ 483              	.LVL45:
+ 185:t_CLOCK.c     **** 			*(t_reg32*)REG_CLK_IMO_TRIM1=(t_uint32)t_imoTrim1Value;
+ 484              		.loc 1 185 0
+ 485 00ba 314B     		ldr	r3, .L25+64
+ 486 00bc 1A60     		str	r2, [r3]
+ 186:t_CLOCK.c     ****             *(t_reg32*)REG_PWR_BG_TRIM4=t_bgtrim4;
+ 487              		.loc 1 186 0
+ 488 00be 314B     		ldr	r3, .L25+68
+ 489 00c0 1D60     		str	r5, [r3]
+ 187:t_CLOCK.c     ****             *(t_reg32*)REG_PWR_BR_TRIM5=t_bgtrim5;
+ 490              		.loc 1 187 0
+ 491 00c2 314B     		ldr	r3, .L25+72
+ 492 00c4 1F60     		str	r7, [r3]
+ 188:t_CLOCK.c     **** 			
+ 189:t_CLOCK.c     **** 			//Delay for 5 millis
+ 190:t_CLOCK.c     ****             t_DelayCycles(5u);
+ 493              		.loc 1 190 0
+ 494 00c6 0520     		movs	r0, #5
+ 495 00c8 FFF7FEFF 		bl	t_DelayCycles
+ 496              	.LVL46:
+ 191:t_CLOCK.c     **** 			
+ 192:t_CLOCK.c     **** 			//Change the Imo Frequency to the new Frequency
+ 193:t_CLOCK.c     ****             *(t_reg32*)0x400BFF2C=t_ImoFreqMhz2Reg[t_freq-3];
+ 497              		.loc 1 193 0
+ 498 00cc 4E44     		add	r6, r6, r9
+ 499 00ce 3379     		ldrb	r3, [r6, #4]
+ 500 00d0 DBB2     		uxtb	r3, r3
+ 501 00d2 5246     		mov	r2, r10
+ 502 00d4 1360     		str	r3, [r2]
+ 503 00d6 26E0     		b	.L17
+ 504              	.LVL47:
+ 505              	.L23:
+ 194:t_CLOCK.c     **** 		}
+ 195:t_CLOCK.c     **** 		else if (t_newImoTrim2Value > t_currentImoTrim2Value)
+ 506              		.loc 1 195 0
+ 507 00d8 9342     		cmp	r3, r2
+ 508 00da 12D9     		bls	.L24
+ 196:t_CLOCK.c     ****         {
+ 197:t_CLOCK.c     ****         	t_imoTrim1Value = (t_uint8) ( ((t_uint8 *) SFLASH_IMO_TRIM_BASE)[t_freq-3]);
+ 509              		.loc 1 197 0
+ 510 00dc 254B     		ldr	r3, .L25+52
+ 511              	.LVL48:
+ 512 00de E318     		adds	r3, r4, r3
+ 513 00e0 1A78     		ldrb	r2, [r3]
+ 514              	.LVL49:
+ 198:t_CLOCK.c     ****         	*(t_reg32*)REG_CLK_IMO_TRIM1 = (t_uint32)t_imoTrim1Value;
+ 515              		.loc 1 198 0
+ 516 00e2 274B     		ldr	r3, .L25+64
+ 517 00e4 1A60     		str	r2, [r3]
+ 518              	.LVL50:
+ 199:t_CLOCK.c     ****         	*(t_reg32*)REG_PWR_BG_TRIM4 = t_bgtrim4;
+ 519              		.loc 1 199 0
+ 520 00e6 274B     		ldr	r3, .L25+68
+ 521 00e8 1D60     		str	r5, [r3]
+ 200:t_CLOCK.c     ****         	*(t_reg32*)REG_PWR_BR_TRIM5 = t_bgtrim5;
+ 522              		.loc 1 200 0
+ 523 00ea 274B     		ldr	r3, .L25+72
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccz9CRYC.s 			page 14
+
+
+ 524 00ec 1F60     		str	r7, [r3]
+ 201:t_CLOCK.c     **** 			
+ 202:t_CLOCK.c     ****         	t_DelayCycles(5u);
+ 525              		.loc 1 202 0
+ 526 00ee 0520     		movs	r0, #5
+ 527 00f0 FFF7FEFF 		bl	t_DelayCycles
+ 528              	.LVL51:
+ 203:t_CLOCK.c     **** 			
+ 204:t_CLOCK.c     ****         	*(t_reg32*)0x400BFF2C=t_ImoFreqMhz2Reg[t_freq-3];    
+ 529              		.loc 1 204 0
+ 530 00f4 204B     		ldr	r3, .L25+56
+ 531 00f6 9E19     		adds	r6, r3, r6
+ 532 00f8 3379     		ldrb	r3, [r6, #4]
+ 533 00fa DBB2     		uxtb	r3, r3
+ 534 00fc 1F4A     		ldr	r2, .L25+60
+ 535 00fe 1360     		str	r3, [r2]
+ 536 0100 11E0     		b	.L17
+ 537              	.LVL52:
+ 538              	.L24:
+ 205:t_CLOCK.c     ****         }
+ 206:t_CLOCK.c     ****         else
+ 207:t_CLOCK.c     ****         {
+ 208:t_CLOCK.c     ****         	*(t_reg32*)0x400BFF2C=t_ImoFreqMhz2Reg[t_freq-3];
+ 539              		.loc 1 208 0
+ 540 0102 1D4B     		ldr	r3, .L25+56
+ 541              	.LVL53:
+ 542 0104 9E19     		adds	r6, r3, r6
+ 543 0106 3379     		ldrb	r3, [r6, #4]
+ 544 0108 DBB2     		uxtb	r3, r3
+ 545 010a 1C4A     		ldr	r2, .L25+60
+ 546              	.LVL54:
+ 547 010c 1360     		str	r3, [r2]
+ 548              	.LVL55:
+ 209:t_CLOCK.c     **** 			
+ 210:t_CLOCK.c     ****         	t_DelayCycles(5u);
+ 549              		.loc 1 210 0
+ 550 010e 0520     		movs	r0, #5
+ 551 0110 FFF7FEFF 		bl	t_DelayCycles
+ 552              	.LVL56:
+ 211:t_CLOCK.c     **** 			
+ 212:t_CLOCK.c     ****         	t_imoTrim1Value = (t_uint8) ( ((t_uint8 *) SFLASH_IMO_TRIM_BASE)[t_freq-3]);
+ 553              		.loc 1 212 0
+ 554 0114 174B     		ldr	r3, .L25+52
+ 555 0116 E318     		adds	r3, r4, r3
+ 556 0118 1A78     		ldrb	r2, [r3]
+ 557              	.LVL57:
+ 213:t_CLOCK.c     ****         	*(t_reg32*)REG_CLK_IMO_TRIM1 = (t_uint32)t_imoTrim1Value;
+ 558              		.loc 1 213 0
+ 559 011a 194B     		ldr	r3, .L25+64
+ 560 011c 1A60     		str	r2, [r3]
+ 214:t_CLOCK.c     ****        		*(t_reg32*)REG_PWR_BG_TRIM4 = t_bgtrim4;
+ 561              		.loc 1 214 0
+ 562 011e 194B     		ldr	r3, .L25+68
+ 563 0120 1D60     		str	r5, [r3]
+ 215:t_CLOCK.c     ****         	*(t_reg32*)REG_PWR_BR_TRIM5 = t_bgtrim5;    
+ 564              		.loc 1 215 0
+ 565 0122 194B     		ldr	r3, .L25+72
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccz9CRYC.s 			page 15
+
+
+ 566 0124 1F60     		str	r7, [r3]
+ 567              	.LVL58:
+ 568              	.L17:
+ 216:t_CLOCK.c     ****         }
+ 217:t_CLOCK.c     **** 	}
+ 218:t_CLOCK.c     **** 	//input frequency t_freq to MHz value
+ 219:t_CLOCK.c     **** 	t_sys_freq = t_freq * 1000000;
+ 569              		.loc 1 219 0
+ 570 0126 194B     		ldr	r3, .L25+76
+ 571 0128 5C43     		muls	r4, r3
+ 572 012a 134B     		ldr	r3, .L25+56
+ 573 012c 1C60     		str	r4, [r3]
+ 220:t_CLOCK.c     **** 	
+ 221:t_CLOCK.c     **** 	t_ExitCriticalSection(t_interruptstate);
+ 574              		.loc 1 221 0
+ 575 012e 0198     		ldr	r0, [sp, #4]
+ 576 0130 FFF7FEFF 		bl	t_ExitCriticalSection
+ 577              	.LVL59:
+ 222:t_CLOCK.c     **** }
+ 578              		.loc 1 222 0
+ 579 0134 03B0     		add	sp, sp, #12
+ 580              		@ sp needed
+ 581 0136 0CBC     		pop	{r2, r3}
+ 582 0138 9146     		mov	r9, r2
+ 583 013a 9A46     		mov	r10, r3
+ 584 013c F0BD     		pop	{r4, r5, r6, r7, pc}
+ 585              	.L26:
+ 586 013e C046     		.align	2
+ 587              	.L25:
+ 588 0140 C0F1FF0F 		.word	268431808
+ 589 0144 C1F1FF0F 		.word	268431809
+ 590 0148 C2F1FF0F 		.word	268431810
+ 591 014c C3F1FF0F 		.word	268431811
+ 592 0150 C4F1FF0F 		.word	268431812
+ 593 0154 C5F1FF0F 		.word	268431813
+ 594 0158 C6F1FF0F 		.word	268431814
+ 595 015c C7F1FF0F 		.word	268431815
+ 596 0160 C8F1FF0F 		.word	268431816
+ 597 0164 C9F1FF0F 		.word	268431817
+ 598 0168 CAF1FF0F 		.word	268431818
+ 599 016c CBF1FF0F 		.word	268431819
+ 600 0170 CCF1FF0F 		.word	268431820
+ 601 0174 CDF1FF0F 		.word	268431821
+ 602 0178 00000000 		.word	.LANCHOR0
+ 603 017c 2CFF0B40 		.word	1074528044
+ 604 0180 28FF0B40 		.word	1074528040
+ 605 0184 1CFF0B40 		.word	1074528028
+ 606 0188 20FF0B40 		.word	1074528032
+ 607 018c 40420F00 		.word	1000000
+ 608              		.cfi_endproc
+ 609              	.LFE7:
+ 610              		.size	t_ClkWriteImoFreq, .-t_ClkWriteImoFreq
+ 611              		.global	t_ImoFreqMhz2Reg
+ 612              		.global	t_sys_freq
+ 613              		.section	.rodata
+ 614              		.align	2
+ 615              		.set	.LANCHOR1,. + 0
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccz9CRYC.s 			page 16
+
+
+ 616              	.LC0:
+ 617 0000 01       		.byte	1
+ 618 0001 02       		.byte	2
+ 619 0002 04       		.byte	4
+ 620 0003 08       		.byte	8
+ 621 0004 10       		.byte	16
+ 622 0005 20       		.byte	32
+ 623 0006 40       		.byte	64
+ 624 0007 80       		.byte	-128
+ 625              		.data
+ 626              		.align	2
+ 627              		.set	.LANCHOR0,. + 0
+ 628              		.type	t_sys_freq, %object
+ 629              		.size	t_sys_freq, 4
+ 630              	t_sys_freq:
+ 631 0000 006CDC02 		.word	48000000
+ 632              		.type	t_ImoFreqMhz2Reg, %object
+ 633              		.size	t_ImoFreqMhz2Reg, 46
+ 634              	t_ImoFreqMhz2Reg:
+ 635 0004 03       		.byte	3
+ 636 0005 04       		.byte	4
+ 637 0006 05       		.byte	5
+ 638 0007 06       		.byte	6
+ 639 0008 07       		.byte	7
+ 640 0009 08       		.byte	8
+ 641 000a 09       		.byte	9
+ 642 000b 0A       		.byte	10
+ 643 000c 0B       		.byte	11
+ 644 000d 0C       		.byte	12
+ 645 000e 0E       		.byte	14
+ 646 000f 0F       		.byte	15
+ 647 0010 10       		.byte	16
+ 648 0011 11       		.byte	17
+ 649 0012 12       		.byte	18
+ 650 0013 13       		.byte	19
+ 651 0014 14       		.byte	20
+ 652 0015 15       		.byte	21
+ 653 0016 16       		.byte	22
+ 654 0017 17       		.byte	23
+ 655 0018 18       		.byte	24
+ 656 0019 19       		.byte	25
+ 657 001a 1B       		.byte	27
+ 658 001b 1C       		.byte	28
+ 659 001c 1D       		.byte	29
+ 660 001d 1E       		.byte	30
+ 661 001e 1F       		.byte	31
+ 662 001f 20       		.byte	32
+ 663 0020 21       		.byte	33
+ 664 0021 22       		.byte	34
+ 665 0022 23       		.byte	35
+ 666 0023 25       		.byte	37
+ 667 0024 26       		.byte	38
+ 668 0025 27       		.byte	39
+ 669 0026 28       		.byte	40
+ 670 0027 29       		.byte	41
+ 671 0028 2A       		.byte	42
+ 672 0029 2B       		.byte	43
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccz9CRYC.s 			page 17
+
+
+ 673 002a 2E       		.byte	46
+ 674 002b 2F       		.byte	47
+ 675 002c 30       		.byte	48
+ 676 002d 31       		.byte	49
+ 677 002e 32       		.byte	50
+ 678 002f 33       		.byte	51
+ 679 0030 34       		.byte	52
+ 680 0031 35       		.byte	53
+ 681              		.text
+ 682              	.Letext0:
+ 683              		.file 2 "t_udtypes.h"
+ 684              		.section	.debug_info,"",%progbits
+ 685              	.Ldebug_info0:
+ 686 0000 14030000 		.4byte	0x314
+ 687 0004 0400     		.2byte	0x4
+ 688 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 689 000a 04       		.byte	0x4
+ 690 000b 01       		.uleb128 0x1
+ 691 000c 48010000 		.4byte	.LASF31
+ 692 0010 0C       		.byte	0xc
+ 693 0011 20020000 		.4byte	.LASF32
+ 694 0015 20000000 		.4byte	.LASF33
+ 695 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 696 001d 00000000 		.4byte	0
+ 697 0021 00000000 		.4byte	.Ldebug_line0
+ 698 0025 02       		.uleb128 0x2
+ 699 0026 F9000000 		.4byte	.LASF0
+ 700 002a 02       		.byte	0x2
+ 701 002b 04       		.byte	0x4
+ 702 002c 37000000 		.4byte	0x37
+ 703 0030 03       		.uleb128 0x3
+ 704 0031 04       		.byte	0x4
+ 705 0032 07       		.byte	0x7
+ 706 0033 99000000 		.4byte	.LASF2
+ 707 0037 04       		.uleb128 0x4
+ 708 0038 30000000 		.4byte	0x30
+ 709 003c 02       		.uleb128 0x2
+ 710 003d 01010000 		.4byte	.LASF1
+ 711 0041 02       		.byte	0x2
+ 712 0042 05       		.byte	0x5
+ 713 0043 4E000000 		.4byte	0x4e
+ 714 0047 03       		.uleb128 0x3
+ 715 0048 01       		.byte	0x1
+ 716 0049 08       		.byte	0x8
+ 717 004a 56000000 		.4byte	.LASF3
+ 718 004e 04       		.uleb128 0x4
+ 719 004f 47000000 		.4byte	0x47
+ 720 0053 02       		.uleb128 0x2
+ 721 0054 D6010000 		.4byte	.LASF4
+ 722 0058 02       		.byte	0x2
+ 723 0059 06       		.byte	0x6
+ 724 005a 30000000 		.4byte	0x30
+ 725 005e 02       		.uleb128 0x2
+ 726 005f 78020000 		.4byte	.LASF5
+ 727 0063 02       		.byte	0x2
+ 728 0064 07       		.byte	0x7
+ 729 0065 47000000 		.4byte	0x47
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccz9CRYC.s 			page 18
+
+
+ 730 0069 05       		.uleb128 0x5
+ 731 006a CA000000 		.4byte	.LASF6
+ 732 006e 01       		.byte	0x1
+ 733 006f 5D       		.byte	0x5d
+ 734 0070 00000000 		.4byte	.LFB4
+ 735 0074 0C000000 		.4byte	.LFE4-.LFB4
+ 736 0078 01       		.uleb128 0x1
+ 737 0079 9C       		.byte	0x9c
+ 738 007a 8C000000 		.4byte	0x8c
+ 739 007e 06       		.uleb128 0x6
+ 740 007f 19000000 		.4byte	.LASF8
+ 741 0083 01       		.byte	0x1
+ 742 0084 5D       		.byte	0x5d
+ 743 0085 53000000 		.4byte	0x53
+ 744 0089 01       		.uleb128 0x1
+ 745 008a 50       		.byte	0x50
+ 746 008b 00       		.byte	0
+ 747 008c 07       		.uleb128 0x7
+ 748 008d BF000000 		.4byte	.LASF7
+ 749 0091 01       		.byte	0x1
+ 750 0092 45       		.byte	0x45
+ 751 0093 00000000 		.4byte	.LFB2
+ 752 0097 1C000000 		.4byte	.LFE2-.LFB2
+ 753 009b 01       		.uleb128 0x1
+ 754 009c 9C       		.byte	0x9c
+ 755 009d BA000000 		.4byte	0xba
+ 756 00a1 08       		.uleb128 0x8
+ 757 00a2 3E010000 		.4byte	.LASF9
+ 758 00a6 01       		.byte	0x1
+ 759 00a7 45       		.byte	0x45
+ 760 00a8 53000000 		.4byte	0x53
+ 761 00ac 00000000 		.4byte	.LLST0
+ 762 00b0 09       		.uleb128 0x9
+ 763 00b1 16000000 		.4byte	.LVL4
+ 764 00b5 69000000 		.4byte	0x69
+ 765 00b9 00       		.byte	0
+ 766 00ba 07       		.uleb128 0x7
+ 767 00bb F0010000 		.4byte	.LASF10
+ 768 00bf 01       		.byte	0x1
+ 769 00c0 51       		.byte	0x51
+ 770 00c1 00000000 		.4byte	.LFB3
+ 771 00c5 20000000 		.4byte	.LFE3-.LFB3
+ 772 00c9 01       		.uleb128 0x1
+ 773 00ca 9C       		.byte	0x9c
+ 774 00cb E8000000 		.4byte	0xe8
+ 775 00cf 08       		.uleb128 0x8
+ 776 00d0 4C020000 		.4byte	.LASF11
+ 777 00d4 01       		.byte	0x1
+ 778 00d5 51       		.byte	0x51
+ 779 00d6 53000000 		.4byte	0x53
+ 780 00da 2C000000 		.4byte	.LLST1
+ 781 00de 09       		.uleb128 0x9
+ 782 00df 14000000 		.4byte	.LVL9
+ 783 00e3 69000000 		.4byte	0x69
+ 784 00e7 00       		.byte	0
+ 785 00e8 0A       		.uleb128 0xa
+ 786 00e9 FB010000 		.4byte	.LASF34
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccz9CRYC.s 			page 19
+
+
+ 787 00ed 01       		.byte	0x1
+ 788 00ee 66       		.byte	0x66
+ 789 00ef 5E000000 		.4byte	0x5e
+ 790 00f3 00000000 		.4byte	.LFB5
+ 791 00f7 0A000000 		.4byte	.LFE5-.LFB5
+ 792 00fb 01       		.uleb128 0x1
+ 793 00fc 9C       		.byte	0x9c
+ 794 00fd 05       		.uleb128 0x5
+ 795 00fe 64000000 		.4byte	.LASF12
+ 796 0102 01       		.byte	0x1
+ 797 0103 77       		.byte	0x77
+ 798 0104 00000000 		.4byte	.LFB6
+ 799 0108 08000000 		.4byte	.LFE6-.LFB6
+ 800 010c 01       		.uleb128 0x1
+ 801 010d 9C       		.byte	0x9c
+ 802 010e 20010000 		.4byte	0x120
+ 803 0112 06       		.uleb128 0x6
+ 804 0113 3F020000 		.4byte	.LASF13
+ 805 0117 01       		.byte	0x1
+ 806 0118 77       		.byte	0x77
+ 807 0119 5E000000 		.4byte	0x5e
+ 808 011d 01       		.uleb128 0x1
+ 809 011e 50       		.byte	0x50
+ 810 011f 00       		.byte	0
+ 811 0120 05       		.uleb128 0x5
+ 812 0121 11010000 		.4byte	.LASF14
+ 813 0125 01       		.byte	0x1
+ 814 0126 24       		.byte	0x24
+ 815 0127 00000000 		.4byte	.LFB0
+ 816 012b 1C000000 		.4byte	.LFE0-.LFB0
+ 817 012f 01       		.uleb128 0x1
+ 818 0130 9C       		.byte	0x9c
+ 819 0131 66010000 		.4byte	0x166
+ 820 0135 08       		.uleb128 0x8
+ 821 0136 8D000000 		.4byte	.LASF15
+ 822 013a 01       		.byte	0x1
+ 823 013b 24       		.byte	0x24
+ 824 013c 53000000 		.4byte	0x53
+ 825 0140 58000000 		.4byte	.LLST2
+ 826 0144 0B       		.uleb128 0xb
+ 827 0145 67020000 		.4byte	.LASF18
+ 828 0149 01       		.byte	0x1
+ 829 014a 26       		.byte	0x26
+ 830 014b 5E000000 		.4byte	0x5e
+ 831 014f 79000000 		.4byte	.LLST3
+ 832 0153 09       		.uleb128 0x9
+ 833 0154 06000000 		.4byte	.LVL13
+ 834 0158 E8000000 		.4byte	0xe8
+ 835 015c 09       		.uleb128 0x9
+ 836 015d 14000000 		.4byte	.LVL14
+ 837 0161 FD000000 		.4byte	0xfd
+ 838 0165 00       		.byte	0
+ 839 0166 07       		.uleb128 0x7
+ 840 0167 AB000000 		.4byte	.LASF16
+ 841 016b 01       		.byte	0x1
+ 842 016c 33       		.byte	0x33
+ 843 016d 00000000 		.4byte	.LFB1
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccz9CRYC.s 			page 20
+
+
+ 844 0171 50000000 		.4byte	.LFE1-.LFB1
+ 845 0175 01       		.uleb128 0x1
+ 846 0176 9C       		.byte	0x9c
+ 847 0177 E3010000 		.4byte	0x1e3
+ 848 017b 08       		.uleb128 0x8
+ 849 017c 2A020000 		.4byte	.LASF17
+ 850 0180 01       		.byte	0x1
+ 851 0181 33       		.byte	0x33
+ 852 0182 53000000 		.4byte	0x53
+ 853 0186 8C000000 		.4byte	.LLST4
+ 854 018a 0B       		.uleb128 0xb
+ 855 018b 67020000 		.4byte	.LASF18
+ 856 018f 01       		.byte	0x1
+ 857 0190 35       		.byte	0x35
+ 858 0191 5E000000 		.4byte	0x5e
+ 859 0195 B8000000 		.4byte	.LLST5
+ 860 0199 0C       		.uleb128 0xc
+ 861 019a 12020000 		.4byte	.LASF19
+ 862 019e 01       		.byte	0x1
+ 863 019f 36       		.byte	0x36
+ 864 01a0 E3010000 		.4byte	0x1e3
+ 865 01a4 02       		.uleb128 0x2
+ 866 01a5 91       		.byte	0x91
+ 867 01a6 68       		.sleb128 -24
+ 868 01a7 09       		.uleb128 0x9
+ 869 01a8 0A000000 		.4byte	.LVL16
+ 870 01ac E8000000 		.4byte	0xe8
+ 871 01b0 0D       		.uleb128 0xd
+ 872 01b1 16000000 		.4byte	.LVL18
+ 873 01b5 0E030000 		.4byte	0x30e
+ 874 01b9 D2010000 		.4byte	0x1d2
+ 875 01bd 0E       		.uleb128 0xe
+ 876 01be 01       		.uleb128 0x1
+ 877 01bf 50       		.byte	0x50
+ 878 01c0 02       		.uleb128 0x2
+ 879 01c1 7D       		.byte	0x7d
+ 880 01c2 00       		.sleb128 0
+ 881 01c3 0E       		.uleb128 0xe
+ 882 01c4 01       		.uleb128 0x1
+ 883 01c5 51       		.byte	0x51
+ 884 01c6 05       		.uleb128 0x5
+ 885 01c7 03       		.byte	0x3
+ 886 01c8 00000000 		.4byte	.LANCHOR1
+ 887 01cc 0E       		.uleb128 0xe
+ 888 01cd 01       		.uleb128 0x1
+ 889 01ce 52       		.byte	0x52
+ 890 01cf 01       		.uleb128 0x1
+ 891 01d0 38       		.byte	0x38
+ 892 01d1 00       		.byte	0
+ 893 01d2 0F       		.uleb128 0xf
+ 894 01d3 3E000000 		.4byte	.LVL21
+ 895 01d7 FD000000 		.4byte	0xfd
+ 896 01db 0E       		.uleb128 0xe
+ 897 01dc 01       		.uleb128 0x1
+ 898 01dd 50       		.byte	0x50
+ 899 01de 02       		.uleb128 0x2
+ 900 01df 74       		.byte	0x74
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccz9CRYC.s 			page 21
+
+
+ 901 01e0 00       		.sleb128 0
+ 902 01e1 00       		.byte	0
+ 903 01e2 00       		.byte	0
+ 904 01e3 10       		.uleb128 0x10
+ 905 01e4 5E000000 		.4byte	0x5e
+ 906 01e8 F3010000 		.4byte	0x1f3
+ 907 01ec 11       		.uleb128 0x11
+ 908 01ed F3010000 		.4byte	0x1f3
+ 909 01f1 07       		.byte	0x7
+ 910 01f2 00       		.byte	0
+ 911 01f3 03       		.uleb128 0x3
+ 912 01f4 04       		.byte	0x4
+ 913 01f5 07       		.byte	0x7
+ 914 01f6 08010000 		.4byte	.LASF20
+ 915 01fa 05       		.uleb128 0x5
+ 916 01fb 07000000 		.4byte	.LASF21
+ 917 01ff 01       		.byte	0x1
+ 918 0200 85       		.byte	0x85
+ 919 0201 00000000 		.4byte	.LFB7
+ 920 0205 90010000 		.4byte	.LFE7-.LFB7
+ 921 0209 01       		.uleb128 0x1
+ 922 020a 9C       		.byte	0x9c
+ 923 020b CD020000 		.4byte	0x2cd
+ 924 020f 08       		.uleb128 0x8
+ 925 0210 00000000 		.4byte	.LASF22
+ 926 0214 01       		.byte	0x1
+ 927 0215 85       		.byte	0x85
+ 928 0216 5E000000 		.4byte	0x5e
+ 929 021a CB000000 		.4byte	.LLST6
+ 930 021e 0B       		.uleb128 0xb
+ 931 021f 4C000000 		.4byte	.LASF23
+ 932 0223 01       		.byte	0x1
+ 933 0224 87       		.byte	0x87
+ 934 0225 5E000000 		.4byte	0x5e
+ 935 0229 EC000000 		.4byte	.LLST7
+ 936 022d 0B       		.uleb128 0xb
+ 937 022e D8000000 		.4byte	.LASF24
+ 938 0232 01       		.byte	0x1
+ 939 0233 88       		.byte	0x88
+ 940 0234 5E000000 		.4byte	0x5e
+ 941 0238 2B010000 		.4byte	.LLST8
+ 942 023c 0B       		.uleb128 0xb
+ 943 023d 7A000000 		.4byte	.LASF25
+ 944 0241 01       		.byte	0x1
+ 945 0242 89       		.byte	0x89
+ 946 0243 5E000000 		.4byte	0x5e
+ 947 0247 6A010000 		.4byte	.LLST9
+ 948 024b 0B       		.uleb128 0xb
+ 949 024c E2000000 		.4byte	.LASF26
+ 950 0250 01       		.byte	0x1
+ 951 0251 8A       		.byte	0x8a
+ 952 0252 5E000000 		.4byte	0x5e
+ 953 0256 93010000 		.4byte	.LLST10
+ 954 025a 0B       		.uleb128 0xb
+ 955 025b 2E010000 		.4byte	.LASF27
+ 956 025f 01       		.byte	0x1
+ 957 0260 8B       		.byte	0x8b
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccz9CRYC.s 			page 22
+
+
+ 958 0261 5E000000 		.4byte	0x5e
+ 959 0265 BC010000 		.4byte	.LLST11
+ 960 0269 0B       		.uleb128 0xb
+ 961 026a DF010000 		.4byte	.LASF28
+ 962 026e 01       		.byte	0x1
+ 963 026f 8E       		.byte	0x8e
+ 964 0270 5E000000 		.4byte	0x5e
+ 965 0274 E5010000 		.4byte	.LLST12
+ 966 0278 09       		.uleb128 0x9
+ 967 0279 10000000 		.4byte	.LVL24
+ 968 027d E8000000 		.4byte	0xe8
+ 969 0281 0D       		.uleb128 0xd
+ 970 0282 CC000000 		.4byte	.LVL46
+ 971 0286 69000000 		.4byte	0x69
+ 972 028a 94020000 		.4byte	0x294
+ 973 028e 0E       		.uleb128 0xe
+ 974 028f 01       		.uleb128 0x1
+ 975 0290 50       		.byte	0x50
+ 976 0291 01       		.uleb128 0x1
+ 977 0292 35       		.byte	0x35
+ 978 0293 00       		.byte	0
+ 979 0294 0D       		.uleb128 0xd
+ 980 0295 F4000000 		.4byte	.LVL51
+ 981 0299 69000000 		.4byte	0x69
+ 982 029d A7020000 		.4byte	0x2a7
+ 983 02a1 0E       		.uleb128 0xe
+ 984 02a2 01       		.uleb128 0x1
+ 985 02a3 50       		.byte	0x50
+ 986 02a4 01       		.uleb128 0x1
+ 987 02a5 35       		.byte	0x35
+ 988 02a6 00       		.byte	0
+ 989 02a7 0D       		.uleb128 0xd
+ 990 02a8 14010000 		.4byte	.LVL56
+ 991 02ac 69000000 		.4byte	0x69
+ 992 02b0 BA020000 		.4byte	0x2ba
+ 993 02b4 0E       		.uleb128 0xe
+ 994 02b5 01       		.uleb128 0x1
+ 995 02b6 50       		.byte	0x50
+ 996 02b7 01       		.uleb128 0x1
+ 997 02b8 35       		.byte	0x35
+ 998 02b9 00       		.byte	0
+ 999 02ba 0F       		.uleb128 0xf
+ 1000 02bb 34010000 		.4byte	.LVL59
+ 1001 02bf FD000000 		.4byte	0xfd
+ 1002 02c3 0E       		.uleb128 0xe
+ 1003 02c4 01       		.uleb128 0x1
+ 1004 02c5 50       		.byte	0x50
+ 1005 02c6 04       		.uleb128 0x4
+ 1006 02c7 91       		.byte	0x91
+ 1007 02c8 5C       		.sleb128 -36
+ 1008 02c9 94       		.byte	0x94
+ 1009 02ca 01       		.byte	0x1
+ 1010 02cb 00       		.byte	0
+ 1011 02cc 00       		.byte	0
+ 1012 02cd 12       		.uleb128 0x12
+ 1013 02ce 34020000 		.4byte	.LASF29
+ 1014 02d2 01       		.byte	0x1
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccz9CRYC.s 			page 23
+
+
+ 1015 02d3 0D       		.byte	0xd
+ 1016 02d4 53000000 		.4byte	0x53
+ 1017 02d8 05       		.uleb128 0x5
+ 1018 02d9 03       		.byte	0x3
+ 1019 02da 00000000 		.4byte	t_sys_freq
+ 1020 02de 10       		.uleb128 0x10
+ 1021 02df EE020000 		.4byte	0x2ee
+ 1022 02e3 EE020000 		.4byte	0x2ee
+ 1023 02e7 11       		.uleb128 0x11
+ 1024 02e8 F3010000 		.4byte	0x1f3
+ 1025 02ec 2D       		.byte	0x2d
+ 1026 02ed 00       		.byte	0
+ 1027 02ee 13       		.uleb128 0x13
+ 1028 02ef 4E000000 		.4byte	0x4e
+ 1029 02f3 12       		.uleb128 0x12
+ 1030 02f4 56020000 		.4byte	.LASF30
+ 1031 02f8 01       		.byte	0x1
+ 1032 02f9 0E       		.byte	0xe
+ 1033 02fa 09030000 		.4byte	0x309
+ 1034 02fe 05       		.uleb128 0x5
+ 1035 02ff 03       		.byte	0x3
+ 1036 0300 00000000 		.4byte	t_ImoFreqMhz2Reg
+ 1037 0304 04       		.uleb128 0x4
+ 1038 0305 DE020000 		.4byte	0x2de
+ 1039 0309 13       		.uleb128 0x13
+ 1040 030a 04030000 		.4byte	0x304
+ 1041 030e 14       		.uleb128 0x14
+ 1042 030f 27010000 		.4byte	.LASF35
+ 1043 0313 27010000 		.4byte	.LASF35
+ 1044 0317 00       		.byte	0
+ 1045              		.section	.debug_abbrev,"",%progbits
+ 1046              	.Ldebug_abbrev0:
+ 1047 0000 01       		.uleb128 0x1
+ 1048 0001 11       		.uleb128 0x11
+ 1049 0002 01       		.byte	0x1
+ 1050 0003 25       		.uleb128 0x25
+ 1051 0004 0E       		.uleb128 0xe
+ 1052 0005 13       		.uleb128 0x13
+ 1053 0006 0B       		.uleb128 0xb
+ 1054 0007 03       		.uleb128 0x3
+ 1055 0008 0E       		.uleb128 0xe
+ 1056 0009 1B       		.uleb128 0x1b
+ 1057 000a 0E       		.uleb128 0xe
+ 1058 000b 55       		.uleb128 0x55
+ 1059 000c 17       		.uleb128 0x17
+ 1060 000d 11       		.uleb128 0x11
+ 1061 000e 01       		.uleb128 0x1
+ 1062 000f 10       		.uleb128 0x10
+ 1063 0010 17       		.uleb128 0x17
+ 1064 0011 00       		.byte	0
+ 1065 0012 00       		.byte	0
+ 1066 0013 02       		.uleb128 0x2
+ 1067 0014 16       		.uleb128 0x16
+ 1068 0015 00       		.byte	0
+ 1069 0016 03       		.uleb128 0x3
+ 1070 0017 0E       		.uleb128 0xe
+ 1071 0018 3A       		.uleb128 0x3a
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccz9CRYC.s 			page 24
+
+
+ 1072 0019 0B       		.uleb128 0xb
+ 1073 001a 3B       		.uleb128 0x3b
+ 1074 001b 0B       		.uleb128 0xb
+ 1075 001c 49       		.uleb128 0x49
+ 1076 001d 13       		.uleb128 0x13
+ 1077 001e 00       		.byte	0
+ 1078 001f 00       		.byte	0
+ 1079 0020 03       		.uleb128 0x3
+ 1080 0021 24       		.uleb128 0x24
+ 1081 0022 00       		.byte	0
+ 1082 0023 0B       		.uleb128 0xb
+ 1083 0024 0B       		.uleb128 0xb
+ 1084 0025 3E       		.uleb128 0x3e
+ 1085 0026 0B       		.uleb128 0xb
+ 1086 0027 03       		.uleb128 0x3
+ 1087 0028 0E       		.uleb128 0xe
+ 1088 0029 00       		.byte	0
+ 1089 002a 00       		.byte	0
+ 1090 002b 04       		.uleb128 0x4
+ 1091 002c 35       		.uleb128 0x35
+ 1092 002d 00       		.byte	0
+ 1093 002e 49       		.uleb128 0x49
+ 1094 002f 13       		.uleb128 0x13
+ 1095 0030 00       		.byte	0
+ 1096 0031 00       		.byte	0
+ 1097 0032 05       		.uleb128 0x5
+ 1098 0033 2E       		.uleb128 0x2e
+ 1099 0034 01       		.byte	0x1
+ 1100 0035 3F       		.uleb128 0x3f
+ 1101 0036 19       		.uleb128 0x19
+ 1102 0037 03       		.uleb128 0x3
+ 1103 0038 0E       		.uleb128 0xe
+ 1104 0039 3A       		.uleb128 0x3a
+ 1105 003a 0B       		.uleb128 0xb
+ 1106 003b 3B       		.uleb128 0x3b
+ 1107 003c 0B       		.uleb128 0xb
+ 1108 003d 27       		.uleb128 0x27
+ 1109 003e 19       		.uleb128 0x19
+ 1110 003f 11       		.uleb128 0x11
+ 1111 0040 01       		.uleb128 0x1
+ 1112 0041 12       		.uleb128 0x12
+ 1113 0042 06       		.uleb128 0x6
+ 1114 0043 40       		.uleb128 0x40
+ 1115 0044 18       		.uleb128 0x18
+ 1116 0045 9742     		.uleb128 0x2117
+ 1117 0047 19       		.uleb128 0x19
+ 1118 0048 01       		.uleb128 0x1
+ 1119 0049 13       		.uleb128 0x13
+ 1120 004a 00       		.byte	0
+ 1121 004b 00       		.byte	0
+ 1122 004c 06       		.uleb128 0x6
+ 1123 004d 05       		.uleb128 0x5
+ 1124 004e 00       		.byte	0
+ 1125 004f 03       		.uleb128 0x3
+ 1126 0050 0E       		.uleb128 0xe
+ 1127 0051 3A       		.uleb128 0x3a
+ 1128 0052 0B       		.uleb128 0xb
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccz9CRYC.s 			page 25
+
+
+ 1129 0053 3B       		.uleb128 0x3b
+ 1130 0054 0B       		.uleb128 0xb
+ 1131 0055 49       		.uleb128 0x49
+ 1132 0056 13       		.uleb128 0x13
+ 1133 0057 02       		.uleb128 0x2
+ 1134 0058 18       		.uleb128 0x18
+ 1135 0059 00       		.byte	0
+ 1136 005a 00       		.byte	0
+ 1137 005b 07       		.uleb128 0x7
+ 1138 005c 2E       		.uleb128 0x2e
+ 1139 005d 01       		.byte	0x1
+ 1140 005e 3F       		.uleb128 0x3f
+ 1141 005f 19       		.uleb128 0x19
+ 1142 0060 03       		.uleb128 0x3
+ 1143 0061 0E       		.uleb128 0xe
+ 1144 0062 3A       		.uleb128 0x3a
+ 1145 0063 0B       		.uleb128 0xb
+ 1146 0064 3B       		.uleb128 0x3b
+ 1147 0065 0B       		.uleb128 0xb
+ 1148 0066 27       		.uleb128 0x27
+ 1149 0067 19       		.uleb128 0x19
+ 1150 0068 11       		.uleb128 0x11
+ 1151 0069 01       		.uleb128 0x1
+ 1152 006a 12       		.uleb128 0x12
+ 1153 006b 06       		.uleb128 0x6
+ 1154 006c 40       		.uleb128 0x40
+ 1155 006d 18       		.uleb128 0x18
+ 1156 006e 9642     		.uleb128 0x2116
+ 1157 0070 19       		.uleb128 0x19
+ 1158 0071 01       		.uleb128 0x1
+ 1159 0072 13       		.uleb128 0x13
+ 1160 0073 00       		.byte	0
+ 1161 0074 00       		.byte	0
+ 1162 0075 08       		.uleb128 0x8
+ 1163 0076 05       		.uleb128 0x5
+ 1164 0077 00       		.byte	0
+ 1165 0078 03       		.uleb128 0x3
+ 1166 0079 0E       		.uleb128 0xe
+ 1167 007a 3A       		.uleb128 0x3a
+ 1168 007b 0B       		.uleb128 0xb
+ 1169 007c 3B       		.uleb128 0x3b
+ 1170 007d 0B       		.uleb128 0xb
+ 1171 007e 49       		.uleb128 0x49
+ 1172 007f 13       		.uleb128 0x13
+ 1173 0080 02       		.uleb128 0x2
+ 1174 0081 17       		.uleb128 0x17
+ 1175 0082 00       		.byte	0
+ 1176 0083 00       		.byte	0
+ 1177 0084 09       		.uleb128 0x9
+ 1178 0085 898201   		.uleb128 0x4109
+ 1179 0088 00       		.byte	0
+ 1180 0089 11       		.uleb128 0x11
+ 1181 008a 01       		.uleb128 0x1
+ 1182 008b 31       		.uleb128 0x31
+ 1183 008c 13       		.uleb128 0x13
+ 1184 008d 00       		.byte	0
+ 1185 008e 00       		.byte	0
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccz9CRYC.s 			page 26
+
+
+ 1186 008f 0A       		.uleb128 0xa
+ 1187 0090 2E       		.uleb128 0x2e
+ 1188 0091 00       		.byte	0
+ 1189 0092 3F       		.uleb128 0x3f
+ 1190 0093 19       		.uleb128 0x19
+ 1191 0094 03       		.uleb128 0x3
+ 1192 0095 0E       		.uleb128 0xe
+ 1193 0096 3A       		.uleb128 0x3a
+ 1194 0097 0B       		.uleb128 0xb
+ 1195 0098 3B       		.uleb128 0x3b
+ 1196 0099 0B       		.uleb128 0xb
+ 1197 009a 27       		.uleb128 0x27
+ 1198 009b 19       		.uleb128 0x19
+ 1199 009c 49       		.uleb128 0x49
+ 1200 009d 13       		.uleb128 0x13
+ 1201 009e 11       		.uleb128 0x11
+ 1202 009f 01       		.uleb128 0x1
+ 1203 00a0 12       		.uleb128 0x12
+ 1204 00a1 06       		.uleb128 0x6
+ 1205 00a2 40       		.uleb128 0x40
+ 1206 00a3 18       		.uleb128 0x18
+ 1207 00a4 9742     		.uleb128 0x2117
+ 1208 00a6 19       		.uleb128 0x19
+ 1209 00a7 00       		.byte	0
+ 1210 00a8 00       		.byte	0
+ 1211 00a9 0B       		.uleb128 0xb
+ 1212 00aa 34       		.uleb128 0x34
+ 1213 00ab 00       		.byte	0
+ 1214 00ac 03       		.uleb128 0x3
+ 1215 00ad 0E       		.uleb128 0xe
+ 1216 00ae 3A       		.uleb128 0x3a
+ 1217 00af 0B       		.uleb128 0xb
+ 1218 00b0 3B       		.uleb128 0x3b
+ 1219 00b1 0B       		.uleb128 0xb
+ 1220 00b2 49       		.uleb128 0x49
+ 1221 00b3 13       		.uleb128 0x13
+ 1222 00b4 02       		.uleb128 0x2
+ 1223 00b5 17       		.uleb128 0x17
+ 1224 00b6 00       		.byte	0
+ 1225 00b7 00       		.byte	0
+ 1226 00b8 0C       		.uleb128 0xc
+ 1227 00b9 34       		.uleb128 0x34
+ 1228 00ba 00       		.byte	0
+ 1229 00bb 03       		.uleb128 0x3
+ 1230 00bc 0E       		.uleb128 0xe
+ 1231 00bd 3A       		.uleb128 0x3a
+ 1232 00be 0B       		.uleb128 0xb
+ 1233 00bf 3B       		.uleb128 0x3b
+ 1234 00c0 0B       		.uleb128 0xb
+ 1235 00c1 49       		.uleb128 0x49
+ 1236 00c2 13       		.uleb128 0x13
+ 1237 00c3 02       		.uleb128 0x2
+ 1238 00c4 18       		.uleb128 0x18
+ 1239 00c5 00       		.byte	0
+ 1240 00c6 00       		.byte	0
+ 1241 00c7 0D       		.uleb128 0xd
+ 1242 00c8 898201   		.uleb128 0x4109
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccz9CRYC.s 			page 27
+
+
+ 1243 00cb 01       		.byte	0x1
+ 1244 00cc 11       		.uleb128 0x11
+ 1245 00cd 01       		.uleb128 0x1
+ 1246 00ce 31       		.uleb128 0x31
+ 1247 00cf 13       		.uleb128 0x13
+ 1248 00d0 01       		.uleb128 0x1
+ 1249 00d1 13       		.uleb128 0x13
+ 1250 00d2 00       		.byte	0
+ 1251 00d3 00       		.byte	0
+ 1252 00d4 0E       		.uleb128 0xe
+ 1253 00d5 8A8201   		.uleb128 0x410a
+ 1254 00d8 00       		.byte	0
+ 1255 00d9 02       		.uleb128 0x2
+ 1256 00da 18       		.uleb128 0x18
+ 1257 00db 9142     		.uleb128 0x2111
+ 1258 00dd 18       		.uleb128 0x18
+ 1259 00de 00       		.byte	0
+ 1260 00df 00       		.byte	0
+ 1261 00e0 0F       		.uleb128 0xf
+ 1262 00e1 898201   		.uleb128 0x4109
+ 1263 00e4 01       		.byte	0x1
+ 1264 00e5 11       		.uleb128 0x11
+ 1265 00e6 01       		.uleb128 0x1
+ 1266 00e7 31       		.uleb128 0x31
+ 1267 00e8 13       		.uleb128 0x13
+ 1268 00e9 00       		.byte	0
+ 1269 00ea 00       		.byte	0
+ 1270 00eb 10       		.uleb128 0x10
+ 1271 00ec 01       		.uleb128 0x1
+ 1272 00ed 01       		.byte	0x1
+ 1273 00ee 49       		.uleb128 0x49
+ 1274 00ef 13       		.uleb128 0x13
+ 1275 00f0 01       		.uleb128 0x1
+ 1276 00f1 13       		.uleb128 0x13
+ 1277 00f2 00       		.byte	0
+ 1278 00f3 00       		.byte	0
+ 1279 00f4 11       		.uleb128 0x11
+ 1280 00f5 21       		.uleb128 0x21
+ 1281 00f6 00       		.byte	0
+ 1282 00f7 49       		.uleb128 0x49
+ 1283 00f8 13       		.uleb128 0x13
+ 1284 00f9 2F       		.uleb128 0x2f
+ 1285 00fa 0B       		.uleb128 0xb
+ 1286 00fb 00       		.byte	0
+ 1287 00fc 00       		.byte	0
+ 1288 00fd 12       		.uleb128 0x12
+ 1289 00fe 34       		.uleb128 0x34
+ 1290 00ff 00       		.byte	0
+ 1291 0100 03       		.uleb128 0x3
+ 1292 0101 0E       		.uleb128 0xe
+ 1293 0102 3A       		.uleb128 0x3a
+ 1294 0103 0B       		.uleb128 0xb
+ 1295 0104 3B       		.uleb128 0x3b
+ 1296 0105 0B       		.uleb128 0xb
+ 1297 0106 49       		.uleb128 0x49
+ 1298 0107 13       		.uleb128 0x13
+ 1299 0108 3F       		.uleb128 0x3f
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccz9CRYC.s 			page 28
+
+
+ 1300 0109 19       		.uleb128 0x19
+ 1301 010a 02       		.uleb128 0x2
+ 1302 010b 18       		.uleb128 0x18
+ 1303 010c 00       		.byte	0
+ 1304 010d 00       		.byte	0
+ 1305 010e 13       		.uleb128 0x13
+ 1306 010f 26       		.uleb128 0x26
+ 1307 0110 00       		.byte	0
+ 1308 0111 49       		.uleb128 0x49
+ 1309 0112 13       		.uleb128 0x13
+ 1310 0113 00       		.byte	0
+ 1311 0114 00       		.byte	0
+ 1312 0115 14       		.uleb128 0x14
+ 1313 0116 2E       		.uleb128 0x2e
+ 1314 0117 00       		.byte	0
+ 1315 0118 3F       		.uleb128 0x3f
+ 1316 0119 19       		.uleb128 0x19
+ 1317 011a 3C       		.uleb128 0x3c
+ 1318 011b 19       		.uleb128 0x19
+ 1319 011c 6E       		.uleb128 0x6e
+ 1320 011d 0E       		.uleb128 0xe
+ 1321 011e 03       		.uleb128 0x3
+ 1322 011f 0E       		.uleb128 0xe
+ 1323 0120 00       		.byte	0
+ 1324 0121 00       		.byte	0
+ 1325 0122 00       		.byte	0
+ 1326              		.section	.debug_loc,"",%progbits
+ 1327              	.Ldebug_loc0:
+ 1328              	.LLST0:
+ 1329 0000 00000000 		.4byte	.LVL1
+ 1330 0004 08000000 		.4byte	.LVL2
+ 1331 0008 0100     		.2byte	0x1
+ 1332 000a 50       		.byte	0x50
+ 1333 000b 08000000 		.4byte	.LVL2
+ 1334 000f 16000000 		.4byte	.LVL5
+ 1335 0013 0100     		.2byte	0x1
+ 1336 0015 54       		.byte	0x54
+ 1337 0016 16000000 		.4byte	.LVL5
+ 1338 001a 1C000000 		.4byte	.LFE2
+ 1339 001e 0400     		.2byte	0x4
+ 1340 0020 F3       		.byte	0xf3
+ 1341 0021 01       		.uleb128 0x1
+ 1342 0022 50       		.byte	0x50
+ 1343 0023 9F       		.byte	0x9f
+ 1344 0024 00000000 		.4byte	0
+ 1345 0028 00000000 		.4byte	0
+ 1346              	.LLST1:
+ 1347 002c 00000000 		.4byte	.LVL6
+ 1348 0030 08000000 		.4byte	.LVL7
+ 1349 0034 0100     		.2byte	0x1
+ 1350 0036 50       		.byte	0x50
+ 1351 0037 08000000 		.4byte	.LVL7
+ 1352 003b 14000000 		.4byte	.LVL10
+ 1353 003f 0100     		.2byte	0x1
+ 1354 0041 54       		.byte	0x54
+ 1355 0042 14000000 		.4byte	.LVL10
+ 1356 0046 20000000 		.4byte	.LFE3
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccz9CRYC.s 			page 29
+
+
+ 1357 004a 0400     		.2byte	0x4
+ 1358 004c F3       		.byte	0xf3
+ 1359 004d 01       		.uleb128 0x1
+ 1360 004e 50       		.byte	0x50
+ 1361 004f 9F       		.byte	0x9f
+ 1362 0050 00000000 		.4byte	0
+ 1363 0054 00000000 		.4byte	0
+ 1364              	.LLST2:
+ 1365 0058 00000000 		.4byte	.LVL12
+ 1366 005c 05000000 		.4byte	.LVL13-1
+ 1367 0060 0100     		.2byte	0x1
+ 1368 0062 50       		.byte	0x50
+ 1369 0063 05000000 		.4byte	.LVL13-1
+ 1370 0067 1C000000 		.4byte	.LFE0
+ 1371 006b 0400     		.2byte	0x4
+ 1372 006d F3       		.byte	0xf3
+ 1373 006e 01       		.uleb128 0x1
+ 1374 006f 50       		.byte	0x50
+ 1375 0070 9F       		.byte	0x9f
+ 1376 0071 00000000 		.4byte	0
+ 1377 0075 00000000 		.4byte	0
+ 1378              	.LLST3:
+ 1379 0079 06000000 		.4byte	.LVL13
+ 1380 007d 13000000 		.4byte	.LVL14-1
+ 1381 0081 0100     		.2byte	0x1
+ 1382 0083 50       		.byte	0x50
+ 1383 0084 00000000 		.4byte	0
+ 1384 0088 00000000 		.4byte	0
+ 1385              	.LLST4:
+ 1386 008c 00000000 		.4byte	.LVL15
+ 1387 0090 09000000 		.4byte	.LVL16-1
+ 1388 0094 0100     		.2byte	0x1
+ 1389 0096 50       		.byte	0x50
+ 1390 0097 09000000 		.4byte	.LVL16-1
+ 1391 009b 30000000 		.4byte	.LVL19
+ 1392 009f 0100     		.2byte	0x1
+ 1393 00a1 55       		.byte	0x55
+ 1394 00a2 30000000 		.4byte	.LVL19
+ 1395 00a6 50000000 		.4byte	.LFE1
+ 1396 00aa 0400     		.2byte	0x4
+ 1397 00ac F3       		.byte	0xf3
+ 1398 00ad 01       		.uleb128 0x1
+ 1399 00ae 50       		.byte	0x50
+ 1400 00af 9F       		.byte	0x9f
+ 1401 00b0 00000000 		.4byte	0
+ 1402 00b4 00000000 		.4byte	0
+ 1403              	.LLST5:
+ 1404 00b8 0C000000 		.4byte	.LVL17
+ 1405 00bc 40000000 		.4byte	.LVL22
+ 1406 00c0 0100     		.2byte	0x1
+ 1407 00c2 54       		.byte	0x54
+ 1408 00c3 00000000 		.4byte	0
+ 1409 00c7 00000000 		.4byte	0
+ 1410              	.LLST6:
+ 1411 00cb 00000000 		.4byte	.LVL23
+ 1412 00cf 0F000000 		.4byte	.LVL24-1
+ 1413 00d3 0100     		.2byte	0x1
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccz9CRYC.s 			page 30
+
+
+ 1414 00d5 50       		.byte	0x50
+ 1415 00d6 0F000000 		.4byte	.LVL24-1
+ 1416 00da 90010000 		.4byte	.LFE7
+ 1417 00de 0400     		.2byte	0x4
+ 1418 00e0 F3       		.byte	0xf3
+ 1419 00e1 01       		.uleb128 0x1
+ 1420 00e2 50       		.byte	0x50
+ 1421 00e3 9F       		.byte	0x9f
+ 1422 00e4 00000000 		.4byte	0
+ 1423 00e8 00000000 		.4byte	0
+ 1424              	.LLST7:
+ 1425 00ec 2C000000 		.4byte	.LVL26
+ 1426 00f0 34000000 		.4byte	.LVL28
+ 1427 00f4 0100     		.2byte	0x1
+ 1428 00f6 55       		.byte	0x55
+ 1429 00f7 44000000 		.4byte	.LVL29
+ 1430 00fb 4C000000 		.4byte	.LVL31
+ 1431 00ff 0100     		.2byte	0x1
+ 1432 0101 55       		.byte	0x55
+ 1433 0102 5C000000 		.4byte	.LVL32
+ 1434 0106 64000000 		.4byte	.LVL34
+ 1435 010a 0100     		.2byte	0x1
+ 1436 010c 55       		.byte	0x55
+ 1437 010d 74000000 		.4byte	.LVL35
+ 1438 0111 7C000000 		.4byte	.LVL37
+ 1439 0115 0100     		.2byte	0x1
+ 1440 0117 55       		.byte	0x55
+ 1441 0118 82000000 		.4byte	.LVL38
+ 1442 011c 26010000 		.4byte	.LVL58
+ 1443 0120 0100     		.2byte	0x1
+ 1444 0122 55       		.byte	0x55
+ 1445 0123 00000000 		.4byte	0
+ 1446 0127 00000000 		.4byte	0
+ 1447              	.LLST8:
+ 1448 012b 32000000 		.4byte	.LVL27
+ 1449 012f 34000000 		.4byte	.LVL28
+ 1450 0133 0100     		.2byte	0x1
+ 1451 0135 57       		.byte	0x57
+ 1452 0136 4A000000 		.4byte	.LVL30
+ 1453 013a 4C000000 		.4byte	.LVL31
+ 1454 013e 0100     		.2byte	0x1
+ 1455 0140 57       		.byte	0x57
+ 1456 0141 62000000 		.4byte	.LVL33
+ 1457 0145 64000000 		.4byte	.LVL34
+ 1458 0149 0100     		.2byte	0x1
+ 1459 014b 57       		.byte	0x57
+ 1460 014c 7A000000 		.4byte	.LVL36
+ 1461 0150 7C000000 		.4byte	.LVL37
+ 1462 0154 0100     		.2byte	0x1
+ 1463 0156 57       		.byte	0x57
+ 1464 0157 88000000 		.4byte	.LVL39
+ 1465 015b 26010000 		.4byte	.LVL58
+ 1466 015f 0100     		.2byte	0x1
+ 1467 0161 57       		.byte	0x57
+ 1468 0162 00000000 		.4byte	0
+ 1469 0166 00000000 		.4byte	0
+ 1470              	.LLST9:
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccz9CRYC.s 			page 31
+
+
+ 1471 016a 92000000 		.4byte	.LVL40
+ 1472 016e A8000000 		.4byte	.LVL42
+ 1473 0172 0100     		.2byte	0x1
+ 1474 0174 53       		.byte	0x53
+ 1475 0175 D8000000 		.4byte	.LVL47
+ 1476 0179 DE000000 		.4byte	.LVL48
+ 1477 017d 0100     		.2byte	0x1
+ 1478 017f 53       		.byte	0x53
+ 1479 0180 02010000 		.4byte	.LVL52
+ 1480 0184 04010000 		.4byte	.LVL53
+ 1481 0188 0100     		.2byte	0x1
+ 1482 018a 53       		.byte	0x53
+ 1483 018b 00000000 		.4byte	0
+ 1484 018f 00000000 		.4byte	0
+ 1485              	.LLST10:
+ 1486 0193 9A000000 		.4byte	.LVL41
+ 1487 0197 B0000000 		.4byte	.LVL43
+ 1488 019b 0100     		.2byte	0x1
+ 1489 019d 52       		.byte	0x52
+ 1490 019e D8000000 		.4byte	.LVL47
+ 1491 01a2 E2000000 		.4byte	.LVL49
+ 1492 01a6 0100     		.2byte	0x1
+ 1493 01a8 52       		.byte	0x52
+ 1494 01a9 02010000 		.4byte	.LVL52
+ 1495 01ad 0C010000 		.4byte	.LVL54
+ 1496 01b1 0100     		.2byte	0x1
+ 1497 01b3 52       		.byte	0x52
+ 1498 01b4 00000000 		.4byte	0
+ 1499 01b8 00000000 		.4byte	0
+ 1500              	.LLST11:
+ 1501 01bc BA000000 		.4byte	.LVL45
+ 1502 01c0 CB000000 		.4byte	.LVL46-1
+ 1503 01c4 0100     		.2byte	0x1
+ 1504 01c6 52       		.byte	0x52
+ 1505 01c7 E2000000 		.4byte	.LVL49
+ 1506 01cb F3000000 		.4byte	.LVL51-1
+ 1507 01cf 0100     		.2byte	0x1
+ 1508 01d1 52       		.byte	0x52
+ 1509 01d2 1A010000 		.4byte	.LVL57
+ 1510 01d6 26010000 		.4byte	.LVL58
+ 1511 01da 0100     		.2byte	0x1
+ 1512 01dc 52       		.byte	0x52
+ 1513 01dd 00000000 		.4byte	0
+ 1514 01e1 00000000 		.4byte	0
+ 1515              	.LLST12:
+ 1516 01e5 12000000 		.4byte	.LVL25
+ 1517 01e9 B4000000 		.4byte	.LVL44
+ 1518 01ed 0200     		.2byte	0x2
+ 1519 01ef 91       		.byte	0x91
+ 1520 01f0 5C       		.sleb128 -36
+ 1521 01f1 D8000000 		.4byte	.LVL47
+ 1522 01f5 E6000000 		.4byte	.LVL50
+ 1523 01f9 0200     		.2byte	0x2
+ 1524 01fb 91       		.byte	0x91
+ 1525 01fc 5C       		.sleb128 -36
+ 1526 01fd 02010000 		.4byte	.LVL52
+ 1527 0201 0E010000 		.4byte	.LVL55
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccz9CRYC.s 			page 32
+
+
+ 1528 0205 0200     		.2byte	0x2
+ 1529 0207 91       		.byte	0x91
+ 1530 0208 5C       		.sleb128 -36
+ 1531 0209 00000000 		.4byte	0
+ 1532 020d 00000000 		.4byte	0
+ 1533              		.section	.debug_aranges,"",%progbits
+ 1534 0000 54000000 		.4byte	0x54
+ 1535 0004 0200     		.2byte	0x2
+ 1536 0006 00000000 		.4byte	.Ldebug_info0
+ 1537 000a 04       		.byte	0x4
+ 1538 000b 00       		.byte	0
+ 1539 000c 0000     		.2byte	0
+ 1540 000e 0000     		.2byte	0
+ 1541 0010 00000000 		.4byte	.LFB4
+ 1542 0014 0C000000 		.4byte	.LFE4-.LFB4
+ 1543 0018 00000000 		.4byte	.LFB2
+ 1544 001c 1C000000 		.4byte	.LFE2-.LFB2
+ 1545 0020 00000000 		.4byte	.LFB3
+ 1546 0024 20000000 		.4byte	.LFE3-.LFB3
+ 1547 0028 00000000 		.4byte	.LFB5
+ 1548 002c 0A000000 		.4byte	.LFE5-.LFB5
+ 1549 0030 00000000 		.4byte	.LFB6
+ 1550 0034 08000000 		.4byte	.LFE6-.LFB6
+ 1551 0038 00000000 		.4byte	.LFB0
+ 1552 003c 1C000000 		.4byte	.LFE0-.LFB0
+ 1553 0040 00000000 		.4byte	.LFB1
+ 1554 0044 50000000 		.4byte	.LFE1-.LFB1
+ 1555 0048 00000000 		.4byte	.LFB7
+ 1556 004c 90010000 		.4byte	.LFE7-.LFB7
+ 1557 0050 00000000 		.4byte	0
+ 1558 0054 00000000 		.4byte	0
+ 1559              		.section	.debug_ranges,"",%progbits
+ 1560              	.Ldebug_ranges0:
+ 1561 0000 00000000 		.4byte	.LFB4
+ 1562 0004 0C000000 		.4byte	.LFE4
+ 1563 0008 00000000 		.4byte	.LFB2
+ 1564 000c 1C000000 		.4byte	.LFE2
+ 1565 0010 00000000 		.4byte	.LFB3
+ 1566 0014 20000000 		.4byte	.LFE3
+ 1567 0018 00000000 		.4byte	.LFB5
+ 1568 001c 0A000000 		.4byte	.LFE5
+ 1569 0020 00000000 		.4byte	.LFB6
+ 1570 0024 08000000 		.4byte	.LFE6
+ 1571 0028 00000000 		.4byte	.LFB0
+ 1572 002c 1C000000 		.4byte	.LFE0
+ 1573 0030 00000000 		.4byte	.LFB1
+ 1574 0034 50000000 		.4byte	.LFE1
+ 1575 0038 00000000 		.4byte	.LFB7
+ 1576 003c 90010000 		.4byte	.LFE7
+ 1577 0040 00000000 		.4byte	0
+ 1578 0044 00000000 		.4byte	0
+ 1579              		.section	.debug_line,"",%progbits
+ 1580              	.Ldebug_line0:
+ 1581 0000 04010000 		.section	.debug_str,"MS",%progbits,1
+ 1581      02002F00 
+ 1581      00000201 
+ 1581      FB0E0D00 
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccz9CRYC.s 			page 33
+
+
+ 1581      01010101 
+ 1582              	.LASF22:
+ 1583 0000 745F6672 		.ascii	"t_freq\000"
+ 1583      657100
+ 1584              	.LASF21:
+ 1585 0007 745F436C 		.ascii	"t_ClkWriteImoFreq\000"
+ 1585      6B577269 
+ 1585      7465496D 
+ 1585      6F467265 
+ 1585      7100
+ 1586              	.LASF8:
+ 1587 0019 6379636C 		.ascii	"cycles\000"
+ 1587      657300
+ 1588              	.LASF33:
+ 1589 0020 443A5C44 		.ascii	"D:\\Development\\AESD\\WatchDogTimer\\WDT.cydsn\000"
+ 1589      6576656C 
+ 1589      6F706D65 
+ 1589      6E745C41 
+ 1589      4553445C 
+ 1590              	.LASF23:
+ 1591 004c 745F6267 		.ascii	"t_bgtrim4\000"
+ 1591      7472696D 
+ 1591      3400
+ 1592              	.LASF3:
+ 1593 0056 756E7369 		.ascii	"unsigned char\000"
+ 1593      676E6564 
+ 1593      20636861 
+ 1593      7200
+ 1594              	.LASF12:
+ 1595 0064 745F4578 		.ascii	"t_ExitCriticalSection\000"
+ 1595      69744372 
+ 1595      69746963 
+ 1595      616C5365 
+ 1595      6374696F 
+ 1596              	.LASF25:
+ 1597 007a 745F6E65 		.ascii	"t_newImoTrim2Value\000"
+ 1597      77496D6F 
+ 1597      5472696D 
+ 1597      3256616C 
+ 1597      756500
+ 1598              	.LASF15:
+ 1599 008d 745F636C 		.ascii	"t_clkselect\000"
+ 1599      6B73656C 
+ 1599      65637400 
+ 1600              	.LASF2:
+ 1601 0099 6C6F6E67 		.ascii	"long unsigned int\000"
+ 1601      20756E73 
+ 1601      69676E65 
+ 1601      6420696E 
+ 1601      7400
+ 1602              	.LASF16:
+ 1603 00ab 745F436C 		.ascii	"t_ClkWriteSysClkDiv\000"
+ 1603      6B577269 
+ 1603      74655379 
+ 1603      73436C6B 
+ 1603      44697600 
+ 1604              	.LASF7:
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccz9CRYC.s 			page 34
+
+
+ 1605 00bf 745F4465 		.ascii	"t_Delay_ms\000"
+ 1605      6C61795F 
+ 1605      6D7300
+ 1606              	.LASF6:
+ 1607 00ca 745F4465 		.ascii	"t_DelayCycles\000"
+ 1607      6C617943 
+ 1607      79636C65 
+ 1607      7300
+ 1608              	.LASF24:
+ 1609 00d8 745F6267 		.ascii	"t_bgtrim5\000"
+ 1609      7472696D 
+ 1609      3500
+ 1610              	.LASF26:
+ 1611 00e2 745F6375 		.ascii	"t_currentImoTrim2Value\000"
+ 1611      7272656E 
+ 1611      74496D6F 
+ 1611      5472696D 
+ 1611      3256616C 
+ 1612              	.LASF0:
+ 1613 00f9 745F7265 		.ascii	"t_reg32\000"
+ 1613      67333200 
+ 1614              	.LASF1:
+ 1615 0101 745F7265 		.ascii	"t_reg8\000"
+ 1615      673800
+ 1616              	.LASF20:
+ 1617 0108 73697A65 		.ascii	"sizetype\000"
+ 1617      74797065 
+ 1617      00
+ 1618              	.LASF14:
+ 1619 0111 745F436C 		.ascii	"t_ClkWriteHfclkDirect\000"
+ 1619      6B577269 
+ 1619      74654866 
+ 1619      636C6B44 
+ 1619      69726563 
+ 1620              	.LASF35:
+ 1621 0127 6D656D63 		.ascii	"memcpy\000"
+ 1621      707900
+ 1622              	.LASF27:
+ 1623 012e 745F696D 		.ascii	"t_imoTrim1Value\000"
+ 1623      6F547269 
+ 1623      6D315661 
+ 1623      6C756500 
+ 1624              	.LASF9:
+ 1625 013e 745F7469 		.ascii	"t_time_ms\000"
+ 1625      6D655F6D 
+ 1625      7300
+ 1626              	.LASF31:
+ 1627 0148 474E5520 		.ascii	"GNU C11 5.4.1 20160609 (release) [ARM/embedded-5-br"
+ 1627      43313120 
+ 1627      352E342E 
+ 1627      31203230 
+ 1627      31363036 
+ 1628 017b 616E6368 		.ascii	"anch revision 237715] -mcpu=cortex-m0 -mthumb -g -O"
+ 1628      20726576 
+ 1628      6973696F 
+ 1628      6E203233 
+ 1628      37373135 
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccz9CRYC.s 			page 35
+
+
+ 1629 01ae 67202D66 		.ascii	"g -ffunction-sections -ffat-lto-objects\000"
+ 1629      66756E63 
+ 1629      74696F6E 
+ 1629      2D736563 
+ 1629      74696F6E 
+ 1630              	.LASF4:
+ 1631 01d6 745F7569 		.ascii	"t_uint32\000"
+ 1631      6E743332 
+ 1631      00
+ 1632              	.LASF28:
+ 1633 01df 745F696E 		.ascii	"t_interruptstate\000"
+ 1633      74657272 
+ 1633      75707473 
+ 1633      74617465 
+ 1633      00
+ 1634              	.LASF10:
+ 1635 01f0 745F4465 		.ascii	"t_Delay_us\000"
+ 1635      6C61795F 
+ 1635      757300
+ 1636              	.LASF34:
+ 1637 01fb 745F456E 		.ascii	"t_EnterCriticalSection\000"
+ 1637      74657243 
+ 1637      72697469 
+ 1637      63616C53 
+ 1637      65637469 
+ 1638              	.LASF19:
+ 1639 0212 745F5379 		.ascii	"t_Sys_Clk_Div\000"
+ 1639      735F436C 
+ 1639      6B5F4469 
+ 1639      7600
+ 1640              	.LASF32:
+ 1641 0220 745F434C 		.ascii	"t_CLOCK.c\000"
+ 1641      4F434B2E 
+ 1641      6300
+ 1642              	.LASF17:
+ 1643 022a 745F6469 		.ascii	"t_divider\000"
+ 1643      76696465 
+ 1643      7200
+ 1644              	.LASF29:
+ 1645 0234 745F7379 		.ascii	"t_sys_freq\000"
+ 1645      735F6672 
+ 1645      657100
+ 1646              	.LASF13:
+ 1647 023f 745F496E 		.ascii	"t_IntrStatus\000"
+ 1647      74725374 
+ 1647      61747573 
+ 1647      00
+ 1648              	.LASF11:
+ 1649 024c 745F7469 		.ascii	"t_time_us\000"
+ 1649      6D655F75 
+ 1649      7300
+ 1650              	.LASF30:
+ 1651 0256 745F496D 		.ascii	"t_ImoFreqMhz2Reg\000"
+ 1651      6F467265 
+ 1651      714D687A 
+ 1651      32526567 
+ 1651      00
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccz9CRYC.s 			page 36
+
+
+ 1652              	.LASF18:
+ 1653 0267 745F696E 		.ascii	"t_interruptState\000"
+ 1653      74657272 
+ 1653      75707453 
+ 1653      74617465 
+ 1653      00
+ 1654              	.LASF5:
+ 1655 0278 745F7569 		.ascii	"t_uint8\000"
+ 1655      6E743800 
+ 1656              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 5.4.1 20160609 (release) [ARM/embedded-5-bran

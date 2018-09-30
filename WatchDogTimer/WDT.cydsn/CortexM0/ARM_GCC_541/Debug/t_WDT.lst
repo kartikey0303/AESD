@@ -1,0 +1,1579 @@
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccpGYWdv.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.cpu cortex-m0
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 0
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"t_WDT.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.t_GetResetReason,"ax",%progbits
+  20              		.align	2
+  21              		.global	t_GetResetReason
+  22              		.code	16
+  23              		.thumb_func
+  24              		.type	t_GetResetReason, %function
+  25              	t_GetResetReason:
+  26              	.LFB0:
+  27              		.file 1 "t_WDT.c"
+   1:t_WDT.c       **** /* ========================================
+   2:t_WDT.c       ****  * Name : Watchdog timer
+   3:t_WDT.c       ****  * Date : 20.09.18
+   4:t_WDT.c       ****  * Author : Kartikey Agrawal
+   5:t_WDT.c       ****  * Details : Source file for Watchdog Timer
+   6:t_WDT.c       ****  * 			 Refer to Architecture Technical Reference Manual for futher details
+   7:t_WDT.c       ****  * 			 https://kartikey0303.github.io/pdf/Register_TRM.pdf
+   8:t_WDT.c       ****  * 			 https://kartikey0303.github.io/pdf/Arch_TRM.pdf		
+   9:t_WDT.c       **** */
+  10:t_WDT.c       **** 
+  11:t_WDT.c       **** #include "t_WDT.h"
+  12:t_WDT.c       **** #include "t_CLOCK.h"
+  13:t_WDT.c       **** 
+  14:t_WDT.c       **** 
+  15:t_WDT.c       **** //https://kartikey0303.github.io/pdf/Register_TRM.pdf#page=806
+  16:t_WDT.c       **** t_uint32 t_GetResetReason(t_uint32 t_reason)
+  17:t_WDT.c       **** {
+  28              		.loc 1 17 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		@ link register save eliminated.
+  33              	.LVL0:
+  34 0000 0200     		movs	r2, r0
+  18:t_WDT.c       **** 	t_uint32 t_returnStatus;
+  19:t_WDT.c       **** 
+  20:t_WDT.c       **** 	t_reason &= (((t_uint32)1u << 0) | ((t_uint32)1u << 3) | ((t_uint32)1u << 4));
+  35              		.loc 1 20 0
+  36 0002 1920     		movs	r0, #25
+  37              	.LVL1:
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccpGYWdv.s 			page 2
+
+
+  38 0004 0240     		ands	r2, r0
+  39              	.LVL2:
+  21:t_WDT.c       **** 	t_returnStatus = (*(t_reg32 *) REG_RES_CAUSE) &(((t_uint32)1u << 0) | ((t_uint32)1u << 3)| ((t_uin
+  40              		.loc 1 21 0
+  41 0006 0249     		ldr	r1, .L2
+  42 0008 0B68     		ldr	r3, [r1]
+  43 000a 1840     		ands	r0, r3
+  44              	.LVL3:
+  22:t_WDT.c       **** 	(*(t_reg32 *)REG_RES_CAUSE) = t_reason;
+  45              		.loc 1 22 0
+  46 000c 0A60     		str	r2, [r1]
+  23:t_WDT.c       **** 	
+  24:t_WDT.c       **** 	return (t_returnStatus);
+  25:t_WDT.c       **** }
+  47              		.loc 1 25 0
+  48              		@ sp needed
+  49 000e 7047     		bx	lr
+  50              	.L3:
+  51              		.align	2
+  52              	.L2:
+  53 0010 00030B40 		.word	1074463488
+  54              		.cfi_endproc
+  55              	.LFE0:
+  56              		.size	t_GetResetReason, .-t_GetResetReason
+  57              		.section	.text.t_WDT_SetMatch,"ax",%progbits
+  58              		.align	2
+  59              		.global	t_WDT_SetMatch
+  60              		.code	16
+  61              		.thumb_func
+  62              		.type	t_WDT_SetMatch, %function
+  63              	t_WDT_SetMatch:
+  64              	.LFB1:
+  26:t_WDT.c       **** 
+  27:t_WDT.c       **** void t_WDT_SetMatch(t_uint32 t_CounterNo, t_uint32 t_Match)
+  28:t_WDT.c       **** {
+  65              		.loc 1 28 0
+  66              		.cfi_startproc
+  67              		@ args = 0, pretend = 0, frame = 0
+  68              		@ frame_needed = 0, uses_anonymous_args = 0
+  69              	.LVL4:
+  70 0000 70B5     		push	{r4, r5, r6, lr}
+  71              		.cfi_def_cfa_offset 16
+  72              		.cfi_offset 4, -16
+  73              		.cfi_offset 5, -12
+  74              		.cfi_offset 6, -8
+  75              		.cfi_offset 14, -4
+  76 0002 0500     		movs	r5, r0
+  77 0004 0C00     		movs	r4, r1
+  29:t_WDT.c       **** 	t_Delay_us(100);	
+  78              		.loc 1 29 0
+  79 0006 6420     		movs	r0, #100
+  80              	.LVL5:
+  81 0008 FFF7FEFF 		bl	t_Delay_us
+  82              	.LVL6:
+  30:t_WDT.c       **** 	(*(t_reg32*)REG_WDT_MATCH) = ((*(t_reg32*)REG_WDT_MATCH) & (~((0x0000FFFF) << (t_CounterNo * 16)))
+  83              		.loc 1 30 0
+  84 000c 0549     		ldr	r1, .L5
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccpGYWdv.s 			page 3
+
+
+  85 000e 0B68     		ldr	r3, [r1]
+  86 0010 2D01     		lsls	r5, r5, #4
+  87              	.LVL7:
+  88 0012 054A     		ldr	r2, .L5+4
+  89 0014 AA40     		lsls	r2, r2, r5
+  90 0016 9343     		bics	r3, r2
+  91 0018 1C43     		orrs	r4, r3
+  92              	.LVL8:
+  93 001a 0C60     		str	r4, [r1]
+  31:t_WDT.c       **** 	t_Delay_us(35u);
+  94              		.loc 1 31 0
+  95 001c 2320     		movs	r0, #35
+  96 001e FFF7FEFF 		bl	t_Delay_us
+  97              	.LVL9:
+  32:t_WDT.c       **** }
+  98              		.loc 1 32 0
+  99              		@ sp needed
+ 100 0022 70BD     		pop	{r4, r5, r6, pc}
+ 101              	.L6:
+ 102              		.align	2
+ 103              	.L5:
+ 104 0024 08020B40 		.word	1074463240
+ 105 0028 FFFF0000 		.word	65535
+ 106              		.cfi_endproc
+ 107              	.LFE1:
+ 108              		.size	t_WDT_SetMatch, .-t_WDT_SetMatch
+ 109              		.section	.text.t_WDT_ClearInterrupt,"ax",%progbits
+ 110              		.align	2
+ 111              		.global	t_WDT_ClearInterrupt
+ 112              		.code	16
+ 113              		.thumb_func
+ 114              		.type	t_WDT_ClearInterrupt, %function
+ 115              	t_WDT_ClearInterrupt:
+ 116              	.LFB2:
+  33:t_WDT.c       **** 
+  34:t_WDT.c       **** void t_WDT_ClearInterrupt(t_uint32 t_CounterMask)
+  35:t_WDT.c       **** {
+ 117              		.loc 1 35 0
+ 118              		.cfi_startproc
+ 119              		@ args = 0, pretend = 0, frame = 0
+ 120              		@ frame_needed = 0, uses_anonymous_args = 0
+ 121              	.LVL10:
+ 122 0000 10B5     		push	{r4, lr}
+ 123              		.cfi_def_cfa_offset 8
+ 124              		.cfi_offset 4, -8
+ 125              		.cfi_offset 14, -4
+ 126 0002 0400     		movs	r4, r0
+  36:t_WDT.c       **** 	t_uint8 t_interruptState;      
+  37:t_WDT.c       **** 	t_interruptState = t_EnterCriticalSection();
+ 127              		.loc 1 37 0
+ 128 0004 FFF7FEFF 		bl	t_EnterCriticalSection
+ 129              	.LVL11:
+  38:t_WDT.c       **** 	t_CounterMask &= (((t_uint32)0x01u << 2u) |((t_uint32)0x01u << 10u) |((t_uint32)0x01u << 18u));
+ 130              		.loc 1 38 0
+ 131 0008 054B     		ldr	r3, .L8
+ 132 000a 1C40     		ands	r4, r3
+ 133              	.LVL12:
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccpGYWdv.s 			page 4
+
+
+  39:t_WDT.c       **** 	(*(t_reg32 *)REG_WDT_CONTROL) = ((*(t_reg32 *)REG_WDT_CONTROL) & ~(((t_uint32)0x01u << 2u) |((t_ui
+ 134              		.loc 1 39 0
+ 135 000c 0549     		ldr	r1, .L8+4
+ 136 000e 0B68     		ldr	r3, [r1]
+ 137 0010 054A     		ldr	r2, .L8+8
+ 138 0012 1340     		ands	r3, r2
+ 139 0014 2343     		orrs	r3, r4
+ 140 0016 0B60     		str	r3, [r1]
+  40:t_WDT.c       **** 	(void)(*(t_reg32 *) REG_WDT_CONTROL);
+ 141              		.loc 1 40 0
+ 142 0018 0B68     		ldr	r3, [r1]
+  41:t_WDT.c       **** 	t_ExitCriticalSection(t_interruptState);
+ 143              		.loc 1 41 0
+ 144 001a FFF7FEFF 		bl	t_ExitCriticalSection
+ 145              	.LVL13:
+  42:t_WDT.c       **** }
+ 146              		.loc 1 42 0
+ 147              		@ sp needed
+ 148              	.LVL14:
+ 149 001e 10BD     		pop	{r4, pc}
+ 150              	.L9:
+ 151              		.align	2
+ 152              	.L8:
+ 153 0020 04040400 		.word	263172
+ 154 0024 10020B40 		.word	1074463248
+ 155 0028 FBFBFBFF 		.word	-263173
+ 156              		.cfi_endproc
+ 157              	.LFE2:
+ 158              		.size	t_WDT_ClearInterrupt, .-t_WDT_ClearInterrupt
+ 159              		.section	.text.t_WDT_GetEnabledStatus,"ax",%progbits
+ 160              		.align	2
+ 161              		.global	t_WDT_GetEnabledStatus
+ 162              		.code	16
+ 163              		.thumb_func
+ 164              		.type	t_WDT_GetEnabledStatus, %function
+ 165              	t_WDT_GetEnabledStatus:
+ 166              	.LFB4:
+  43:t_WDT.c       **** 
+  44:t_WDT.c       **** void t_WDT_Enable(t_uint32 t_CounterNo)
+  45:t_WDT.c       **** {
+  46:t_WDT.c       **** 	(*(t_reg32*) REG_WDT_CONTROL) = (*(t_reg32*)REG_WDT_CONTROL) | ((0x00000001) << (t_CounterNo * 0x0
+  47:t_WDT.c       **** 	
+  48:t_WDT.c       **** 	if(t_CounterNo == 0x00)
+  49:t_WDT.c       **** 	{
+  50:t_WDT.c       **** 		while(t_WDT_GetEnabledStatus(0x00) == 0)
+  51:t_WDT.c       **** 		{
+  52:t_WDT.c       **** 			
+  53:t_WDT.c       **** 		}
+  54:t_WDT.c       **** 	}
+  55:t_WDT.c       **** 	if(t_CounterNo == 0x01)
+  56:t_WDT.c       **** 	{
+  57:t_WDT.c       **** 		while(t_WDT_GetEnabledStatus(0x01) == 0)
+  58:t_WDT.c       **** 		{
+  59:t_WDT.c       **** 			
+  60:t_WDT.c       **** 		}
+  61:t_WDT.c       **** 	}
+  62:t_WDT.c       **** 	if(t_CounterNo == 0x02)
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccpGYWdv.s 			page 5
+
+
+  63:t_WDT.c       **** 	{
+  64:t_WDT.c       **** 		while(t_WDT_GetEnabledStatus(0x02) == 0)
+  65:t_WDT.c       **** 		{
+  66:t_WDT.c       **** 			
+  67:t_WDT.c       **** 		}
+  68:t_WDT.c       **** 	}
+  69:t_WDT.c       **** }
+  70:t_WDT.c       **** t_uint32 t_WDT_GetEnabledStatus(t_uint32 t_CounterNo)
+  71:t_WDT.c       **** {
+ 167              		.loc 1 71 0
+ 168              		.cfi_startproc
+ 169              		@ args = 0, pretend = 0, frame = 0
+ 170              		@ frame_needed = 0, uses_anonymous_args = 0
+ 171              		@ link register save eliminated.
+ 172              	.LVL15:
+  72:t_WDT.c       **** 	return (((*(t_reg32*) REG_WDT_CONTROL) >> ((0x08u * t_CounterNo) + 0x01u)) & 0x01u);
+ 173              		.loc 1 72 0
+ 174 0000 044B     		ldr	r3, .L11
+ 175 0002 1B68     		ldr	r3, [r3]
+ 176 0004 C000     		lsls	r0, r0, #3
+ 177              	.LVL16:
+ 178 0006 0130     		adds	r0, r0, #1
+ 179 0008 C340     		lsrs	r3, r3, r0
+ 180 000a 1800     		movs	r0, r3
+ 181 000c 0123     		movs	r3, #1
+ 182 000e 1840     		ands	r0, r3
+  73:t_WDT.c       **** }
+ 183              		.loc 1 73 0
+ 184              		@ sp needed
+ 185 0010 7047     		bx	lr
+ 186              	.L12:
+ 187 0012 C046     		.align	2
+ 188              	.L11:
+ 189 0014 10020B40 		.word	1074463248
+ 190              		.cfi_endproc
+ 191              	.LFE4:
+ 192              		.size	t_WDT_GetEnabledStatus, .-t_WDT_GetEnabledStatus
+ 193              		.section	.text.t_WDT_Enable,"ax",%progbits
+ 194              		.align	2
+ 195              		.global	t_WDT_Enable
+ 196              		.code	16
+ 197              		.thumb_func
+ 198              		.type	t_WDT_Enable, %function
+ 199              	t_WDT_Enable:
+ 200              	.LFB3:
+  45:t_WDT.c       **** 	(*(t_reg32*) REG_WDT_CONTROL) = (*(t_reg32*)REG_WDT_CONTROL) | ((0x00000001) << (t_CounterNo * 0x0
+ 201              		.loc 1 45 0
+ 202              		.cfi_startproc
+ 203              		@ args = 0, pretend = 0, frame = 0
+ 204              		@ frame_needed = 0, uses_anonymous_args = 0
+ 205              	.LVL17:
+ 206 0000 10B5     		push	{r4, lr}
+ 207              		.cfi_def_cfa_offset 8
+ 208              		.cfi_offset 4, -8
+ 209              		.cfi_offset 14, -4
+ 210 0002 0400     		movs	r4, r0
+  46:t_WDT.c       **** 	
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccpGYWdv.s 			page 6
+
+
+ 211              		.loc 1 46 0
+ 212 0004 0E49     		ldr	r1, .L20
+ 213 0006 0A68     		ldr	r2, [r1]
+ 214 0008 C000     		lsls	r0, r0, #3
+ 215              	.LVL18:
+ 216 000a 0123     		movs	r3, #1
+ 217 000c 8340     		lsls	r3, r3, r0
+ 218 000e 1343     		orrs	r3, r2
+ 219 0010 0B60     		str	r3, [r1]
+  48:t_WDT.c       **** 	{
+ 220              		.loc 1 48 0
+ 221 0012 002C     		cmp	r4, #0
+ 222 0014 04D1     		bne	.L14
+ 223              	.L15:
+  50:t_WDT.c       **** 		{
+ 224              		.loc 1 50 0 discriminator 1
+ 225 0016 0020     		movs	r0, #0
+ 226 0018 FFF7FEFF 		bl	t_WDT_GetEnabledStatus
+ 227              	.LVL19:
+ 228 001c 0028     		cmp	r0, #0
+ 229 001e FAD0     		beq	.L15
+ 230              	.L14:
+  55:t_WDT.c       **** 	{
+ 231              		.loc 1 55 0
+ 232 0020 012C     		cmp	r4, #1
+ 233 0022 04D1     		bne	.L16
+ 234              	.L17:
+  57:t_WDT.c       **** 		{
+ 235              		.loc 1 57 0 discriminator 1
+ 236 0024 0120     		movs	r0, #1
+ 237 0026 FFF7FEFF 		bl	t_WDT_GetEnabledStatus
+ 238              	.LVL20:
+ 239 002a 0028     		cmp	r0, #0
+ 240 002c FAD0     		beq	.L17
+ 241              	.L16:
+  62:t_WDT.c       **** 	{
+ 242              		.loc 1 62 0
+ 243 002e 022C     		cmp	r4, #2
+ 244 0030 04D1     		bne	.L13
+ 245              	.L19:
+  64:t_WDT.c       **** 		{
+ 246              		.loc 1 64 0 discriminator 1
+ 247 0032 0220     		movs	r0, #2
+ 248 0034 FFF7FEFF 		bl	t_WDT_GetEnabledStatus
+ 249              	.LVL21:
+ 250 0038 0028     		cmp	r0, #0
+ 251 003a FAD0     		beq	.L19
+ 252              	.L13:
+  69:t_WDT.c       **** t_uint32 t_WDT_GetEnabledStatus(t_uint32 t_CounterNo)
+ 253              		.loc 1 69 0
+ 254              		@ sp needed
+ 255              	.LVL22:
+ 256 003c 10BD     		pop	{r4, pc}
+ 257              	.L21:
+ 258 003e C046     		.align	2
+ 259              	.L20:
+ 260 0040 10020B40 		.word	1074463248
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccpGYWdv.s 			page 7
+
+
+ 261              		.cfi_endproc
+ 262              	.LFE3:
+ 263              		.size	t_WDT_Enable, .-t_WDT_Enable
+ 264              		.section	.text.t_WDT_SetCascade,"ax",%progbits
+ 265              		.align	2
+ 266              		.global	t_WDT_SetCascade
+ 267              		.code	16
+ 268              		.thumb_func
+ 269              		.type	t_WDT_SetCascade, %function
+ 270              	t_WDT_SetCascade:
+ 271              	.LFB5:
+  74:t_WDT.c       **** 
+  75:t_WDT.c       **** void t_WDT_SetCascade(t_uint32 t_CascadeMask)
+  76:t_WDT.c       **** {
+ 272              		.loc 1 76 0
+ 273              		.cfi_startproc
+ 274              		@ args = 0, pretend = 0, frame = 0
+ 275              		@ frame_needed = 0, uses_anonymous_args = 0
+ 276              	.LVL23:
+ 277 0000 10B5     		push	{r4, lr}
+ 278              		.cfi_def_cfa_offset 8
+ 279              		.cfi_offset 4, -8
+ 280              		.cfi_offset 14, -4
+  77:t_WDT.c       **** 	t_uint32 t_CounterEnableStatus = t_WDT_GetEnabledStatus(0x00);
+ 281              		.loc 1 77 0
+ 282 0002 0020     		movs	r0, #0
+ 283              	.LVL24:
+ 284 0004 FFF7FEFF 		bl	t_WDT_GetEnabledStatus
+ 285              	.LVL25:
+  78:t_WDT.c       **** 	
+  79:t_WDT.c       **** 	//Counter must not be enables before setting the Cascading
+  80:t_WDT.c       **** 	if(t_CounterEnableStatus == 0)
+ 286              		.loc 1 80 0
+ 287 0008 0028     		cmp	r0, #0
+ 288 000a 04D1     		bne	.L22
+  81:t_WDT.c       **** 	{
+  82:t_WDT.c       **** 		
+  83:t_WDT.c       **** 		(*(t_reg32*)REG_WDT_CONFIG) = (*(t_reg32*)REG_WDT_CONFIG) & ((t_uint32)(~(((t_uint32)(0x01u) << 3
+ 289              		.loc 1 83 0
+ 290 000c 024A     		ldr	r2, .L24
+ 291 000e 1168     		ldr	r1, [r2]
+ 292 0010 024B     		ldr	r3, .L24+4
+ 293 0012 0B40     		ands	r3, r1
+ 294 0014 1360     		str	r3, [r2]
+ 295              	.L22:
+  84:t_WDT.c       **** 		
+  85:t_WDT.c       **** 	}
+  86:t_WDT.c       **** }
+ 296              		.loc 1 86 0
+ 297              		@ sp needed
+ 298 0016 10BD     		pop	{r4, pc}
+ 299              	.L25:
+ 300              		.align	2
+ 301              	.L24:
+ 302 0018 0C020B40 		.word	1074463244
+ 303 001c F7F7FFFF 		.word	-2057
+ 304              		.cfi_endproc
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccpGYWdv.s 			page 8
+
+
+ 305              	.LFE5:
+ 306              		.size	t_WDT_SetCascade, .-t_WDT_SetCascade
+ 307              		.section	.text.t_WDT_SetClearOnMatch,"ax",%progbits
+ 308              		.align	2
+ 309              		.global	t_WDT_SetClearOnMatch
+ 310              		.code	16
+ 311              		.thumb_func
+ 312              		.type	t_WDT_SetClearOnMatch, %function
+ 313              	t_WDT_SetClearOnMatch:
+ 314              	.LFB6:
+  87:t_WDT.c       **** 
+  88:t_WDT.c       **** void t_WDT_SetClearOnMatch(t_uint32 t_CounterNum, t_uint32 t_Enable)
+  89:t_WDT.c       **** {
+ 315              		.loc 1 89 0
+ 316              		.cfi_startproc
+ 317              		@ args = 0, pretend = 0, frame = 0
+ 318              		@ frame_needed = 0, uses_anonymous_args = 0
+ 319              	.LVL26:
+ 320 0000 70B5     		push	{r4, r5, r6, lr}
+ 321              		.cfi_def_cfa_offset 16
+ 322              		.cfi_offset 4, -16
+ 323              		.cfi_offset 5, -12
+ 324              		.cfi_offset 6, -8
+ 325              		.cfi_offset 14, -4
+ 326 0002 0400     		movs	r4, r0
+ 327 0004 0D00     		movs	r5, r1
+  90:t_WDT.c       **** 	t_uint32 t_ConfigRegValue;
+  91:t_WDT.c       **** 
+  92:t_WDT.c       **** 	if(0u == t_WDT_GetEnabledStatus(t_CounterNum))
+ 328              		.loc 1 92 0
+ 329 0006 FFF7FEFF 		bl	t_WDT_GetEnabledStatus
+ 330              	.LVL27:
+ 331 000a 0028     		cmp	r0, #0
+ 332 000c 09D1     		bne	.L26
+  93:t_WDT.c       **** 	{
+  94:t_WDT.c       **** 		t_ConfigRegValue = (*(t_reg32 *) REG_WDT_CONFIG) & ~(((t_uint32)((t_uint32)1u << (0x02u+(t_Counte
+ 333              		.loc 1 94 0
+ 334 000e 0549     		ldr	r1, .L28
+ 335 0010 0B68     		ldr	r3, [r1]
+ 336 0012 E400     		lsls	r4, r4, #3
+ 337              	.LVL28:
+ 338 0014 0234     		adds	r4, r4, #2
+ 339 0016 0122     		movs	r2, #1
+ 340 0018 A240     		lsls	r2, r2, r4
+ 341 001a 9343     		bics	r3, r2
+ 342              	.LVL29:
+  95:t_WDT.c       **** 		t_ConfigRegValue|= (t_uint32)(t_Enable << (0x02u+(t_CounterNum * 0x08u)));
+ 343              		.loc 1 95 0
+ 344 001c A540     		lsls	r5, r5, r4
+ 345              	.LVL30:
+ 346 001e 1D43     		orrs	r5, r3
+ 347              	.LVL31:
+  96:t_WDT.c       **** 		*(t_reg32 *)REG_WDT_CONFIG = t_ConfigRegValue;
+ 348              		.loc 1 96 0
+ 349 0020 0D60     		str	r5, [r1]
+ 350              	.LVL32:
+ 351              	.L26:
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccpGYWdv.s 			page 9
+
+
+  97:t_WDT.c       **** 	}
+  98:t_WDT.c       **** }
+ 352              		.loc 1 98 0
+ 353              		@ sp needed
+ 354 0022 70BD     		pop	{r4, r5, r6, pc}
+ 355              	.L29:
+ 356              		.align	2
+ 357              	.L28:
+ 358 0024 0C020B40 		.word	1074463244
+ 359              		.cfi_endproc
+ 360              	.LFE6:
+ 361              		.size	t_WDT_SetClearOnMatch, .-t_WDT_SetClearOnMatch
+ 362              		.section	.text.t_WDT_SetMode,"ax",%progbits
+ 363              		.align	2
+ 364              		.global	t_WDT_SetMode
+ 365              		.code	16
+ 366              		.thumb_func
+ 367              		.type	t_WDT_SetMode, %function
+ 368              	t_WDT_SetMode:
+ 369              	.LFB7:
+  99:t_WDT.c       **** 
+ 100:t_WDT.c       **** void t_WDT_SetMode(t_uint32 t_CounterNum, t_uint32 t_Mode)
+ 101:t_WDT.c       **** {
+ 370              		.loc 1 101 0
+ 371              		.cfi_startproc
+ 372              		@ args = 0, pretend = 0, frame = 0
+ 373              		@ frame_needed = 0, uses_anonymous_args = 0
+ 374              	.LVL33:
+ 375 0000 70B5     		push	{r4, r5, r6, lr}
+ 376              		.cfi_def_cfa_offset 16
+ 377              		.cfi_offset 4, -16
+ 378              		.cfi_offset 5, -12
+ 379              		.cfi_offset 6, -8
+ 380              		.cfi_offset 14, -4
+ 381 0002 0500     		movs	r5, r0
+ 382 0004 0C00     		movs	r4, r1
+ 102:t_WDT.c       **** 	t_uint32 t_ConfigRegValue; 
+ 103:t_WDT.c       **** 	if(0u == t_WDT_GetEnabledStatus(t_CounterNum))
+ 383              		.loc 1 103 0
+ 384 0006 FFF7FEFF 		bl	t_WDT_GetEnabledStatus
+ 385              	.LVL34:
+ 386 000a 0028     		cmp	r0, #0
+ 387 000c 0AD1     		bne	.L30
+ 104:t_WDT.c       **** 	{
+ 105:t_WDT.c       **** 		t_ConfigRegValue = (*(t_reg32 *)REG_WDT_CONFIG) & (~((t_uint32)((t_uint32)0x03u << (t_CounterNum 
+ 388              		.loc 1 105 0
+ 389 000e 064A     		ldr	r2, .L32
+ 390 0010 1368     		ldr	r3, [r2]
+ 391 0012 ED00     		lsls	r5, r5, #3
+ 392              	.LVL35:
+ 393 0014 0321     		movs	r1, #3
+ 394 0016 0800     		movs	r0, r1
+ 395 0018 A840     		lsls	r0, r0, r5
+ 396 001a 8343     		bics	r3, r0
+ 397              	.LVL36:
+ 106:t_WDT.c       **** 		t_ConfigRegValue |= (t_uint32)((t_Mode & (t_uint32)(0x03u)) << (t_CounterNum * 0x08));
+ 398              		.loc 1 106 0
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccpGYWdv.s 			page 10
+
+
+ 399 001c 0C40     		ands	r4, r1
+ 400              	.LVL37:
+ 401 001e AC40     		lsls	r4, r4, r5
+ 402 0020 1C43     		orrs	r4, r3
+ 403              	.LVL38:
+ 107:t_WDT.c       **** 		(*(t_reg32 *)REG_WDT_CONFIG) = t_ConfigRegValue;
+ 404              		.loc 1 107 0
+ 405 0022 1460     		str	r4, [r2]
+ 406              	.LVL39:
+ 407              	.L30:
+ 108:t_WDT.c       **** 	}
+ 109:t_WDT.c       **** }
+ 408              		.loc 1 109 0
+ 409              		@ sp needed
+ 410 0024 70BD     		pop	{r4, r5, r6, pc}
+ 411              	.L33:
+ 412 0026 C046     		.align	2
+ 413              	.L32:
+ 414 0028 0C020B40 		.word	1074463244
+ 415              		.cfi_endproc
+ 416              	.LFE7:
+ 417              		.size	t_WDT_SetMode, .-t_WDT_SetMode
+ 418              		.text
+ 419              	.Letext0:
+ 420              		.file 2 "t_udtypes.h"
+ 421              		.file 3 "t_CLOCK.h"
+ 422              		.section	.debug_info,"",%progbits
+ 423              	.Ldebug_info0:
+ 424 0000 B5020000 		.4byte	0x2b5
+ 425 0004 0400     		.2byte	0x4
+ 426 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 427 000a 04       		.byte	0x4
+ 428 000b 01       		.uleb128 0x1
+ 429 000c 68010000 		.4byte	.LASF28
+ 430 0010 0C       		.byte	0xc
+ 431 0011 1F000000 		.4byte	.LASF29
+ 432 0015 3C010000 		.4byte	.LASF30
+ 433 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 434 001d 00000000 		.4byte	0
+ 435 0021 00000000 		.4byte	.Ldebug_line0
+ 436 0025 02       		.uleb128 0x2
+ 437 0026 9D000000 		.4byte	.LASF2
+ 438 002a 02       		.byte	0x2
+ 439 002b 04       		.byte	0x4
+ 440 002c 37000000 		.4byte	0x37
+ 441 0030 03       		.uleb128 0x3
+ 442 0031 04       		.byte	0x4
+ 443 0032 07       		.byte	0x7
+ 444 0033 7E000000 		.4byte	.LASF0
+ 445 0037 04       		.uleb128 0x4
+ 446 0038 30000000 		.4byte	0x30
+ 447 003c 03       		.uleb128 0x3
+ 448 003d 01       		.byte	0x1
+ 449 003e 08       		.byte	0x8
+ 450 003f 36000000 		.4byte	.LASF1
+ 451 0043 02       		.uleb128 0x2
+ 452 0044 07020000 		.4byte	.LASF3
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccpGYWdv.s 			page 11
+
+
+ 453 0048 02       		.byte	0x2
+ 454 0049 06       		.byte	0x6
+ 455 004a 30000000 		.4byte	0x30
+ 456 004e 02       		.uleb128 0x2
+ 457 004f 56020000 		.4byte	.LASF4
+ 458 0053 02       		.byte	0x2
+ 459 0054 07       		.byte	0x7
+ 460 0055 3C000000 		.4byte	0x3c
+ 461 0059 05       		.uleb128 0x5
+ 462 005a F6010000 		.4byte	.LASF13
+ 463 005e 01       		.byte	0x1
+ 464 005f 10       		.byte	0x10
+ 465 0060 43000000 		.4byte	0x43
+ 466 0064 00000000 		.4byte	.LFB0
+ 467 0068 14000000 		.4byte	.LFE0-.LFB0
+ 468 006c 01       		.uleb128 0x1
+ 469 006d 9C       		.byte	0x9c
+ 470 006e 8F000000 		.4byte	0x8f
+ 471 0072 06       		.uleb128 0x6
+ 472 0073 DA000000 		.4byte	.LASF5
+ 473 0077 01       		.byte	0x1
+ 474 0078 10       		.byte	0x10
+ 475 0079 43000000 		.4byte	0x43
+ 476 007d 00000000 		.4byte	.LLST0
+ 477 0081 07       		.uleb128 0x7
+ 478 0082 27000000 		.4byte	.LASF11
+ 479 0086 01       		.byte	0x1
+ 480 0087 12       		.byte	0x12
+ 481 0088 43000000 		.4byte	0x43
+ 482 008c 01       		.uleb128 0x1
+ 483 008d 50       		.byte	0x50
+ 484 008e 00       		.byte	0
+ 485 008f 08       		.uleb128 0x8
+ 486 0090 5A000000 		.4byte	.LASF8
+ 487 0094 01       		.byte	0x1
+ 488 0095 1B       		.byte	0x1b
+ 489 0096 00000000 		.4byte	.LFB1
+ 490 009a 2C000000 		.4byte	.LFE1-.LFB1
+ 491 009e 01       		.uleb128 0x1
+ 492 009f 9C       		.byte	0x9c
+ 493 00a0 E7000000 		.4byte	0xe7
+ 494 00a4 06       		.uleb128 0x6
+ 495 00a5 29020000 		.4byte	.LASF6
+ 496 00a9 01       		.byte	0x1
+ 497 00aa 1B       		.byte	0x1b
+ 498 00ab 43000000 		.4byte	0x43
+ 499 00af 1E000000 		.4byte	.LLST1
+ 500 00b3 06       		.uleb128 0x6
+ 501 00b4 A5000000 		.4byte	.LASF7
+ 502 00b8 01       		.byte	0x1
+ 503 00b9 1B       		.byte	0x1b
+ 504 00ba 43000000 		.4byte	0x43
+ 505 00be 4A000000 		.4byte	.LLST2
+ 506 00c2 09       		.uleb128 0x9
+ 507 00c3 0C000000 		.4byte	.LVL6
+ 508 00c7 97020000 		.4byte	0x297
+ 509 00cb D6000000 		.4byte	0xd6
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccpGYWdv.s 			page 12
+
+
+ 510 00cf 0A       		.uleb128 0xa
+ 511 00d0 01       		.uleb128 0x1
+ 512 00d1 50       		.byte	0x50
+ 513 00d2 02       		.uleb128 0x2
+ 514 00d3 08       		.byte	0x8
+ 515 00d4 64       		.byte	0x64
+ 516 00d5 00       		.byte	0
+ 517 00d6 0B       		.uleb128 0xb
+ 518 00d7 22000000 		.4byte	.LVL9
+ 519 00db 97020000 		.4byte	0x297
+ 520 00df 0A       		.uleb128 0xa
+ 521 00e0 01       		.uleb128 0x1
+ 522 00e1 50       		.byte	0x50
+ 523 00e2 02       		.uleb128 0x2
+ 524 00e3 08       		.byte	0x8
+ 525 00e4 23       		.byte	0x23
+ 526 00e5 00       		.byte	0
+ 527 00e6 00       		.byte	0
+ 528 00e7 08       		.uleb128 0x8
+ 529 00e8 69000000 		.4byte	.LASF9
+ 530 00ec 01       		.byte	0x1
+ 531 00ed 22       		.byte	0x22
+ 532 00ee 00000000 		.4byte	.LFB2
+ 533 00f2 2C000000 		.4byte	.LFE2-.LFB2
+ 534 00f6 01       		.uleb128 0x1
+ 535 00f7 9C       		.byte	0x9c
+ 536 00f8 2D010000 		.4byte	0x12d
+ 537 00fc 06       		.uleb128 0x6
+ 538 00fd 1B020000 		.4byte	.LASF10
+ 539 0101 01       		.byte	0x1
+ 540 0102 22       		.byte	0x22
+ 541 0103 43000000 		.4byte	0x43
+ 542 0107 76000000 		.4byte	.LLST3
+ 543 010b 0C       		.uleb128 0xc
+ 544 010c 35020000 		.4byte	.LASF12
+ 545 0110 01       		.byte	0x1
+ 546 0111 24       		.byte	0x24
+ 547 0112 4E000000 		.4byte	0x4e
+ 548 0116 A8000000 		.4byte	.LLST4
+ 549 011a 0D       		.uleb128 0xd
+ 550 011b 08000000 		.4byte	.LVL11
+ 551 011f A2020000 		.4byte	0x2a2
+ 552 0123 0D       		.uleb128 0xd
+ 553 0124 1E000000 		.4byte	.LVL13
+ 554 0128 AD020000 		.4byte	0x2ad
+ 555 012c 00       		.byte	0
+ 556 012d 05       		.uleb128 0x5
+ 557 012e AD000000 		.4byte	.LASF14
+ 558 0132 01       		.byte	0x1
+ 559 0133 46       		.byte	0x46
+ 560 0134 43000000 		.4byte	0x43
+ 561 0138 00000000 		.4byte	.LFB4
+ 562 013c 18000000 		.4byte	.LFE4-.LFB4
+ 563 0140 01       		.uleb128 0x1
+ 564 0141 9C       		.byte	0x9c
+ 565 0142 56010000 		.4byte	0x156
+ 566 0146 06       		.uleb128 0x6
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccpGYWdv.s 			page 13
+
+
+ 567 0147 29020000 		.4byte	.LASF6
+ 568 014b 01       		.byte	0x1
+ 569 014c 46       		.byte	0x46
+ 570 014d 43000000 		.4byte	0x43
+ 571 0151 BB000000 		.4byte	.LLST5
+ 572 0155 00       		.byte	0
+ 573 0156 08       		.uleb128 0x8
+ 574 0157 0B010000 		.4byte	.LASF15
+ 575 015b 01       		.byte	0x1
+ 576 015c 2C       		.byte	0x2c
+ 577 015d 00000000 		.4byte	.LFB3
+ 578 0161 44000000 		.4byte	.LFE3-.LFB3
+ 579 0165 01       		.uleb128 0x1
+ 580 0166 9C       		.byte	0x9c
+ 581 0167 B0010000 		.4byte	0x1b0
+ 582 016b 06       		.uleb128 0x6
+ 583 016c 29020000 		.4byte	.LASF6
+ 584 0170 01       		.byte	0x1
+ 585 0171 2C       		.byte	0x2c
+ 586 0172 43000000 		.4byte	0x43
+ 587 0176 DC000000 		.4byte	.LLST6
+ 588 017a 09       		.uleb128 0x9
+ 589 017b 1C000000 		.4byte	.LVL19
+ 590 017f 2D010000 		.4byte	0x12d
+ 591 0183 8D010000 		.4byte	0x18d
+ 592 0187 0A       		.uleb128 0xa
+ 593 0188 01       		.uleb128 0x1
+ 594 0189 50       		.byte	0x50
+ 595 018a 01       		.uleb128 0x1
+ 596 018b 30       		.byte	0x30
+ 597 018c 00       		.byte	0
+ 598 018d 09       		.uleb128 0x9
+ 599 018e 2A000000 		.4byte	.LVL20
+ 600 0192 2D010000 		.4byte	0x12d
+ 601 0196 A0010000 		.4byte	0x1a0
+ 602 019a 0A       		.uleb128 0xa
+ 603 019b 01       		.uleb128 0x1
+ 604 019c 50       		.byte	0x50
+ 605 019d 01       		.uleb128 0x1
+ 606 019e 31       		.byte	0x31
+ 607 019f 00       		.byte	0
+ 608 01a0 0B       		.uleb128 0xb
+ 609 01a1 38000000 		.4byte	.LVL21
+ 610 01a5 2D010000 		.4byte	0x12d
+ 611 01a9 0A       		.uleb128 0xa
+ 612 01aa 01       		.uleb128 0x1
+ 613 01ab 50       		.byte	0x50
+ 614 01ac 01       		.uleb128 0x1
+ 615 01ad 32       		.byte	0x32
+ 616 01ae 00       		.byte	0
+ 617 01af 00       		.byte	0
+ 618 01b0 08       		.uleb128 0x8
+ 619 01b1 FA000000 		.4byte	.LASF16
+ 620 01b5 01       		.byte	0x1
+ 621 01b6 4B       		.byte	0x4b
+ 622 01b7 00000000 		.4byte	.LFB5
+ 623 01bb 20000000 		.4byte	.LFE5-.LFB5
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccpGYWdv.s 			page 14
+
+
+ 624 01bf 01       		.uleb128 0x1
+ 625 01c0 9C       		.byte	0x9c
+ 626 01c1 F1010000 		.4byte	0x1f1
+ 627 01c5 06       		.uleb128 0x6
+ 628 01c6 2E010000 		.4byte	.LASF17
+ 629 01ca 01       		.byte	0x1
+ 630 01cb 4B       		.byte	0x4b
+ 631 01cc 43000000 		.4byte	0x43
+ 632 01d0 08010000 		.4byte	.LLST7
+ 633 01d4 07       		.uleb128 0x7
+ 634 01d5 C4000000 		.4byte	.LASF18
+ 635 01d9 01       		.byte	0x1
+ 636 01da 4D       		.byte	0x4d
+ 637 01db 43000000 		.4byte	0x43
+ 638 01df 01       		.uleb128 0x1
+ 639 01e0 50       		.byte	0x50
+ 640 01e1 0B       		.uleb128 0xb
+ 641 01e2 08000000 		.4byte	.LVL25
+ 642 01e6 2D010000 		.4byte	0x12d
+ 643 01ea 0A       		.uleb128 0xa
+ 644 01eb 01       		.uleb128 0x1
+ 645 01ec 50       		.byte	0x50
+ 646 01ed 01       		.uleb128 0x1
+ 647 01ee 30       		.byte	0x30
+ 648 01ef 00       		.byte	0
+ 649 01f0 00       		.byte	0
+ 650 01f1 08       		.uleb128 0x8
+ 651 01f2 18010000 		.4byte	.LASF19
+ 652 01f6 01       		.byte	0x1
+ 653 01f7 58       		.byte	0x58
+ 654 01f8 00000000 		.4byte	.LFB6
+ 655 01fc 28000000 		.4byte	.LFE6-.LFB6
+ 656 0200 01       		.uleb128 0x1
+ 657 0201 9C       		.byte	0x9c
+ 658 0202 44020000 		.4byte	0x244
+ 659 0206 06       		.uleb128 0x6
+ 660 0207 90000000 		.4byte	.LASF20
+ 661 020b 01       		.byte	0x1
+ 662 020c 58       		.byte	0x58
+ 663 020d 43000000 		.4byte	0x43
+ 664 0211 29010000 		.4byte	.LLST8
+ 665 0215 06       		.uleb128 0x6
+ 666 0216 4D020000 		.4byte	.LASF21
+ 667 021a 01       		.byte	0x1
+ 668 021b 58       		.byte	0x58
+ 669 021c 43000000 		.4byte	0x43
+ 670 0220 55010000 		.4byte	.LLST9
+ 671 0224 0C       		.uleb128 0xc
+ 672 0225 00000000 		.4byte	.LASF22
+ 673 0229 01       		.byte	0x1
+ 674 022a 5A       		.byte	0x5a
+ 675 022b 43000000 		.4byte	0x43
+ 676 022f 81010000 		.4byte	.LLST10
+ 677 0233 0B       		.uleb128 0xb
+ 678 0234 0A000000 		.4byte	.LVL27
+ 679 0238 2D010000 		.4byte	0x12d
+ 680 023c 0A       		.uleb128 0xa
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccpGYWdv.s 			page 15
+
+
+ 681 023d 01       		.uleb128 0x1
+ 682 023e 50       		.byte	0x50
+ 683 023f 02       		.uleb128 0x2
+ 684 0240 74       		.byte	0x74
+ 685 0241 00       		.sleb128 0
+ 686 0242 00       		.byte	0
+ 687 0243 00       		.byte	0
+ 688 0244 08       		.uleb128 0x8
+ 689 0245 11000000 		.4byte	.LASF23
+ 690 0249 01       		.byte	0x1
+ 691 024a 64       		.byte	0x64
+ 692 024b 00000000 		.4byte	.LFB7
+ 693 024f 2C000000 		.4byte	.LFE7-.LFB7
+ 694 0253 01       		.uleb128 0x1
+ 695 0254 9C       		.byte	0x9c
+ 696 0255 97020000 		.4byte	0x297
+ 697 0259 06       		.uleb128 0x6
+ 698 025a 90000000 		.4byte	.LASF20
+ 699 025e 01       		.byte	0x1
+ 700 025f 64       		.byte	0x64
+ 701 0260 43000000 		.4byte	0x43
+ 702 0264 9F010000 		.4byte	.LLST11
+ 703 0268 06       		.uleb128 0x6
+ 704 0269 46020000 		.4byte	.LASF24
+ 705 026d 01       		.byte	0x1
+ 706 026e 64       		.byte	0x64
+ 707 026f 43000000 		.4byte	0x43
+ 708 0273 CB010000 		.4byte	.LLST12
+ 709 0277 0C       		.uleb128 0xc
+ 710 0278 00000000 		.4byte	.LASF22
+ 711 027c 01       		.byte	0x1
+ 712 027d 66       		.byte	0x66
+ 713 027e 43000000 		.4byte	0x43
+ 714 0282 F7010000 		.4byte	.LLST13
+ 715 0286 0B       		.uleb128 0xb
+ 716 0287 0A000000 		.4byte	.LVL34
+ 717 028b 2D010000 		.4byte	0x12d
+ 718 028f 0A       		.uleb128 0xa
+ 719 0290 01       		.uleb128 0x1
+ 720 0291 50       		.byte	0x50
+ 721 0292 02       		.uleb128 0x2
+ 722 0293 75       		.byte	0x75
+ 723 0294 00       		.sleb128 0
+ 724 0295 00       		.byte	0
+ 725 0296 00       		.byte	0
+ 726 0297 0E       		.uleb128 0xe
+ 727 0298 10020000 		.4byte	.LASF25
+ 728 029c 10020000 		.4byte	.LASF25
+ 729 02a0 03       		.byte	0x3
+ 730 02a1 1D       		.byte	0x1d
+ 731 02a2 0E       		.uleb128 0xe
+ 732 02a3 E3000000 		.4byte	.LASF26
+ 733 02a7 E3000000 		.4byte	.LASF26
+ 734 02ab 03       		.byte	0x3
+ 735 02ac 10       		.byte	0x10
+ 736 02ad 0E       		.uleb128 0xe
+ 737 02ae 44000000 		.4byte	.LASF27
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccpGYWdv.s 			page 16
+
+
+ 738 02b2 44000000 		.4byte	.LASF27
+ 739 02b6 03       		.byte	0x3
+ 740 02b7 12       		.byte	0x12
+ 741 02b8 00       		.byte	0
+ 742              		.section	.debug_abbrev,"",%progbits
+ 743              	.Ldebug_abbrev0:
+ 744 0000 01       		.uleb128 0x1
+ 745 0001 11       		.uleb128 0x11
+ 746 0002 01       		.byte	0x1
+ 747 0003 25       		.uleb128 0x25
+ 748 0004 0E       		.uleb128 0xe
+ 749 0005 13       		.uleb128 0x13
+ 750 0006 0B       		.uleb128 0xb
+ 751 0007 03       		.uleb128 0x3
+ 752 0008 0E       		.uleb128 0xe
+ 753 0009 1B       		.uleb128 0x1b
+ 754 000a 0E       		.uleb128 0xe
+ 755 000b 55       		.uleb128 0x55
+ 756 000c 17       		.uleb128 0x17
+ 757 000d 11       		.uleb128 0x11
+ 758 000e 01       		.uleb128 0x1
+ 759 000f 10       		.uleb128 0x10
+ 760 0010 17       		.uleb128 0x17
+ 761 0011 00       		.byte	0
+ 762 0012 00       		.byte	0
+ 763 0013 02       		.uleb128 0x2
+ 764 0014 16       		.uleb128 0x16
+ 765 0015 00       		.byte	0
+ 766 0016 03       		.uleb128 0x3
+ 767 0017 0E       		.uleb128 0xe
+ 768 0018 3A       		.uleb128 0x3a
+ 769 0019 0B       		.uleb128 0xb
+ 770 001a 3B       		.uleb128 0x3b
+ 771 001b 0B       		.uleb128 0xb
+ 772 001c 49       		.uleb128 0x49
+ 773 001d 13       		.uleb128 0x13
+ 774 001e 00       		.byte	0
+ 775 001f 00       		.byte	0
+ 776 0020 03       		.uleb128 0x3
+ 777 0021 24       		.uleb128 0x24
+ 778 0022 00       		.byte	0
+ 779 0023 0B       		.uleb128 0xb
+ 780 0024 0B       		.uleb128 0xb
+ 781 0025 3E       		.uleb128 0x3e
+ 782 0026 0B       		.uleb128 0xb
+ 783 0027 03       		.uleb128 0x3
+ 784 0028 0E       		.uleb128 0xe
+ 785 0029 00       		.byte	0
+ 786 002a 00       		.byte	0
+ 787 002b 04       		.uleb128 0x4
+ 788 002c 35       		.uleb128 0x35
+ 789 002d 00       		.byte	0
+ 790 002e 49       		.uleb128 0x49
+ 791 002f 13       		.uleb128 0x13
+ 792 0030 00       		.byte	0
+ 793 0031 00       		.byte	0
+ 794 0032 05       		.uleb128 0x5
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccpGYWdv.s 			page 17
+
+
+ 795 0033 2E       		.uleb128 0x2e
+ 796 0034 01       		.byte	0x1
+ 797 0035 3F       		.uleb128 0x3f
+ 798 0036 19       		.uleb128 0x19
+ 799 0037 03       		.uleb128 0x3
+ 800 0038 0E       		.uleb128 0xe
+ 801 0039 3A       		.uleb128 0x3a
+ 802 003a 0B       		.uleb128 0xb
+ 803 003b 3B       		.uleb128 0x3b
+ 804 003c 0B       		.uleb128 0xb
+ 805 003d 27       		.uleb128 0x27
+ 806 003e 19       		.uleb128 0x19
+ 807 003f 49       		.uleb128 0x49
+ 808 0040 13       		.uleb128 0x13
+ 809 0041 11       		.uleb128 0x11
+ 810 0042 01       		.uleb128 0x1
+ 811 0043 12       		.uleb128 0x12
+ 812 0044 06       		.uleb128 0x6
+ 813 0045 40       		.uleb128 0x40
+ 814 0046 18       		.uleb128 0x18
+ 815 0047 9742     		.uleb128 0x2117
+ 816 0049 19       		.uleb128 0x19
+ 817 004a 01       		.uleb128 0x1
+ 818 004b 13       		.uleb128 0x13
+ 819 004c 00       		.byte	0
+ 820 004d 00       		.byte	0
+ 821 004e 06       		.uleb128 0x6
+ 822 004f 05       		.uleb128 0x5
+ 823 0050 00       		.byte	0
+ 824 0051 03       		.uleb128 0x3
+ 825 0052 0E       		.uleb128 0xe
+ 826 0053 3A       		.uleb128 0x3a
+ 827 0054 0B       		.uleb128 0xb
+ 828 0055 3B       		.uleb128 0x3b
+ 829 0056 0B       		.uleb128 0xb
+ 830 0057 49       		.uleb128 0x49
+ 831 0058 13       		.uleb128 0x13
+ 832 0059 02       		.uleb128 0x2
+ 833 005a 17       		.uleb128 0x17
+ 834 005b 00       		.byte	0
+ 835 005c 00       		.byte	0
+ 836 005d 07       		.uleb128 0x7
+ 837 005e 34       		.uleb128 0x34
+ 838 005f 00       		.byte	0
+ 839 0060 03       		.uleb128 0x3
+ 840 0061 0E       		.uleb128 0xe
+ 841 0062 3A       		.uleb128 0x3a
+ 842 0063 0B       		.uleb128 0xb
+ 843 0064 3B       		.uleb128 0x3b
+ 844 0065 0B       		.uleb128 0xb
+ 845 0066 49       		.uleb128 0x49
+ 846 0067 13       		.uleb128 0x13
+ 847 0068 02       		.uleb128 0x2
+ 848 0069 18       		.uleb128 0x18
+ 849 006a 00       		.byte	0
+ 850 006b 00       		.byte	0
+ 851 006c 08       		.uleb128 0x8
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccpGYWdv.s 			page 18
+
+
+ 852 006d 2E       		.uleb128 0x2e
+ 853 006e 01       		.byte	0x1
+ 854 006f 3F       		.uleb128 0x3f
+ 855 0070 19       		.uleb128 0x19
+ 856 0071 03       		.uleb128 0x3
+ 857 0072 0E       		.uleb128 0xe
+ 858 0073 3A       		.uleb128 0x3a
+ 859 0074 0B       		.uleb128 0xb
+ 860 0075 3B       		.uleb128 0x3b
+ 861 0076 0B       		.uleb128 0xb
+ 862 0077 27       		.uleb128 0x27
+ 863 0078 19       		.uleb128 0x19
+ 864 0079 11       		.uleb128 0x11
+ 865 007a 01       		.uleb128 0x1
+ 866 007b 12       		.uleb128 0x12
+ 867 007c 06       		.uleb128 0x6
+ 868 007d 40       		.uleb128 0x40
+ 869 007e 18       		.uleb128 0x18
+ 870 007f 9742     		.uleb128 0x2117
+ 871 0081 19       		.uleb128 0x19
+ 872 0082 01       		.uleb128 0x1
+ 873 0083 13       		.uleb128 0x13
+ 874 0084 00       		.byte	0
+ 875 0085 00       		.byte	0
+ 876 0086 09       		.uleb128 0x9
+ 877 0087 898201   		.uleb128 0x4109
+ 878 008a 01       		.byte	0x1
+ 879 008b 11       		.uleb128 0x11
+ 880 008c 01       		.uleb128 0x1
+ 881 008d 31       		.uleb128 0x31
+ 882 008e 13       		.uleb128 0x13
+ 883 008f 01       		.uleb128 0x1
+ 884 0090 13       		.uleb128 0x13
+ 885 0091 00       		.byte	0
+ 886 0092 00       		.byte	0
+ 887 0093 0A       		.uleb128 0xa
+ 888 0094 8A8201   		.uleb128 0x410a
+ 889 0097 00       		.byte	0
+ 890 0098 02       		.uleb128 0x2
+ 891 0099 18       		.uleb128 0x18
+ 892 009a 9142     		.uleb128 0x2111
+ 893 009c 18       		.uleb128 0x18
+ 894 009d 00       		.byte	0
+ 895 009e 00       		.byte	0
+ 896 009f 0B       		.uleb128 0xb
+ 897 00a0 898201   		.uleb128 0x4109
+ 898 00a3 01       		.byte	0x1
+ 899 00a4 11       		.uleb128 0x11
+ 900 00a5 01       		.uleb128 0x1
+ 901 00a6 31       		.uleb128 0x31
+ 902 00a7 13       		.uleb128 0x13
+ 903 00a8 00       		.byte	0
+ 904 00a9 00       		.byte	0
+ 905 00aa 0C       		.uleb128 0xc
+ 906 00ab 34       		.uleb128 0x34
+ 907 00ac 00       		.byte	0
+ 908 00ad 03       		.uleb128 0x3
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccpGYWdv.s 			page 19
+
+
+ 909 00ae 0E       		.uleb128 0xe
+ 910 00af 3A       		.uleb128 0x3a
+ 911 00b0 0B       		.uleb128 0xb
+ 912 00b1 3B       		.uleb128 0x3b
+ 913 00b2 0B       		.uleb128 0xb
+ 914 00b3 49       		.uleb128 0x49
+ 915 00b4 13       		.uleb128 0x13
+ 916 00b5 02       		.uleb128 0x2
+ 917 00b6 17       		.uleb128 0x17
+ 918 00b7 00       		.byte	0
+ 919 00b8 00       		.byte	0
+ 920 00b9 0D       		.uleb128 0xd
+ 921 00ba 898201   		.uleb128 0x4109
+ 922 00bd 00       		.byte	0
+ 923 00be 11       		.uleb128 0x11
+ 924 00bf 01       		.uleb128 0x1
+ 925 00c0 31       		.uleb128 0x31
+ 926 00c1 13       		.uleb128 0x13
+ 927 00c2 00       		.byte	0
+ 928 00c3 00       		.byte	0
+ 929 00c4 0E       		.uleb128 0xe
+ 930 00c5 2E       		.uleb128 0x2e
+ 931 00c6 00       		.byte	0
+ 932 00c7 3F       		.uleb128 0x3f
+ 933 00c8 19       		.uleb128 0x19
+ 934 00c9 3C       		.uleb128 0x3c
+ 935 00ca 19       		.uleb128 0x19
+ 936 00cb 6E       		.uleb128 0x6e
+ 937 00cc 0E       		.uleb128 0xe
+ 938 00cd 03       		.uleb128 0x3
+ 939 00ce 0E       		.uleb128 0xe
+ 940 00cf 3A       		.uleb128 0x3a
+ 941 00d0 0B       		.uleb128 0xb
+ 942 00d1 3B       		.uleb128 0x3b
+ 943 00d2 0B       		.uleb128 0xb
+ 944 00d3 00       		.byte	0
+ 945 00d4 00       		.byte	0
+ 946 00d5 00       		.byte	0
+ 947              		.section	.debug_loc,"",%progbits
+ 948              	.Ldebug_loc0:
+ 949              	.LLST0:
+ 950 0000 00000000 		.4byte	.LVL0
+ 951 0004 04000000 		.4byte	.LVL1
+ 952 0008 0100     		.2byte	0x1
+ 953 000a 50       		.byte	0x50
+ 954 000b 04000000 		.4byte	.LVL1
+ 955 000f 14000000 		.4byte	.LFE0
+ 956 0013 0100     		.2byte	0x1
+ 957 0015 52       		.byte	0x52
+ 958 0016 00000000 		.4byte	0
+ 959 001a 00000000 		.4byte	0
+ 960              	.LLST1:
+ 961 001e 00000000 		.4byte	.LVL4
+ 962 0022 08000000 		.4byte	.LVL5
+ 963 0026 0100     		.2byte	0x1
+ 964 0028 50       		.byte	0x50
+ 965 0029 08000000 		.4byte	.LVL5
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccpGYWdv.s 			page 20
+
+
+ 966 002d 12000000 		.4byte	.LVL7
+ 967 0031 0100     		.2byte	0x1
+ 968 0033 55       		.byte	0x55
+ 969 0034 12000000 		.4byte	.LVL7
+ 970 0038 2C000000 		.4byte	.LFE1
+ 971 003c 0400     		.2byte	0x4
+ 972 003e F3       		.byte	0xf3
+ 973 003f 01       		.uleb128 0x1
+ 974 0040 50       		.byte	0x50
+ 975 0041 9F       		.byte	0x9f
+ 976 0042 00000000 		.4byte	0
+ 977 0046 00000000 		.4byte	0
+ 978              	.LLST2:
+ 979 004a 00000000 		.4byte	.LVL4
+ 980 004e 0B000000 		.4byte	.LVL6-1
+ 981 0052 0100     		.2byte	0x1
+ 982 0054 51       		.byte	0x51
+ 983 0055 0B000000 		.4byte	.LVL6-1
+ 984 0059 1A000000 		.4byte	.LVL8
+ 985 005d 0100     		.2byte	0x1
+ 986 005f 54       		.byte	0x54
+ 987 0060 1A000000 		.4byte	.LVL8
+ 988 0064 2C000000 		.4byte	.LFE1
+ 989 0068 0400     		.2byte	0x4
+ 990 006a F3       		.byte	0xf3
+ 991 006b 01       		.uleb128 0x1
+ 992 006c 51       		.byte	0x51
+ 993 006d 9F       		.byte	0x9f
+ 994 006e 00000000 		.4byte	0
+ 995 0072 00000000 		.4byte	0
+ 996              	.LLST3:
+ 997 0076 00000000 		.4byte	.LVL10
+ 998 007a 07000000 		.4byte	.LVL11-1
+ 999 007e 0100     		.2byte	0x1
+ 1000 0080 50       		.byte	0x50
+ 1001 0081 07000000 		.4byte	.LVL11-1
+ 1002 0085 1E000000 		.4byte	.LVL14
+ 1003 0089 0100     		.2byte	0x1
+ 1004 008b 54       		.byte	0x54
+ 1005 008c 1E000000 		.4byte	.LVL14
+ 1006 0090 2C000000 		.4byte	.LFE2
+ 1007 0094 0A00     		.2byte	0xa
+ 1008 0096 F3       		.byte	0xf3
+ 1009 0097 01       		.uleb128 0x1
+ 1010 0098 50       		.byte	0x50
+ 1011 0099 0C       		.byte	0xc
+ 1012 009a 04040400 		.4byte	0x40404
+ 1013 009e 1A       		.byte	0x1a
+ 1014 009f 9F       		.byte	0x9f
+ 1015 00a0 00000000 		.4byte	0
+ 1016 00a4 00000000 		.4byte	0
+ 1017              	.LLST4:
+ 1018 00a8 08000000 		.4byte	.LVL11
+ 1019 00ac 1D000000 		.4byte	.LVL13-1
+ 1020 00b0 0100     		.2byte	0x1
+ 1021 00b2 50       		.byte	0x50
+ 1022 00b3 00000000 		.4byte	0
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccpGYWdv.s 			page 21
+
+
+ 1023 00b7 00000000 		.4byte	0
+ 1024              	.LLST5:
+ 1025 00bb 00000000 		.4byte	.LVL15
+ 1026 00bf 06000000 		.4byte	.LVL16
+ 1027 00c3 0100     		.2byte	0x1
+ 1028 00c5 50       		.byte	0x50
+ 1029 00c6 06000000 		.4byte	.LVL16
+ 1030 00ca 18000000 		.4byte	.LFE4
+ 1031 00ce 0400     		.2byte	0x4
+ 1032 00d0 F3       		.byte	0xf3
+ 1033 00d1 01       		.uleb128 0x1
+ 1034 00d2 50       		.byte	0x50
+ 1035 00d3 9F       		.byte	0x9f
+ 1036 00d4 00000000 		.4byte	0
+ 1037 00d8 00000000 		.4byte	0
+ 1038              	.LLST6:
+ 1039 00dc 00000000 		.4byte	.LVL17
+ 1040 00e0 0A000000 		.4byte	.LVL18
+ 1041 00e4 0100     		.2byte	0x1
+ 1042 00e6 50       		.byte	0x50
+ 1043 00e7 0A000000 		.4byte	.LVL18
+ 1044 00eb 3C000000 		.4byte	.LVL22
+ 1045 00ef 0100     		.2byte	0x1
+ 1046 00f1 54       		.byte	0x54
+ 1047 00f2 3C000000 		.4byte	.LVL22
+ 1048 00f6 44000000 		.4byte	.LFE3
+ 1049 00fa 0400     		.2byte	0x4
+ 1050 00fc F3       		.byte	0xf3
+ 1051 00fd 01       		.uleb128 0x1
+ 1052 00fe 50       		.byte	0x50
+ 1053 00ff 9F       		.byte	0x9f
+ 1054 0100 00000000 		.4byte	0
+ 1055 0104 00000000 		.4byte	0
+ 1056              	.LLST7:
+ 1057 0108 00000000 		.4byte	.LVL23
+ 1058 010c 04000000 		.4byte	.LVL24
+ 1059 0110 0100     		.2byte	0x1
+ 1060 0112 50       		.byte	0x50
+ 1061 0113 04000000 		.4byte	.LVL24
+ 1062 0117 20000000 		.4byte	.LFE5
+ 1063 011b 0400     		.2byte	0x4
+ 1064 011d F3       		.byte	0xf3
+ 1065 011e 01       		.uleb128 0x1
+ 1066 011f 50       		.byte	0x50
+ 1067 0120 9F       		.byte	0x9f
+ 1068 0121 00000000 		.4byte	0
+ 1069 0125 00000000 		.4byte	0
+ 1070              	.LLST8:
+ 1071 0129 00000000 		.4byte	.LVL26
+ 1072 012d 09000000 		.4byte	.LVL27-1
+ 1073 0131 0100     		.2byte	0x1
+ 1074 0133 50       		.byte	0x50
+ 1075 0134 09000000 		.4byte	.LVL27-1
+ 1076 0138 14000000 		.4byte	.LVL28
+ 1077 013c 0100     		.2byte	0x1
+ 1078 013e 54       		.byte	0x54
+ 1079 013f 14000000 		.4byte	.LVL28
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccpGYWdv.s 			page 22
+
+
+ 1080 0143 28000000 		.4byte	.LFE6
+ 1081 0147 0400     		.2byte	0x4
+ 1082 0149 F3       		.byte	0xf3
+ 1083 014a 01       		.uleb128 0x1
+ 1084 014b 50       		.byte	0x50
+ 1085 014c 9F       		.byte	0x9f
+ 1086 014d 00000000 		.4byte	0
+ 1087 0151 00000000 		.4byte	0
+ 1088              	.LLST9:
+ 1089 0155 00000000 		.4byte	.LVL26
+ 1090 0159 09000000 		.4byte	.LVL27-1
+ 1091 015d 0100     		.2byte	0x1
+ 1092 015f 51       		.byte	0x51
+ 1093 0160 09000000 		.4byte	.LVL27-1
+ 1094 0164 1E000000 		.4byte	.LVL30
+ 1095 0168 0100     		.2byte	0x1
+ 1096 016a 55       		.byte	0x55
+ 1097 016b 1E000000 		.4byte	.LVL30
+ 1098 016f 28000000 		.4byte	.LFE6
+ 1099 0173 0400     		.2byte	0x4
+ 1100 0175 F3       		.byte	0xf3
+ 1101 0176 01       		.uleb128 0x1
+ 1102 0177 51       		.byte	0x51
+ 1103 0178 9F       		.byte	0x9f
+ 1104 0179 00000000 		.4byte	0
+ 1105 017d 00000000 		.4byte	0
+ 1106              	.LLST10:
+ 1107 0181 1C000000 		.4byte	.LVL29
+ 1108 0185 20000000 		.4byte	.LVL31
+ 1109 0189 0100     		.2byte	0x1
+ 1110 018b 53       		.byte	0x53
+ 1111 018c 20000000 		.4byte	.LVL31
+ 1112 0190 22000000 		.4byte	.LVL32
+ 1113 0194 0100     		.2byte	0x1
+ 1114 0196 55       		.byte	0x55
+ 1115 0197 00000000 		.4byte	0
+ 1116 019b 00000000 		.4byte	0
+ 1117              	.LLST11:
+ 1118 019f 00000000 		.4byte	.LVL33
+ 1119 01a3 09000000 		.4byte	.LVL34-1
+ 1120 01a7 0100     		.2byte	0x1
+ 1121 01a9 50       		.byte	0x50
+ 1122 01aa 09000000 		.4byte	.LVL34-1
+ 1123 01ae 14000000 		.4byte	.LVL35
+ 1124 01b2 0100     		.2byte	0x1
+ 1125 01b4 55       		.byte	0x55
+ 1126 01b5 14000000 		.4byte	.LVL35
+ 1127 01b9 2C000000 		.4byte	.LFE7
+ 1128 01bd 0400     		.2byte	0x4
+ 1129 01bf F3       		.byte	0xf3
+ 1130 01c0 01       		.uleb128 0x1
+ 1131 01c1 50       		.byte	0x50
+ 1132 01c2 9F       		.byte	0x9f
+ 1133 01c3 00000000 		.4byte	0
+ 1134 01c7 00000000 		.4byte	0
+ 1135              	.LLST12:
+ 1136 01cb 00000000 		.4byte	.LVL33
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccpGYWdv.s 			page 23
+
+
+ 1137 01cf 09000000 		.4byte	.LVL34-1
+ 1138 01d3 0100     		.2byte	0x1
+ 1139 01d5 51       		.byte	0x51
+ 1140 01d6 09000000 		.4byte	.LVL34-1
+ 1141 01da 1E000000 		.4byte	.LVL37
+ 1142 01de 0100     		.2byte	0x1
+ 1143 01e0 54       		.byte	0x54
+ 1144 01e1 1E000000 		.4byte	.LVL37
+ 1145 01e5 2C000000 		.4byte	.LFE7
+ 1146 01e9 0400     		.2byte	0x4
+ 1147 01eb F3       		.byte	0xf3
+ 1148 01ec 01       		.uleb128 0x1
+ 1149 01ed 51       		.byte	0x51
+ 1150 01ee 9F       		.byte	0x9f
+ 1151 01ef 00000000 		.4byte	0
+ 1152 01f3 00000000 		.4byte	0
+ 1153              	.LLST13:
+ 1154 01f7 1C000000 		.4byte	.LVL36
+ 1155 01fb 22000000 		.4byte	.LVL38
+ 1156 01ff 0100     		.2byte	0x1
+ 1157 0201 53       		.byte	0x53
+ 1158 0202 22000000 		.4byte	.LVL38
+ 1159 0206 24000000 		.4byte	.LVL39
+ 1160 020a 0100     		.2byte	0x1
+ 1161 020c 54       		.byte	0x54
+ 1162 020d 00000000 		.4byte	0
+ 1163 0211 00000000 		.4byte	0
+ 1164              		.section	.debug_aranges,"",%progbits
+ 1165 0000 54000000 		.4byte	0x54
+ 1166 0004 0200     		.2byte	0x2
+ 1167 0006 00000000 		.4byte	.Ldebug_info0
+ 1168 000a 04       		.byte	0x4
+ 1169 000b 00       		.byte	0
+ 1170 000c 0000     		.2byte	0
+ 1171 000e 0000     		.2byte	0
+ 1172 0010 00000000 		.4byte	.LFB0
+ 1173 0014 14000000 		.4byte	.LFE0-.LFB0
+ 1174 0018 00000000 		.4byte	.LFB1
+ 1175 001c 2C000000 		.4byte	.LFE1-.LFB1
+ 1176 0020 00000000 		.4byte	.LFB2
+ 1177 0024 2C000000 		.4byte	.LFE2-.LFB2
+ 1178 0028 00000000 		.4byte	.LFB4
+ 1179 002c 18000000 		.4byte	.LFE4-.LFB4
+ 1180 0030 00000000 		.4byte	.LFB3
+ 1181 0034 44000000 		.4byte	.LFE3-.LFB3
+ 1182 0038 00000000 		.4byte	.LFB5
+ 1183 003c 20000000 		.4byte	.LFE5-.LFB5
+ 1184 0040 00000000 		.4byte	.LFB6
+ 1185 0044 28000000 		.4byte	.LFE6-.LFB6
+ 1186 0048 00000000 		.4byte	.LFB7
+ 1187 004c 2C000000 		.4byte	.LFE7-.LFB7
+ 1188 0050 00000000 		.4byte	0
+ 1189 0054 00000000 		.4byte	0
+ 1190              		.section	.debug_ranges,"",%progbits
+ 1191              	.Ldebug_ranges0:
+ 1192 0000 00000000 		.4byte	.LFB0
+ 1193 0004 14000000 		.4byte	.LFE0
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccpGYWdv.s 			page 24
+
+
+ 1194 0008 00000000 		.4byte	.LFB1
+ 1195 000c 2C000000 		.4byte	.LFE1
+ 1196 0010 00000000 		.4byte	.LFB2
+ 1197 0014 2C000000 		.4byte	.LFE2
+ 1198 0018 00000000 		.4byte	.LFB4
+ 1199 001c 18000000 		.4byte	.LFE4
+ 1200 0020 00000000 		.4byte	.LFB3
+ 1201 0024 44000000 		.4byte	.LFE3
+ 1202 0028 00000000 		.4byte	.LFB5
+ 1203 002c 20000000 		.4byte	.LFE5
+ 1204 0030 00000000 		.4byte	.LFB6
+ 1205 0034 28000000 		.4byte	.LFE6
+ 1206 0038 00000000 		.4byte	.LFB7
+ 1207 003c 2C000000 		.4byte	.LFE7
+ 1208 0040 00000000 		.4byte	0
+ 1209 0044 00000000 		.4byte	0
+ 1210              		.section	.debug_line,"",%progbits
+ 1211              	.Ldebug_line0:
+ 1212 0000 EE000000 		.section	.debug_str,"MS",%progbits,1
+ 1212      02003A00 
+ 1212      00000201 
+ 1212      FB0E0D00 
+ 1212      01010101 
+ 1213              	.LASF22:
+ 1214 0000 745F436F 		.ascii	"t_ConfigRegValue\000"
+ 1214      6E666967 
+ 1214      52656756 
+ 1214      616C7565 
+ 1214      00
+ 1215              	.LASF23:
+ 1216 0011 745F5744 		.ascii	"t_WDT_SetMode\000"
+ 1216      545F5365 
+ 1216      744D6F64 
+ 1216      6500
+ 1217              	.LASF29:
+ 1218 001f 745F5744 		.ascii	"t_WDT.c\000"
+ 1218      542E6300 
+ 1219              	.LASF11:
+ 1220 0027 745F7265 		.ascii	"t_returnStatus\000"
+ 1220      7475726E 
+ 1220      53746174 
+ 1220      757300
+ 1221              	.LASF1:
+ 1222 0036 756E7369 		.ascii	"unsigned char\000"
+ 1222      676E6564 
+ 1222      20636861 
+ 1222      7200
+ 1223              	.LASF27:
+ 1224 0044 745F4578 		.ascii	"t_ExitCriticalSection\000"
+ 1224      69744372 
+ 1224      69746963 
+ 1224      616C5365 
+ 1224      6374696F 
+ 1225              	.LASF8:
+ 1226 005a 745F5744 		.ascii	"t_WDT_SetMatch\000"
+ 1226      545F5365 
+ 1226      744D6174 
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccpGYWdv.s 			page 25
+
+
+ 1226      636800
+ 1227              	.LASF9:
+ 1228 0069 745F5744 		.ascii	"t_WDT_ClearInterrupt\000"
+ 1228      545F436C 
+ 1228      65617249 
+ 1228      6E746572 
+ 1228      72757074 
+ 1229              	.LASF0:
+ 1230 007e 6C6F6E67 		.ascii	"long unsigned int\000"
+ 1230      20756E73 
+ 1230      69676E65 
+ 1230      6420696E 
+ 1230      7400
+ 1231              	.LASF20:
+ 1232 0090 745F436F 		.ascii	"t_CounterNum\000"
+ 1232      756E7465 
+ 1232      724E756D 
+ 1232      00
+ 1233              	.LASF2:
+ 1234 009d 745F7265 		.ascii	"t_reg32\000"
+ 1234      67333200 
+ 1235              	.LASF7:
+ 1236 00a5 745F4D61 		.ascii	"t_Match\000"
+ 1236      74636800 
+ 1237              	.LASF14:
+ 1238 00ad 745F5744 		.ascii	"t_WDT_GetEnabledStatus\000"
+ 1238      545F4765 
+ 1238      74456E61 
+ 1238      626C6564 
+ 1238      53746174 
+ 1239              	.LASF18:
+ 1240 00c4 745F436F 		.ascii	"t_CounterEnableStatus\000"
+ 1240      756E7465 
+ 1240      72456E61 
+ 1240      626C6553 
+ 1240      74617475 
+ 1241              	.LASF5:
+ 1242 00da 745F7265 		.ascii	"t_reason\000"
+ 1242      61736F6E 
+ 1242      00
+ 1243              	.LASF26:
+ 1244 00e3 745F456E 		.ascii	"t_EnterCriticalSection\000"
+ 1244      74657243 
+ 1244      72697469 
+ 1244      63616C53 
+ 1244      65637469 
+ 1245              	.LASF16:
+ 1246 00fa 745F5744 		.ascii	"t_WDT_SetCascade\000"
+ 1246      545F5365 
+ 1246      74436173 
+ 1246      63616465 
+ 1246      00
+ 1247              	.LASF15:
+ 1248 010b 745F5744 		.ascii	"t_WDT_Enable\000"
+ 1248      545F456E 
+ 1248      61626C65 
+ 1248      00
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccpGYWdv.s 			page 26
+
+
+ 1249              	.LASF19:
+ 1250 0118 745F5744 		.ascii	"t_WDT_SetClearOnMatch\000"
+ 1250      545F5365 
+ 1250      74436C65 
+ 1250      61724F6E 
+ 1250      4D617463 
+ 1251              	.LASF17:
+ 1252 012e 745F4361 		.ascii	"t_CascadeMask\000"
+ 1252      73636164 
+ 1252      654D6173 
+ 1252      6B00
+ 1253              	.LASF30:
+ 1254 013c 443A5C44 		.ascii	"D:\\Development\\AESD\\WatchDogTimer\\WDT.cydsn\000"
+ 1254      6576656C 
+ 1254      6F706D65 
+ 1254      6E745C41 
+ 1254      4553445C 
+ 1255              	.LASF28:
+ 1256 0168 474E5520 		.ascii	"GNU C11 5.4.1 20160609 (release) [ARM/embedded-5-br"
+ 1256      43313120 
+ 1256      352E342E 
+ 1256      31203230 
+ 1256      31363036 
+ 1257 019b 616E6368 		.ascii	"anch revision 237715] -mcpu=cortex-m0 -mthumb -g -O"
+ 1257      20726576 
+ 1257      6973696F 
+ 1257      6E203233 
+ 1257      37373135 
+ 1258 01ce 67202D66 		.ascii	"g -ffunction-sections -ffat-lto-objects\000"
+ 1258      66756E63 
+ 1258      74696F6E 
+ 1258      2D736563 
+ 1258      74696F6E 
+ 1259              	.LASF13:
+ 1260 01f6 745F4765 		.ascii	"t_GetResetReason\000"
+ 1260      74526573 
+ 1260      65745265 
+ 1260      61736F6E 
+ 1260      00
+ 1261              	.LASF3:
+ 1262 0207 745F7569 		.ascii	"t_uint32\000"
+ 1262      6E743332 
+ 1262      00
+ 1263              	.LASF25:
+ 1264 0210 745F4465 		.ascii	"t_Delay_us\000"
+ 1264      6C61795F 
+ 1264      757300
+ 1265              	.LASF10:
+ 1266 021b 745F436F 		.ascii	"t_CounterMask\000"
+ 1266      756E7465 
+ 1266      724D6173 
+ 1266      6B00
+ 1267              	.LASF6:
+ 1268 0229 745F436F 		.ascii	"t_CounterNo\000"
+ 1268      756E7465 
+ 1268      724E6F00 
+ 1269              	.LASF12:
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccpGYWdv.s 			page 27
+
+
+ 1270 0235 745F696E 		.ascii	"t_interruptState\000"
+ 1270      74657272 
+ 1270      75707453 
+ 1270      74617465 
+ 1270      00
+ 1271              	.LASF24:
+ 1272 0246 745F4D6F 		.ascii	"t_Mode\000"
+ 1272      646500
+ 1273              	.LASF21:
+ 1274 024d 745F456E 		.ascii	"t_Enable\000"
+ 1274      61626C65 
+ 1274      00
+ 1275              	.LASF4:
+ 1276 0256 745F7569 		.ascii	"t_uint8\000"
+ 1276      6E743800 
+ 1277              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 5.4.1 20160609 (release) [ARM/embedded-5-bran

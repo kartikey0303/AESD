@@ -16,34 +16,48 @@
  * t_CyclesDone : BX LR
 */
 #include "t_udtypes.h"
-
-void t_DelayCycles(t_uint32);
-
-t_uint8 t_EnterCriticalSection(void);
-
-void t_ExitCriticalSection(t_uint8);
+#include "t_CLOCK.h"
+#include "t_GPIO.h"
 
 int main(void)
 {
-	//500 Cycles delay
-	t_DelayCycles(500);
+	GPIO_SET_MODE(GPIO_PRT2_PC, 6, GPIO_DM_STRONG);
+	/*b) 48
+	t_ClkWriteImoFreq(48u);*/
+	
+	//c)
+	t_ClkWriteImoFreq(12u);
+	
+	t_ClkWriteHfclkDirect(0x00);
+	
+	/*a)
+	t_ClkWriteSysClkDiv(0);*/
+	
+	/*b)(1/24)MHz
+	t_ClkWriteSysClkDiv(1);*/
+	
+	//c)
+	t_ClkWriteSysClkDiv(0);
     for(;;)
     {
+		GPIO_WRITE_PIN(GPIO_PRT2_DR, 6, 0);
+		//t_Delay_ms(500);
+		
+		/*b) 48 * (1/24)
+		t_DelayCycles(48000000);*/
+		
+		//c)delay of 0.25sec
+		t_DelayCycles(3000000);
+		
+		GPIO_WRITE_PIN(GPIO_PRT2_DR, 6, 1);
+		
+		//t_Delay_ms(500);
+		
+		//t_DelayCycles(48000000);
+		
+		//c)
+		t_DelayCycles(3000000);
     }
 }
 
-/*
- * Name :       t_DelayCycles
- * Function :   To give a delay of "cycles" Cycles
- * Paramaters : cycles - unsigned long
- * Details :    The value of "cycles" is stored in R0 where it is decremented 
- *				writen in assembly language
-*/
-void t_DelayCycles(t_uint32 cycles)
-{
-	asm("LSR R0, #2");
-	asm("BEQ t_CyclesDone");
-	asm("t_LOOP: SUB R0, #1");
-	asm("BNE t_LOOP");
-	asm("t_CyclesDone: BX LR");
-}
+

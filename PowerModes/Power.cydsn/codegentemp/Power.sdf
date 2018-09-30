@@ -1,0 +1,28 @@
+(DELAYFILE
+ (SDFVERSION "IEEE 1497 4.0")
+ (DATE "2018-09-27T04:01:23Z")
+ (DESIGN "Power")
+ (VENDOR "Cypress Semiconductor")
+ (PROGRAM "PSoC Creator")
+ (VERSION " 4.2")
+ (DIVIDER .)
+ (TIMESCALE 1 ns)
+ (CELL
+  (CELLTYPE "Power")
+  (INSTANCE *)
+  (DELAY
+   (ABSOLUTE
+    (INTERCONNECT ClockBlock.hfclk isr_WakeUp.clock (0.000:0.000:0.000))
+    (INTERCONNECT \\Timer_1\:cy_m0s8_tcpwm_1\\.line Pin_2\(0\).pin_input (1.000:1.000:1.000))
+    (INTERCONNECT ClockBlock.ff_div_12 \\Timer_1\:cy_m0s8_tcpwm_1\\.clock (0.000:0.000:0.000))
+    (INTERCONNECT ModeSwitch.interrupt isr_WakeUp.interrupt (1.000:1.000:1.000))
+    (INTERCONNECT Pin_2\(0\).pad_out Pin_2\(0\).pad_in (0.000:0.000:0.000))
+    (INTERCONNECT ModeSwitch\(0\)_PAD ModeSwitch\(0\).pad_in (0.000:0.000:0.000))
+    (INTERCONNECT Pin_2\(0\).pad_out Pin_2\(0\)_PAD (0.000:0.000:0.000))
+    (INTERCONNECT Pin_2\(0\)_PAD Pin_2\(0\).pad_in (0.000:0.000:0.000))
+    (INTERCONNECT LED\(0\)_PAD LED\(0\).pad_in (0.000:0.000:0.000))
+    (INTERCONNECT RESET_LED\(0\)_PAD RESET_LED\(0\).pad_in (0.000:0.000:0.000))
+   )
+  )
+ )
+)

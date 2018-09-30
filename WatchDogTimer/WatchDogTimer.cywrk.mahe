@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CyXmlSerializer>
+<!--This file is machine generated and read. It is not intended to be edited by hand.-->
+<!--Due to this, there is no schema for this file.-->
+<CyGuid_843a90a4-0c4b-4e44-991d-05e7fb117a21 type_name="CyDesigner.Common.ProjMgmt.Model.CyPrjMgmtWrkspcCustomData" version="4">
+<CyGuid_fdba8dfd-b15b-4469-9bbb-9e40c3e70997 type_name="CyDesigner.Common.Base.CyCustomData" version="2">
+<userData>
+<dataGuid v="1b906a0f-a7b6-4e4d-a428-82f98b53cb35">
+<CyGuid_1b906a0f-a7b6-4e4d-a428-82f98b53cb35 type_name="CyDesigner.Common.ProjMgmt.GUI.CyExplorerWindow+CyExplorerWindowState" version="3" SelectedTab="Source">
+<TreeKeys>
+<v>Source</v>
+<v>Components</v>
+<v>Output</v>
+</TreeKeys>
+<TreeStates>
+<CyGuid_2a325b3b-c96a-4e9f-b7a0-2c44ecb5f237 type_name="CyDesigner.Common.Base.Controls.CyTreeViewState" version="1" SelectedNodeId="WatchDogTimer\WDT\Header Files">
+<ExpandedNodeIds>
+<v>WatchDogTimer</v>
+<v>WatchDogTimer\WDT</v>
+<v>WatchDogTimer\WDT\TopDesign</v>
+<v>WatchDogTimer\WDT\WDT.cydwr</v>
+<v>WatchDogTimer\WDT\WDT.cydwr\Pins</v>
+<v>WatchDogTimer\WDT\WDT.cydwr\Analog</v>
+<v>WatchDogTimer\WDT\WDT.cydwr\DMA</v>
+<v>WatchDogTimer\WDT\WDT.cydwr\Clocks</v>
+<v>WatchDogTimer\WDT\WDT.cydwr\Interrupts</v>
+<v>WatchDogTimer\WDT\WDT.cydwr\System</v>
+<v>WatchDogTimer\WDT\WDT.cydwr\Directives</v>
+<v>WatchDogTimer\WDT\WDT.cydwr\Flash Security</v>
+<v>WatchDogTimer\WDT\Header Files</v>
+<v>WatchDogTimer\WDT\Header Files\cyapicallbacks.h</v>
+<v>WatchDogTimer\WDT\Header Files\t_CLOCK.h</v>
+<v>WatchDogTimer\WDT\Header Files\t_GPIO.h</v>
+<v>WatchDogTimer\WDT\Header Files\t_INTR.h</v>
+<v>WatchDogTimer\WDT\Header Files\t_udtypes.h</v>
+<v>WatchDogTimer\WDT\Header Files\t_WDT.h</v>
+<v>WatchDogTimer\WDT\Source Files</v>
+<v>WatchDogTimer\WDT\Source Files\main.c</v>
+<v>WatchDogTimer\WDT\Source Files\t_CLOCK.c</v>
+<v>WatchDogTimer\WDT\Source Files\t_INTR.c</v>
+<v>WatchDogTimer\WDT\Source Files\t_WDT.c</v>
+<v>WatchDogTimer\WDT\Generated_Source</v>
+<v>WatchDogTimer\WDT\Generated_Source\PSoC4</v>
+</ExpandedNodeIds>
+<VisibleNodeIds>
+<v>WatchDogTimer</v>
+<v>WatchDogTimer\WDT</v>
+<v>WatchDogTimer\WDT\TopDesign</v>
+<v>WatchDogTimer\WDT\WDT.cydwr</v>
+<v>WatchDogTimer\WDT\WDT.cydwr\Pins</v>
+<v>WatchDogTimer\WDT\WDT.cydwr\Analog</v>
+<v>WatchDogTimer\WDT\WDT.cydwr\DMA</v>
+<v>WatchDogTimer\WDT\WDT.cydwr\Clocks</v>
+<v>WatchDogTimer\WDT\WDT.cydwr\Interrupts</v>
+<v>WatchDogTimer\WDT\WDT.cydwr\System</v>
+<v>WatchDogTimer\WDT\WDT.cydwr\Directives</v>
+<v>WatchDogTimer\WDT\WDT.cydwr\Flash Security</v>
+<v>WatchDogTimer\WDT\Header Files</v>
+<v>WatchDogTimer\WDT\Header Files\cyapicallbacks.h</v>
+<v>WatchDogTimer\WDT\Header Files\t_CLOCK.h</v>
+<v>WatchDogTimer\WDT\Header Files\t_GPIO.h</v>
+<v>WatchDogTimer\WDT\Header Files\t_INTR.h</v>
+<v>WatchDogTimer\WDT\Header Files\t_udtypes.h</v>
+<v>WatchDogTimer\WDT\Header Files\t_WDT.h</v>
+<v>WatchDogTimer\WDT\Source Files</v>
+<v>WatchDogTimer\WDT\Source Files\main.c</v>
+<v>WatchDogTimer\WDT\Source Files\t_CLOCK.c</v>
+<v>WatchDogTimer\WDT\Source Files\t_INTR.c</v>
+<v>WatchDogTimer\WDT\Source Files\t_WDT.c</v>
+<v>WatchDogTimer\WDT\Generated_Source</v>
+<v>WatchDogTimer\WDT\Generated_Source\PSoC4</v>
+<v>WatchDogTimer\WDT\Generated_Source\PSoC4\cy_boot</v>
+<v>WatchDogTimer\WDT\Generated_Source\PSoC4\cy_dmac</v>
+<v>WatchDogTimer\WDT\Generated_Source\PSoC4\cy_lfclk</v>
+<v>WatchDogTimer\WDT\Generated_Source\PSoC4\Em_EEPROM_Dynamic</v>
+<v>WatchDogTimer\WDT\Generated_Source\PSoC4\cycodeshareexport.ld</v>
+<v>WatchDogTimer\WDT\Generated_Source\PSoC4\cycodeshareimport.ld</v>
+</VisibleNodeIds>
+</CyGuid_2a325b3b-c96a-4e9f-b7a0-2c44ecb5f237>
+<CyGuid_2a325b3b-c96a-4e9f-b7a0-2c44ecb5f237 type_name="CyDesigner.Common.Base.Controls.CyTreeViewState" version="1" SelectedNodeId="">
+<ExpandedNodeIds>
+<v>WatchDogTimer</v>
+<v>WatchDogTimer\WDT</v>
+<v>WatchDogTimer\WDT\TopDesign</v>
+<v>WatchDogTimer\WDT\TopDesign\TopDesign.cysch</v>
+</ExpandedNodeIds>
+<VisibleNodeIds>
+<v>WatchDogTimer</v>
+<v>WatchDogTimer\WDT</v>
+<v>WatchDogTimer\WDT\TopDesign</v>
+<v>WatchDogTimer\WDT\TopDesign\TopDesign.cysch</v>
+</VisibleNodeIds>
+</CyGuid_2a325b3b-c96a-4e9f-b7a0-2c44ecb5f237>
+<CyGuid_2a325b3b-c96a-4e9f-b7a0-2c44ecb5f237 type_name="CyDesigner.Common.Base.Controls.CyTreeViewState" version="1" SelectedNodeId="">
+<ExpandedNodeIds>
+<v>WatchDogTimer</v>
+<v>WatchDogTimer\WDT</v>
+<v>WatchDogTimer\WDT\CortexM0</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug\Listing Files</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug\Listing Files\Cm0Start.lst</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug\Listing Files\cy_em_eeprom.lst</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug\Listing Files\CyBootAsmGnu.lst</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug\Listing Files\CyDMA.lst</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug\Listing Files\cyfitter_cfg.lst</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug\Listing Files\CyFlash.lst</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug\Listing Files\CyLFClk.lst</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug\Listing Files\CyLib.lst</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug\Listing Files\cymetadata.lst</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug\Listing Files\cyPm.lst</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug\Listing Files\cyutils.lst</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug\Listing Files\main.lst</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug\Listing Files\t_CLOCK.lst</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug\Listing Files\t_INTR.lst</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug\Listing Files\t_WDT.lst</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug\WDT.elf</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug\WDT.hex</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug\WDT.map</v>
+<v>WatchDogTimer\WDT\WDT.gpdsc</v>
+<v>WatchDogTimer\WDT\WDT.rpt</v>
+<v>WatchDogTimer\WDT\WDT_timing.html</v>
+</ExpandedNodeIds>
+<VisibleNodeIds>
+<v>WatchDogTimer</v>
+<v>WatchDogTimer\WDT</v>
+<v>WatchDogTimer\WDT\CortexM0</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug\Listing Files</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug\Listing Files\Cm0Start.lst</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug\Listing Files\cy_em_eeprom.lst</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug\Listing Files\CyBootAsmGnu.lst</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug\Listing Files\CyDMA.lst</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug\Listing Files\cyfitter_cfg.lst</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug\Listing Files\CyFlash.lst</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug\Listing Files\CyLFClk.lst</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug\Listing Files\CyLib.lst</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug\Listing Files\cymetadata.lst</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug\Listing Files\cyPm.lst</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug\Listing Files\cyutils.lst</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug\Listing Files\main.lst</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug\Listing Files\t_CLOCK.lst</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug\Listing Files\t_INTR.lst</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug\Listing Files\t_WDT.lst</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug\WDT.elf</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug\WDT.hex</v>
+<v>WatchDogTimer\WDT\CortexM0\ARM_GCC_541\Debug\WDT.map</v>
+<v>WatchDogTimer\WDT\WDT.gpdsc</v>
+<v>WatchDogTimer\WDT\WDT.rpt</v>
+<v>WatchDogTimer\WDT\WDT_timing.html</v>
+</VisibleNodeIds>
+</CyGuid_2a325b3b-c96a-4e9f-b7a0-2c44ecb5f237>
+</TreeStates>
+<TreeKeysV2>
+<v>Datasheet</v>
+</TreeKeysV2>
+<TreeStatesV2>
+<CyGuid_2a325b3b-c96a-4e9f-b7a0-2c44ecb5f237 type_name="CyDesigner.Common.Base.Controls.CyTreeViewState" version="1" SelectedNodeId="">
+<ExpandedNodeIds>
+<v>WatchDogTimer</v>
+<v>WatchDogTimer\WDT</v>
+<v>WatchDogTimer\WDT\PSoC 4 Architecture TRM</v>
+<v>WatchDogTimer\WDT\PSoC 4200M Family Datasheet</v>
+<v>WatchDogTimer\WDT\System Reference Guides</v>
+<v>WatchDogTimer\WDT\System Reference Guides\cy_boot_v5_70</v>
+<v>WatchDogTimer\WDT\System Reference Guides\cy_dmac_v1_10</v>
+<v>WatchDogTimer\WDT\System Reference Guides\cy_lfclk_v1_20</v>
+</ExpandedNodeIds>
+<VisibleNodeIds>
+<v>WatchDogTimer</v>
+<v>WatchDogTimer\WDT</v>
+<v>WatchDogTimer\WDT\PSoC 4 Architecture TRM</v>
+<v>WatchDogTimer\WDT\PSoC 4200M Family Datasheet</v>
+<v>WatchDogTimer\WDT\System Reference Guides</v>
+<v>WatchDogTimer\WDT\System Reference Guides\cy_boot_v5_70</v>
+<v>WatchDogTimer\WDT\System Reference Guides\cy_dmac_v1_10</v>
+<v>WatchDogTimer\WDT\System Reference Guides\cy_lfclk_v1_20</v>
+</VisibleNodeIds>
+</CyGuid_2a325b3b-c96a-4e9f-b7a0-2c44ecb5f237>
+</TreeStatesV2>
+</CyGuid_1b906a0f-a7b6-4e4d-a428-82f98b53cb35>
+</dataGuid>
+</userData>
+</CyGuid_fdba8dfd-b15b-4469-9bbb-9e40c3e70997>
+<Unloaded />
+<OpenDocs>
+<name v=".\WDT.cydsn\TopDesign\TopDesign.cysch" />
+<name v=".\WDT.cydsn\t_WDT.h" />
+<name v=".\WDT.cydsn\t_WDT.c" />
+<name v=".\WDT.cydsn\t_udtypes.h" />
+<name v=".\WDT.cydsn\t_CLOCK.c" />
+<name v=".\WDT.cydsn\main.c" />
+<name v=".\WDT.cydsn\t_CLOCK.h" />
+<name v=".\WDT.cydsn\t_INTR.h" />
+<name v=".\WDT.cydsn\t_INTR.c" />
+</OpenDocs>
+<OpenDocsLayout><![CDATA[<?xml version="1.0"?><!--
+
+  Actipro Docking/MDI for WinForms
+  Copyright (c) 2001-2016 Actipro Software LLC.  All rights reserved.
+  http://www.actiprosoftware.com
+
+--><DocumentLayout Version="1.0"><LayoutData><TabbedMdiRootContainer Orientation="Horizontal"><TabbedMdiContainer Size="817, 409" SelectedTabbedMdiWindow="7a84d11c-70e2-45e8-ae8c-ebb0a66034e1"><DocumentWindow Key="D:\Development\AESD\WatchDogTimer\WDT.cydsn\TopDesign\TopDesign.cysch" Guid="8181f617-61e5-43af-8cab-3ee56c7fcd0d" /><DocumentWindow Key="D:\Development\AESD\WatchDogTimer\WDT.cydsn\t_WDT.h" Guid="bd424e81-caca-435a-8c66-378a4f0b2e00" /><DocumentWindow Key="D:\Development\AESD\WatchDogTimer\WDT.cydsn\t_WDT.c" Guid="7a84d11c-70e2-45e8-ae8c-ebb0a66034e1" /><DocumentWindow Key="D:\Development\AESD\WatchDogTimer\WDT.cydsn\t_udtypes.h" Guid="99af20b1-cefd-425a-b21f-0226a0f22f83" /><DocumentWindow Key="D:\Development\AESD\WatchDogTimer\WDT.cydsn\t_CLOCK.c" Guid="5374d6dd-f69d-4c6b-af4c-bc66ff58bfb2" /><DocumentWindow Key="D:\Development\AESD\WatchDogTimer\WDT.cydsn\main.c" Guid="c28e965f-39d5-4ffe-8d4a-2c6ba23e7568" /><DocumentWindow Key="D:\Development\AESD\WatchDogTimer\WDT.cydsn\t_CLOCK.h" Guid="63e541c0-e13f-40ee-9b7d-75fbed109fa1" /><DocumentWindow Key="D:\Development\AESD\WatchDogTimer\WDT.cydsn\t_INTR.h" Guid="7c2ee729-e559-4fc0-811a-a2069bee41b9" /><DocumentWindow Key="D:\Development\AESD\WatchDogTimer\WDT.cydsn\t_INTR.c" Guid="12243f94-a0f1-4860-9bbd-bffcd9d992bc" /></TabbedMdiContainer></TabbedMdiRootContainer><FloatingContainers /></LayoutData></DocumentLayout>]]></OpenDocsLayout>
+<config v="" />
+<AutoUpdate v="true" />
+</CyGuid_843a90a4-0c4b-4e44-991d-05e7fb117a21>
+</CyXmlSerializer>

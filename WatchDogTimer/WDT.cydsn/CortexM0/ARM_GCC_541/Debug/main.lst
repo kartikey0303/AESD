@@ -1,0 +1,1098 @@
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccyCzakR.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.cpu cortex-m0
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 0
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"main.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.t_WDT_ISR,"ax",%progbits
+  20              		.align	2
+  21              		.global	t_WDT_ISR
+  22              		.code	16
+  23              		.thumb_func
+  24              		.type	t_WDT_ISR, %function
+  25              	t_WDT_ISR:
+  26              	.LFB1:
+  27              		.file 1 "main.c"
+   1:main.c        **** #include "t_INTR.h"
+   2:main.c        **** #include "t_udtypes.h"
+   3:main.c        **** #include "t_GPIO.h"
+   4:main.c        **** #include "t_WDT.h"
+   5:main.c        **** #include "t_CLOCK.h"
+   6:main.c        **** 
+   7:main.c        **** void t_WDT_ISR(void);
+   8:main.c        **** 
+   9:main.c        **** int main()
+  10:main.c        **** {
+  11:main.c        **** 	
+  12:main.c        **** 	t_ClkWriteImoFreq(48);
+  13:main.c        **** 	t_ClkWriteHfclkDirect(0);
+  14:main.c        **** 	t_ClkWriteSysClkDiv(0);
+  15:main.c        **** 	
+  16:main.c        **** 	asm("CPSIE   i");
+  17:main.c        **** 	INT_Disable(IRQ7);
+  18:main.c        **** 	INT_Set_ISR_Address(IRQ7,(t_uint32)t_WDT_ISR);
+  19:main.c        **** 	GPIO_SET_MODE(GPIO_PRT0_PC, 6, GPIO_DM_STRONG);
+  20:main.c        **** 	GPIO_SET_MODE(GPIO_PRT2_PC, 6, GPIO_DM_STRONG);
+  21:main.c        **** 	GPIO_SET_MODE(GPIO_PRT6_PC, 5, GPIO_DM_STRONG);
+  22:main.c        **** 	GPIO_WRITE_PIN(GPIO_PRT0_DR, 6, 1);
+  23:main.c        **** 	GPIO_WRITE_PIN(GPIO_PRT2_DR, 6, 1);
+  24:main.c        **** 	GPIO_WRITE_PIN(GPIO_PRT6_DR, 5, 1);
+  25:main.c        **** 	
+  26:main.c        **** 	
+  27:main.c        **** 	if (t_GetResetReason(((t_uint32)1u <<0))==0)
+  28:main.c        **** 	{
+  29:main.c        **** 		/* Toggle LED_Reset at startup after PowerUp/XRES event. */
+  30:main.c        **** 		GPIO_WRITE_PIN(GPIO_PRT0_DR, 6, 0);            //RED
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccyCzakR.s 			page 2
+
+
+  31:main.c        **** 		t_Delay_ms(500);
+  32:main.c        **** 		//CyDelay(500)
+  33:main.c        **** 		GPIO_WRITE_PIN(GPIO_PRT0_DR, 6, 1);
+  34:main.c        **** 	}
+  35:main.c        **** 	
+  36:main.c        **** 	else
+  37:main.c        **** 	{
+  38:main.c        **** 	/* Toggle LED_WdtReset at startup after WDT reset event. */
+  39:main.c        **** 		GPIO_WRITE_PIN(GPIO_PRT6_DR, 5, 0);        //GREEN
+  40:main.c        **** 		t_Delay_ms(500);
+  41:main.c        **** 		//CyDelay(100);
+  42:main.c        **** 		GPIO_WRITE_PIN(GPIO_PRT6_DR, 5, 1);
+  43:main.c        **** 	}
+  44:main.c        **** 
+  45:main.c        **** 	/* Set WDT counter 0 to generate interrupt on match */
+  46:main.c        **** 	t_WDT_SetMode(0, 1);
+  47:main.c        **** 	
+  48:main.c        **** 	/* Loading Match Value of 0x4FFF 
+  49:main.c        **** 	 * 0x4FFF * (1/32k)
+  50:main.c        **** 	 */
+  51:main.c        **** 	t_WDT_SetMatch(0, 0x4FFF);
+  52:main.c        **** 	
+  53:main.c        **** 	/* Clear Counter on Match */
+  54:main.c        **** 	t_WDT_SetClearOnMatch(0, 1);
+  55:main.c        **** 
+  56:main.c        **** 	/* Enable WDT counters 0 and 1 cascade */
+  57:main.c        **** 	t_WDT_SetCascade(((t_uint32)0x01u << 3u));
+  58:main.c        **** 
+  59:main.c        **** 	/* Set WDT counter 1 to generate reset on match */
+  60:main.c        **** 	t_WDT_SetMatch(1,0x0008);
+  61:main.c        **** 
+  62:main.c        **** 	/* Set Mode for counter 1 */
+  63:main.c        **** 	t_WDT_SetMode(1, 2);
+  64:main.c        **** 
+  65:main.c        **** 	/*  */
+  66:main.c        **** 	t_WDT_SetClearOnMatch(1, 1);
+  67:main.c        **** 	
+  68:main.c        **** 	
+  69:main.c        **** 	/* Enable WDT counters 0 and 1 */
+  70:main.c        **** 	t_WDT_Enable((t_uint32)0x01 | ((t_uint32)(1UL<<8)));
+  71:main.c        **** 	INT_Enable(IRQ7);	
+  72:main.c        **** 	for(;;)
+  73:main.c        **** 	{
+  74:main.c        **** 
+  75:main.c        **** 	}
+  76:main.c        **** }
+  77:main.c        **** 
+  78:main.c        **** void t_WDT_ISR (void)
+  79:main.c        **** {
+  28              		.loc 1 79 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32 0000 10B5     		push	{r4, lr}
+  33              		.cfi_def_cfa_offset 8
+  34              		.cfi_offset 4, -8
+  35              		.cfi_offset 14, -4
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccyCzakR.s 			page 3
+
+
+  80:main.c        **** 	/* Toggle pin state */
+  81:main.c        **** 	GPIO_WRITE_PIN(GPIO_PRT2_DR, 6, ~GPIO_READ_PIN(GPIO_PRT2_PS, 6));; //GREEN
+  36              		.loc 1 81 0
+  37 0002 0948     		ldr	r0, .L2
+  38 0004 0168     		ldr	r1, [r0]
+  39 0006 4023     		movs	r3, #64
+  40 0008 9943     		bics	r1, r3
+  41 000a 084A     		ldr	r2, .L2+4
+  42 000c 1268     		ldr	r2, [r2]
+  43 000e 9209     		lsrs	r2, r2, #6
+  44 0010 0124     		movs	r4, #1
+  45 0012 2240     		ands	r2, r4
+  46 0014 D243     		mvns	r2, r2
+  47 0016 9201     		lsls	r2, r2, #6
+  48 0018 1340     		ands	r3, r2
+  49 001a 0B43     		orrs	r3, r1
+  50 001c 0360     		str	r3, [r0]
+  82:main.c        **** 
+  83:main.c        **** 	/* Clear interrupts state */
+  84:main.c        **** 	t_WDT_ClearInterrupt(((t_uint32)0x01u << 2u));
+  51              		.loc 1 84 0
+  52 001e 0420     		movs	r0, #4
+  53 0020 FFF7FEFF 		bl	t_WDT_ClearInterrupt
+  54              	.LVL0:
+  85:main.c        **** 
+  86:main.c        **** }
+  55              		.loc 1 86 0
+  56              		@ sp needed
+  57 0024 10BD     		pop	{r4, pc}
+  58              	.L3:
+  59 0026 C046     		.align	2
+  60              	.L2:
+  61 0028 00020440 		.word	1074004480
+  62 002c 04020440 		.word	1074004484
+  63              		.cfi_endproc
+  64              	.LFE1:
+  65              		.size	t_WDT_ISR, .-t_WDT_ISR
+  66              		.section	.text.main,"ax",%progbits
+  67              		.align	2
+  68              		.global	main
+  69              		.code	16
+  70              		.thumb_func
+  71              		.type	main, %function
+  72              	main:
+  73              	.LFB0:
+  10:main.c        **** 	
+  74              		.loc 1 10 0
+  75              		.cfi_startproc
+  76              		@ Volatile: function does not return.
+  77              		@ args = 0, pretend = 0, frame = 0
+  78              		@ frame_needed = 0, uses_anonymous_args = 0
+  79 0000 70B5     		push	{r4, r5, r6, lr}
+  80              		.cfi_def_cfa_offset 16
+  81              		.cfi_offset 4, -16
+  82              		.cfi_offset 5, -12
+  83              		.cfi_offset 6, -8
+  84              		.cfi_offset 14, -4
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccyCzakR.s 			page 4
+
+
+  12:main.c        **** 	t_ClkWriteHfclkDirect(0);
+  85              		.loc 1 12 0
+  86 0002 3020     		movs	r0, #48
+  87 0004 FFF7FEFF 		bl	t_ClkWriteImoFreq
+  88              	.LVL1:
+  13:main.c        **** 	t_ClkWriteSysClkDiv(0);
+  89              		.loc 1 13 0
+  90 0008 0020     		movs	r0, #0
+  91 000a FFF7FEFF 		bl	t_ClkWriteHfclkDirect
+  92              	.LVL2:
+  14:main.c        **** 	
+  93              		.loc 1 14 0
+  94 000e 0020     		movs	r0, #0
+  95 0010 FFF7FEFF 		bl	t_ClkWriteSysClkDiv
+  96              	.LVL3:
+  16:main.c        **** 	INT_Disable(IRQ7);
+  97              		.loc 1 16 0
+  98              		.syntax divided
+  99              	@ 16 "main.c" 1
+ 100 0014 62B6     		CPSIE   i
+ 101              	@ 0 "" 2
+  17:main.c        **** 	INT_Set_ISR_Address(IRQ7,(t_uint32)t_WDT_ISR);
+ 102              		.loc 1 17 0
+ 103              		.thumb
+ 104              		.syntax unified
+ 105 0016 0720     		movs	r0, #7
+ 106 0018 FFF7FEFF 		bl	INT_Disable
+ 107              	.LVL4:
+  18:main.c        **** 	GPIO_SET_MODE(GPIO_PRT0_PC, 6, GPIO_DM_STRONG);
+ 108              		.loc 1 18 0
+ 109 001c 3349     		ldr	r1, .L8
+ 110 001e 0720     		movs	r0, #7
+ 111 0020 FFF7FEFF 		bl	INT_Set_ISR_Address
+ 112              	.LVL5:
+  19:main.c        **** 	GPIO_SET_MODE(GPIO_PRT2_PC, 6, GPIO_DM_STRONG);
+ 113              		.loc 1 19 0
+ 114 0024 3248     		ldr	r0, .L8+4
+ 115 0026 0268     		ldr	r2, [r0]
+ 116 0028 324B     		ldr	r3, .L8+8
+ 117 002a 1A40     		ands	r2, r3
+ 118 002c C021     		movs	r1, #192
+ 119 002e 4903     		lsls	r1, r1, #13
+ 120 0030 0A43     		orrs	r2, r1
+ 121 0032 0260     		str	r2, [r0]
+  20:main.c        **** 	GPIO_SET_MODE(GPIO_PRT6_PC, 5, GPIO_DM_STRONG);
+ 122              		.loc 1 20 0
+ 123 0034 304A     		ldr	r2, .L8+12
+ 124 0036 1068     		ldr	r0, [r2]
+ 125 0038 0340     		ands	r3, r0
+ 126 003a 0B43     		orrs	r3, r1
+ 127 003c 1360     		str	r3, [r2]
+  21:main.c        **** 	GPIO_WRITE_PIN(GPIO_PRT0_DR, 6, 1);
+ 128              		.loc 1 21 0
+ 129 003e 2F4A     		ldr	r2, .L8+16
+ 130 0040 1168     		ldr	r1, [r2]
+ 131 0042 2F4B     		ldr	r3, .L8+20
+ 132 0044 0B40     		ands	r3, r1
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccyCzakR.s 			page 5
+
+
+ 133 0046 C021     		movs	r1, #192
+ 134 0048 8902     		lsls	r1, r1, #10
+ 135 004a 0B43     		orrs	r3, r1
+ 136 004c 1360     		str	r3, [r2]
+  22:main.c        **** 	GPIO_WRITE_PIN(GPIO_PRT2_DR, 6, 1);
+ 137              		.loc 1 22 0
+ 138 004e 2D49     		ldr	r1, .L8+24
+ 139 0050 0A68     		ldr	r2, [r1]
+ 140 0052 4023     		movs	r3, #64
+ 141 0054 1A43     		orrs	r2, r3
+ 142 0056 0A60     		str	r2, [r1]
+  23:main.c        **** 	GPIO_WRITE_PIN(GPIO_PRT6_DR, 5, 1);
+ 143              		.loc 1 23 0
+ 144 0058 2B4A     		ldr	r2, .L8+28
+ 145 005a 1168     		ldr	r1, [r2]
+ 146 005c 0B43     		orrs	r3, r1
+ 147 005e 1360     		str	r3, [r2]
+  24:main.c        **** 	
+ 148              		.loc 1 24 0
+ 149 0060 2A4A     		ldr	r2, .L8+32
+ 150 0062 1168     		ldr	r1, [r2]
+ 151 0064 2023     		movs	r3, #32
+ 152 0066 0B43     		orrs	r3, r1
+ 153 0068 1360     		str	r3, [r2]
+  27:main.c        **** 	{
+ 154              		.loc 1 27 0
+ 155 006a 0120     		movs	r0, #1
+ 156 006c FFF7FEFF 		bl	t_GetResetReason
+ 157              	.LVL6:
+ 158 0070 0028     		cmp	r0, #0
+ 159 0072 0CD1     		bne	.L5
+  30:main.c        **** 		t_Delay_ms(500);
+ 160              		.loc 1 30 0
+ 161 0074 234C     		ldr	r4, .L8+24
+ 162 0076 2368     		ldr	r3, [r4]
+ 163 0078 4025     		movs	r5, #64
+ 164 007a AB43     		bics	r3, r5
+ 165 007c 2360     		str	r3, [r4]
+  31:main.c        **** 		//CyDelay(500)
+ 166              		.loc 1 31 0
+ 167 007e F530     		adds	r0, r0, #245
+ 168 0080 FF30     		adds	r0, r0, #255
+ 169 0082 FFF7FEFF 		bl	t_Delay_ms
+ 170              	.LVL7:
+  33:main.c        **** 	}
+ 171              		.loc 1 33 0
+ 172 0086 2368     		ldr	r3, [r4]
+ 173 0088 1D43     		orrs	r5, r3
+ 174 008a 2560     		str	r5, [r4]
+ 175 008c 0BE0     		b	.L6
+ 176              	.L5:
+  39:main.c        **** 		t_Delay_ms(500);
+ 177              		.loc 1 39 0
+ 178 008e 1F4C     		ldr	r4, .L8+32
+ 179 0090 2368     		ldr	r3, [r4]
+ 180 0092 2025     		movs	r5, #32
+ 181 0094 AB43     		bics	r3, r5
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccyCzakR.s 			page 6
+
+
+ 182 0096 2360     		str	r3, [r4]
+  40:main.c        **** 		//CyDelay(100);
+ 183              		.loc 1 40 0
+ 184 0098 FA20     		movs	r0, #250
+ 185 009a 4000     		lsls	r0, r0, #1
+ 186 009c FFF7FEFF 		bl	t_Delay_ms
+ 187              	.LVL8:
+  42:main.c        **** 	}
+ 188              		.loc 1 42 0
+ 189 00a0 2368     		ldr	r3, [r4]
+ 190 00a2 1D43     		orrs	r5, r3
+ 191 00a4 2560     		str	r5, [r4]
+ 192              	.L6:
+  46:main.c        **** 	
+ 193              		.loc 1 46 0
+ 194 00a6 0121     		movs	r1, #1
+ 195 00a8 0020     		movs	r0, #0
+ 196 00aa FFF7FEFF 		bl	t_WDT_SetMode
+ 197              	.LVL9:
+  51:main.c        **** 	
+ 198              		.loc 1 51 0
+ 199 00ae 1849     		ldr	r1, .L8+36
+ 200 00b0 0020     		movs	r0, #0
+ 201 00b2 FFF7FEFF 		bl	t_WDT_SetMatch
+ 202              	.LVL10:
+  54:main.c        **** 
+ 203              		.loc 1 54 0
+ 204 00b6 0121     		movs	r1, #1
+ 205 00b8 0020     		movs	r0, #0
+ 206 00ba FFF7FEFF 		bl	t_WDT_SetClearOnMatch
+ 207              	.LVL11:
+  57:main.c        **** 
+ 208              		.loc 1 57 0
+ 209 00be 0820     		movs	r0, #8
+ 210 00c0 FFF7FEFF 		bl	t_WDT_SetCascade
+ 211              	.LVL12:
+  60:main.c        **** 
+ 212              		.loc 1 60 0
+ 213 00c4 0821     		movs	r1, #8
+ 214 00c6 0120     		movs	r0, #1
+ 215 00c8 FFF7FEFF 		bl	t_WDT_SetMatch
+ 216              	.LVL13:
+  63:main.c        **** 
+ 217              		.loc 1 63 0
+ 218 00cc 0221     		movs	r1, #2
+ 219 00ce 0120     		movs	r0, #1
+ 220 00d0 FFF7FEFF 		bl	t_WDT_SetMode
+ 221              	.LVL14:
+  66:main.c        **** 	
+ 222              		.loc 1 66 0
+ 223 00d4 0121     		movs	r1, #1
+ 224 00d6 0120     		movs	r0, #1
+ 225 00d8 FFF7FEFF 		bl	t_WDT_SetClearOnMatch
+ 226              	.LVL15:
+  70:main.c        **** 	INT_Enable(IRQ7);	
+ 227              		.loc 1 70 0
+ 228 00dc 0220     		movs	r0, #2
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccyCzakR.s 			page 7
+
+
+ 229 00de FF30     		adds	r0, r0, #255
+ 230 00e0 FFF7FEFF 		bl	t_WDT_Enable
+ 231              	.LVL16:
+  71:main.c        **** 	for(;;)
+ 232              		.loc 1 71 0
+ 233 00e4 0720     		movs	r0, #7
+ 234 00e6 FFF7FEFF 		bl	INT_Enable
+ 235              	.LVL17:
+ 236              	.L7:
+ 237 00ea FEE7     		b	.L7
+ 238              	.L9:
+ 239              		.align	2
+ 240              	.L8:
+ 241 00ec 00000000 		.word	t_WDT_ISR
+ 242 00f0 08000440 		.word	1074003976
+ 243 00f4 FFFFE3FF 		.word	-1835009
+ 244 00f8 08020440 		.word	1074004488
+ 245 00fc 08060440 		.word	1074005512
+ 246 0100 FF7FFCFF 		.word	-229377
+ 247 0104 00000440 		.word	1074003968
+ 248 0108 00020440 		.word	1074004480
+ 249 010c 00060440 		.word	1074005504
+ 250 0110 FF4F0000 		.word	20479
+ 251              		.cfi_endproc
+ 252              	.LFE0:
+ 253              		.size	main, .-main
+ 254              		.text
+ 255              	.Letext0:
+ 256              		.file 2 "t_udtypes.h"
+ 257              		.file 3 "t_WDT.h"
+ 258              		.file 4 "t_CLOCK.h"
+ 259              		.file 5 "t_INTR.h"
+ 260              		.section	.debug_info,"",%progbits
+ 261              	.Ldebug_info0:
+ 262 0000 8E020000 		.4byte	0x28e
+ 263 0004 0400     		.2byte	0x4
+ 264 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 265 000a 04       		.byte	0x4
+ 266 000b 01       		.uleb128 0x1
+ 267 000c 01010000 		.4byte	.LASF18
+ 268 0010 0C       		.byte	0xc
+ 269 0011 52000000 		.4byte	.LASF19
+ 270 0015 18000000 		.4byte	.LASF20
+ 271 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 272 001d 00000000 		.4byte	0
+ 273 0021 00000000 		.4byte	.Ldebug_line0
+ 274 0025 02       		.uleb128 0x2
+ 275 0026 C0000000 		.4byte	.LASF2
+ 276 002a 02       		.byte	0x2
+ 277 002b 04       		.byte	0x4
+ 278 002c 37000000 		.4byte	0x37
+ 279 0030 03       		.uleb128 0x3
+ 280 0031 04       		.byte	0x4
+ 281 0032 07       		.byte	0x7
+ 282 0033 7D000000 		.4byte	.LASF0
+ 283 0037 04       		.uleb128 0x4
+ 284 0038 30000000 		.4byte	0x30
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccyCzakR.s 			page 8
+
+
+ 285 003c 03       		.uleb128 0x3
+ 286 003d 01       		.byte	0x1
+ 287 003e 08       		.byte	0x8
+ 288 003f 44000000 		.4byte	.LASF1
+ 289 0043 02       		.uleb128 0x2
+ 290 0044 A0010000 		.4byte	.LASF3
+ 291 0048 02       		.byte	0x2
+ 292 0049 06       		.byte	0x6
+ 293 004a 30000000 		.4byte	0x30
+ 294 004e 05       		.uleb128 0x5
+ 295 004f 00000000 		.4byte	.LASF21
+ 296 0053 01       		.byte	0x1
+ 297 0054 4E       		.byte	0x4e
+ 298 0055 00000000 		.4byte	.LFB1
+ 299 0059 30000000 		.4byte	.LFE1-.LFB1
+ 300 005d 01       		.uleb128 0x1
+ 301 005e 9C       		.byte	0x9c
+ 302 005f 73000000 		.4byte	0x73
+ 303 0063 06       		.uleb128 0x6
+ 304 0064 24000000 		.4byte	.LVL0
+ 305 0068 F7010000 		.4byte	0x1f7
+ 306 006c 07       		.uleb128 0x7
+ 307 006d 01       		.uleb128 0x1
+ 308 006e 50       		.byte	0x50
+ 309 006f 01       		.uleb128 0x1
+ 310 0070 34       		.byte	0x34
+ 311 0071 00       		.byte	0
+ 312 0072 00       		.byte	0
+ 313 0073 08       		.uleb128 0x8
+ 314 0074 C8000000 		.4byte	.LASF22
+ 315 0078 01       		.byte	0x1
+ 316 0079 09       		.byte	0x9
+ 317 007a F0010000 		.4byte	0x1f0
+ 318 007e 00000000 		.4byte	.LFB0
+ 319 0082 14010000 		.4byte	.LFE0-.LFB0
+ 320 0086 01       		.uleb128 0x1
+ 321 0087 9C       		.byte	0x9c
+ 322 0088 F0010000 		.4byte	0x1f0
+ 323 008c 09       		.uleb128 0x9
+ 324 008d 08000000 		.4byte	.LVL1
+ 325 0091 02020000 		.4byte	0x202
+ 326 0095 A0000000 		.4byte	0xa0
+ 327 0099 07       		.uleb128 0x7
+ 328 009a 01       		.uleb128 0x1
+ 329 009b 50       		.byte	0x50
+ 330 009c 02       		.uleb128 0x2
+ 331 009d 08       		.byte	0x8
+ 332 009e 30       		.byte	0x30
+ 333 009f 00       		.byte	0
+ 334 00a0 09       		.uleb128 0x9
+ 335 00a1 0E000000 		.4byte	.LVL2
+ 336 00a5 0D020000 		.4byte	0x20d
+ 337 00a9 B3000000 		.4byte	0xb3
+ 338 00ad 07       		.uleb128 0x7
+ 339 00ae 01       		.uleb128 0x1
+ 340 00af 50       		.byte	0x50
+ 341 00b0 01       		.uleb128 0x1
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccyCzakR.s 			page 9
+
+
+ 342 00b1 30       		.byte	0x30
+ 343 00b2 00       		.byte	0
+ 344 00b3 09       		.uleb128 0x9
+ 345 00b4 14000000 		.4byte	.LVL3
+ 346 00b8 18020000 		.4byte	0x218
+ 347 00bc C6000000 		.4byte	0xc6
+ 348 00c0 07       		.uleb128 0x7
+ 349 00c1 01       		.uleb128 0x1
+ 350 00c2 50       		.byte	0x50
+ 351 00c3 01       		.uleb128 0x1
+ 352 00c4 30       		.byte	0x30
+ 353 00c5 00       		.byte	0
+ 354 00c6 09       		.uleb128 0x9
+ 355 00c7 1C000000 		.4byte	.LVL4
+ 356 00cb 23020000 		.4byte	0x223
+ 357 00cf D9000000 		.4byte	0xd9
+ 358 00d3 07       		.uleb128 0x7
+ 359 00d4 01       		.uleb128 0x1
+ 360 00d5 50       		.byte	0x50
+ 361 00d6 01       		.uleb128 0x1
+ 362 00d7 37       		.byte	0x37
+ 363 00d8 00       		.byte	0
+ 364 00d9 09       		.uleb128 0x9
+ 365 00da 24000000 		.4byte	.LVL5
+ 366 00de 2E020000 		.4byte	0x22e
+ 367 00e2 F5000000 		.4byte	0xf5
+ 368 00e6 07       		.uleb128 0x7
+ 369 00e7 01       		.uleb128 0x1
+ 370 00e8 50       		.byte	0x50
+ 371 00e9 01       		.uleb128 0x1
+ 372 00ea 37       		.byte	0x37
+ 373 00eb 07       		.uleb128 0x7
+ 374 00ec 01       		.uleb128 0x1
+ 375 00ed 51       		.byte	0x51
+ 376 00ee 05       		.uleb128 0x5
+ 377 00ef 03       		.byte	0x3
+ 378 00f0 00000000 		.4byte	t_WDT_ISR
+ 379 00f4 00       		.byte	0
+ 380 00f5 09       		.uleb128 0x9
+ 381 00f6 70000000 		.4byte	.LVL6
+ 382 00fa 39020000 		.4byte	0x239
+ 383 00fe 08010000 		.4byte	0x108
+ 384 0102 07       		.uleb128 0x7
+ 385 0103 01       		.uleb128 0x1
+ 386 0104 50       		.byte	0x50
+ 387 0105 01       		.uleb128 0x1
+ 388 0106 31       		.byte	0x31
+ 389 0107 00       		.byte	0
+ 390 0108 0A       		.uleb128 0xa
+ 391 0109 86000000 		.4byte	.LVL7
+ 392 010d 44020000 		.4byte	0x244
+ 393 0111 09       		.uleb128 0x9
+ 394 0112 A0000000 		.4byte	.LVL8
+ 395 0116 44020000 		.4byte	0x244
+ 396 011a 26010000 		.4byte	0x126
+ 397 011e 07       		.uleb128 0x7
+ 398 011f 01       		.uleb128 0x1
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccyCzakR.s 			page 10
+
+
+ 399 0120 50       		.byte	0x50
+ 400 0121 03       		.uleb128 0x3
+ 401 0122 0A       		.byte	0xa
+ 402 0123 F401     		.2byte	0x1f4
+ 403 0125 00       		.byte	0
+ 404 0126 09       		.uleb128 0x9
+ 405 0127 AE000000 		.4byte	.LVL9
+ 406 012b 4F020000 		.4byte	0x24f
+ 407 012f 3E010000 		.4byte	0x13e
+ 408 0133 07       		.uleb128 0x7
+ 409 0134 01       		.uleb128 0x1
+ 410 0135 50       		.byte	0x50
+ 411 0136 01       		.uleb128 0x1
+ 412 0137 30       		.byte	0x30
+ 413 0138 07       		.uleb128 0x7
+ 414 0139 01       		.uleb128 0x1
+ 415 013a 51       		.byte	0x51
+ 416 013b 01       		.uleb128 0x1
+ 417 013c 31       		.byte	0x31
+ 418 013d 00       		.byte	0
+ 419 013e 09       		.uleb128 0x9
+ 420 013f B6000000 		.4byte	.LVL10
+ 421 0143 5A020000 		.4byte	0x25a
+ 422 0147 58010000 		.4byte	0x158
+ 423 014b 07       		.uleb128 0x7
+ 424 014c 01       		.uleb128 0x1
+ 425 014d 50       		.byte	0x50
+ 426 014e 01       		.uleb128 0x1
+ 427 014f 30       		.byte	0x30
+ 428 0150 07       		.uleb128 0x7
+ 429 0151 01       		.uleb128 0x1
+ 430 0152 51       		.byte	0x51
+ 431 0153 03       		.uleb128 0x3
+ 432 0154 0A       		.byte	0xa
+ 433 0155 FF4F     		.2byte	0x4fff
+ 434 0157 00       		.byte	0
+ 435 0158 09       		.uleb128 0x9
+ 436 0159 BE000000 		.4byte	.LVL11
+ 437 015d 65020000 		.4byte	0x265
+ 438 0161 70010000 		.4byte	0x170
+ 439 0165 07       		.uleb128 0x7
+ 440 0166 01       		.uleb128 0x1
+ 441 0167 50       		.byte	0x50
+ 442 0168 01       		.uleb128 0x1
+ 443 0169 30       		.byte	0x30
+ 444 016a 07       		.uleb128 0x7
+ 445 016b 01       		.uleb128 0x1
+ 446 016c 51       		.byte	0x51
+ 447 016d 01       		.uleb128 0x1
+ 448 016e 31       		.byte	0x31
+ 449 016f 00       		.byte	0
+ 450 0170 09       		.uleb128 0x9
+ 451 0171 C4000000 		.4byte	.LVL12
+ 452 0175 70020000 		.4byte	0x270
+ 453 0179 83010000 		.4byte	0x183
+ 454 017d 07       		.uleb128 0x7
+ 455 017e 01       		.uleb128 0x1
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccyCzakR.s 			page 11
+
+
+ 456 017f 50       		.byte	0x50
+ 457 0180 01       		.uleb128 0x1
+ 458 0181 38       		.byte	0x38
+ 459 0182 00       		.byte	0
+ 460 0183 09       		.uleb128 0x9
+ 461 0184 CC000000 		.4byte	.LVL13
+ 462 0188 5A020000 		.4byte	0x25a
+ 463 018c 9B010000 		.4byte	0x19b
+ 464 0190 07       		.uleb128 0x7
+ 465 0191 01       		.uleb128 0x1
+ 466 0192 50       		.byte	0x50
+ 467 0193 01       		.uleb128 0x1
+ 468 0194 31       		.byte	0x31
+ 469 0195 07       		.uleb128 0x7
+ 470 0196 01       		.uleb128 0x1
+ 471 0197 51       		.byte	0x51
+ 472 0198 01       		.uleb128 0x1
+ 473 0199 38       		.byte	0x38
+ 474 019a 00       		.byte	0
+ 475 019b 09       		.uleb128 0x9
+ 476 019c D4000000 		.4byte	.LVL14
+ 477 01a0 4F020000 		.4byte	0x24f
+ 478 01a4 B3010000 		.4byte	0x1b3
+ 479 01a8 07       		.uleb128 0x7
+ 480 01a9 01       		.uleb128 0x1
+ 481 01aa 50       		.byte	0x50
+ 482 01ab 01       		.uleb128 0x1
+ 483 01ac 31       		.byte	0x31
+ 484 01ad 07       		.uleb128 0x7
+ 485 01ae 01       		.uleb128 0x1
+ 486 01af 51       		.byte	0x51
+ 487 01b0 01       		.uleb128 0x1
+ 488 01b1 32       		.byte	0x32
+ 489 01b2 00       		.byte	0
+ 490 01b3 09       		.uleb128 0x9
+ 491 01b4 DC000000 		.4byte	.LVL15
+ 492 01b8 65020000 		.4byte	0x265
+ 493 01bc CB010000 		.4byte	0x1cb
+ 494 01c0 07       		.uleb128 0x7
+ 495 01c1 01       		.uleb128 0x1
+ 496 01c2 50       		.byte	0x50
+ 497 01c3 01       		.uleb128 0x1
+ 498 01c4 31       		.byte	0x31
+ 499 01c5 07       		.uleb128 0x7
+ 500 01c6 01       		.uleb128 0x1
+ 501 01c7 51       		.byte	0x51
+ 502 01c8 01       		.uleb128 0x1
+ 503 01c9 31       		.byte	0x31
+ 504 01ca 00       		.byte	0
+ 505 01cb 09       		.uleb128 0x9
+ 506 01cc E4000000 		.4byte	.LVL16
+ 507 01d0 7B020000 		.4byte	0x27b
+ 508 01d4 E0010000 		.4byte	0x1e0
+ 509 01d8 07       		.uleb128 0x7
+ 510 01d9 01       		.uleb128 0x1
+ 511 01da 50       		.byte	0x50
+ 512 01db 03       		.uleb128 0x3
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccyCzakR.s 			page 12
+
+
+ 513 01dc 0A       		.byte	0xa
+ 514 01dd 0101     		.2byte	0x101
+ 515 01df 00       		.byte	0
+ 516 01e0 06       		.uleb128 0x6
+ 517 01e1 EA000000 		.4byte	.LVL17
+ 518 01e5 86020000 		.4byte	0x286
+ 519 01e9 07       		.uleb128 0x7
+ 520 01ea 01       		.uleb128 0x1
+ 521 01eb 50       		.byte	0x50
+ 522 01ec 01       		.uleb128 0x1
+ 523 01ed 37       		.byte	0x37
+ 524 01ee 00       		.byte	0
+ 525 01ef 00       		.byte	0
+ 526 01f0 0B       		.uleb128 0xb
+ 527 01f1 04       		.byte	0x4
+ 528 01f2 05       		.byte	0x5
+ 529 01f3 696E7400 		.ascii	"int\000"
+ 530 01f7 0C       		.uleb128 0xc
+ 531 01f8 68000000 		.4byte	.LASF4
+ 532 01fc 68000000 		.4byte	.LASF4
+ 533 0200 03       		.byte	0x3
+ 534 0201 12       		.byte	0x12
+ 535 0202 0C       		.uleb128 0xc
+ 536 0203 A3000000 		.4byte	.LASF5
+ 537 0207 A3000000 		.4byte	.LASF5
+ 538 020b 04       		.byte	0x4
+ 539 020c 14       		.byte	0x14
+ 540 020d 0C       		.uleb128 0xc
+ 541 020e BD010000 		.4byte	.LASF6
+ 542 0212 BD010000 		.4byte	.LASF6
+ 543 0216 04       		.byte	0x4
+ 544 0217 18       		.byte	0x18
+ 545 0218 0C       		.uleb128 0xc
+ 546 0219 8F000000 		.4byte	.LASF7
+ 547 021d 8F000000 		.4byte	.LASF7
+ 548 0221 04       		.byte	0x4
+ 549 0222 1A       		.byte	0x1a
+ 550 0223 0C       		.uleb128 0xc
+ 551 0224 D3010000 		.4byte	.LASF8
+ 552 0228 D3010000 		.4byte	.LASF8
+ 553 022c 05       		.byte	0x5
+ 554 022d 11       		.byte	0x11
+ 555 022e 0C       		.uleb128 0xc
+ 556 022f A9010000 		.4byte	.LASF9
+ 557 0233 A9010000 		.4byte	.LASF9
+ 558 0237 05       		.byte	0x5
+ 559 0238 14       		.byte	0x14
+ 560 0239 0C       		.uleb128 0xc
+ 561 023a 8F010000 		.4byte	.LASF10
+ 562 023e 8F010000 		.4byte	.LASF10
+ 563 0242 03       		.byte	0x3
+ 564 0243 10       		.byte	0x10
+ 565 0244 0C       		.uleb128 0xc
+ 566 0245 DF010000 		.4byte	.LASF11
+ 567 0249 DF010000 		.4byte	.LASF11
+ 568 024d 04       		.byte	0x4
+ 569 024e 1C       		.byte	0x1c
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccyCzakR.s 			page 13
+
+
+ 570 024f 0C       		.uleb128 0xc
+ 571 0250 0A000000 		.4byte	.LASF12
+ 572 0254 0A000000 		.4byte	.LASF12
+ 573 0258 03       		.byte	0x3
+ 574 0259 17       		.byte	0x17
+ 575 025a 0C       		.uleb128 0xc
+ 576 025b 59000000 		.4byte	.LASF13
+ 577 025f 59000000 		.4byte	.LASF13
+ 578 0263 03       		.byte	0x3
+ 579 0264 11       		.byte	0x11
+ 580 0265 0C       		.uleb128 0xc
+ 581 0266 EB000000 		.4byte	.LASF14
+ 582 026a EB000000 		.4byte	.LASF14
+ 583 026e 03       		.byte	0x3
+ 584 026f 16       		.byte	0x16
+ 585 0270 0C       		.uleb128 0xc
+ 586 0271 CD000000 		.4byte	.LASF15
+ 587 0275 CD000000 		.4byte	.LASF15
+ 588 0279 03       		.byte	0x3
+ 589 027a 15       		.byte	0x15
+ 590 027b 0C       		.uleb128 0xc
+ 591 027c DE000000 		.4byte	.LASF16
+ 592 0280 DE000000 		.4byte	.LASF16
+ 593 0284 03       		.byte	0x3
+ 594 0285 13       		.byte	0x13
+ 595 0286 0C       		.uleb128 0xc
+ 596 0287 B5000000 		.4byte	.LASF17
+ 597 028b B5000000 		.4byte	.LASF17
+ 598 028f 05       		.byte	0x5
+ 599 0290 12       		.byte	0x12
+ 600 0291 00       		.byte	0
+ 601              		.section	.debug_abbrev,"",%progbits
+ 602              	.Ldebug_abbrev0:
+ 603 0000 01       		.uleb128 0x1
+ 604 0001 11       		.uleb128 0x11
+ 605 0002 01       		.byte	0x1
+ 606 0003 25       		.uleb128 0x25
+ 607 0004 0E       		.uleb128 0xe
+ 608 0005 13       		.uleb128 0x13
+ 609 0006 0B       		.uleb128 0xb
+ 610 0007 03       		.uleb128 0x3
+ 611 0008 0E       		.uleb128 0xe
+ 612 0009 1B       		.uleb128 0x1b
+ 613 000a 0E       		.uleb128 0xe
+ 614 000b 55       		.uleb128 0x55
+ 615 000c 17       		.uleb128 0x17
+ 616 000d 11       		.uleb128 0x11
+ 617 000e 01       		.uleb128 0x1
+ 618 000f 10       		.uleb128 0x10
+ 619 0010 17       		.uleb128 0x17
+ 620 0011 00       		.byte	0
+ 621 0012 00       		.byte	0
+ 622 0013 02       		.uleb128 0x2
+ 623 0014 16       		.uleb128 0x16
+ 624 0015 00       		.byte	0
+ 625 0016 03       		.uleb128 0x3
+ 626 0017 0E       		.uleb128 0xe
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccyCzakR.s 			page 14
+
+
+ 627 0018 3A       		.uleb128 0x3a
+ 628 0019 0B       		.uleb128 0xb
+ 629 001a 3B       		.uleb128 0x3b
+ 630 001b 0B       		.uleb128 0xb
+ 631 001c 49       		.uleb128 0x49
+ 632 001d 13       		.uleb128 0x13
+ 633 001e 00       		.byte	0
+ 634 001f 00       		.byte	0
+ 635 0020 03       		.uleb128 0x3
+ 636 0021 24       		.uleb128 0x24
+ 637 0022 00       		.byte	0
+ 638 0023 0B       		.uleb128 0xb
+ 639 0024 0B       		.uleb128 0xb
+ 640 0025 3E       		.uleb128 0x3e
+ 641 0026 0B       		.uleb128 0xb
+ 642 0027 03       		.uleb128 0x3
+ 643 0028 0E       		.uleb128 0xe
+ 644 0029 00       		.byte	0
+ 645 002a 00       		.byte	0
+ 646 002b 04       		.uleb128 0x4
+ 647 002c 35       		.uleb128 0x35
+ 648 002d 00       		.byte	0
+ 649 002e 49       		.uleb128 0x49
+ 650 002f 13       		.uleb128 0x13
+ 651 0030 00       		.byte	0
+ 652 0031 00       		.byte	0
+ 653 0032 05       		.uleb128 0x5
+ 654 0033 2E       		.uleb128 0x2e
+ 655 0034 01       		.byte	0x1
+ 656 0035 3F       		.uleb128 0x3f
+ 657 0036 19       		.uleb128 0x19
+ 658 0037 03       		.uleb128 0x3
+ 659 0038 0E       		.uleb128 0xe
+ 660 0039 3A       		.uleb128 0x3a
+ 661 003a 0B       		.uleb128 0xb
+ 662 003b 3B       		.uleb128 0x3b
+ 663 003c 0B       		.uleb128 0xb
+ 664 003d 27       		.uleb128 0x27
+ 665 003e 19       		.uleb128 0x19
+ 666 003f 11       		.uleb128 0x11
+ 667 0040 01       		.uleb128 0x1
+ 668 0041 12       		.uleb128 0x12
+ 669 0042 06       		.uleb128 0x6
+ 670 0043 40       		.uleb128 0x40
+ 671 0044 18       		.uleb128 0x18
+ 672 0045 9742     		.uleb128 0x2117
+ 673 0047 19       		.uleb128 0x19
+ 674 0048 01       		.uleb128 0x1
+ 675 0049 13       		.uleb128 0x13
+ 676 004a 00       		.byte	0
+ 677 004b 00       		.byte	0
+ 678 004c 06       		.uleb128 0x6
+ 679 004d 898201   		.uleb128 0x4109
+ 680 0050 01       		.byte	0x1
+ 681 0051 11       		.uleb128 0x11
+ 682 0052 01       		.uleb128 0x1
+ 683 0053 31       		.uleb128 0x31
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccyCzakR.s 			page 15
+
+
+ 684 0054 13       		.uleb128 0x13
+ 685 0055 00       		.byte	0
+ 686 0056 00       		.byte	0
+ 687 0057 07       		.uleb128 0x7
+ 688 0058 8A8201   		.uleb128 0x410a
+ 689 005b 00       		.byte	0
+ 690 005c 02       		.uleb128 0x2
+ 691 005d 18       		.uleb128 0x18
+ 692 005e 9142     		.uleb128 0x2111
+ 693 0060 18       		.uleb128 0x18
+ 694 0061 00       		.byte	0
+ 695 0062 00       		.byte	0
+ 696 0063 08       		.uleb128 0x8
+ 697 0064 2E       		.uleb128 0x2e
+ 698 0065 01       		.byte	0x1
+ 699 0066 3F       		.uleb128 0x3f
+ 700 0067 19       		.uleb128 0x19
+ 701 0068 03       		.uleb128 0x3
+ 702 0069 0E       		.uleb128 0xe
+ 703 006a 3A       		.uleb128 0x3a
+ 704 006b 0B       		.uleb128 0xb
+ 705 006c 3B       		.uleb128 0x3b
+ 706 006d 0B       		.uleb128 0xb
+ 707 006e 49       		.uleb128 0x49
+ 708 006f 13       		.uleb128 0x13
+ 709 0070 8701     		.uleb128 0x87
+ 710 0072 19       		.uleb128 0x19
+ 711 0073 11       		.uleb128 0x11
+ 712 0074 01       		.uleb128 0x1
+ 713 0075 12       		.uleb128 0x12
+ 714 0076 06       		.uleb128 0x6
+ 715 0077 40       		.uleb128 0x40
+ 716 0078 18       		.uleb128 0x18
+ 717 0079 9742     		.uleb128 0x2117
+ 718 007b 19       		.uleb128 0x19
+ 719 007c 01       		.uleb128 0x1
+ 720 007d 13       		.uleb128 0x13
+ 721 007e 00       		.byte	0
+ 722 007f 00       		.byte	0
+ 723 0080 09       		.uleb128 0x9
+ 724 0081 898201   		.uleb128 0x4109
+ 725 0084 01       		.byte	0x1
+ 726 0085 11       		.uleb128 0x11
+ 727 0086 01       		.uleb128 0x1
+ 728 0087 31       		.uleb128 0x31
+ 729 0088 13       		.uleb128 0x13
+ 730 0089 01       		.uleb128 0x1
+ 731 008a 13       		.uleb128 0x13
+ 732 008b 00       		.byte	0
+ 733 008c 00       		.byte	0
+ 734 008d 0A       		.uleb128 0xa
+ 735 008e 898201   		.uleb128 0x4109
+ 736 0091 00       		.byte	0
+ 737 0092 11       		.uleb128 0x11
+ 738 0093 01       		.uleb128 0x1
+ 739 0094 31       		.uleb128 0x31
+ 740 0095 13       		.uleb128 0x13
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccyCzakR.s 			page 16
+
+
+ 741 0096 00       		.byte	0
+ 742 0097 00       		.byte	0
+ 743 0098 0B       		.uleb128 0xb
+ 744 0099 24       		.uleb128 0x24
+ 745 009a 00       		.byte	0
+ 746 009b 0B       		.uleb128 0xb
+ 747 009c 0B       		.uleb128 0xb
+ 748 009d 3E       		.uleb128 0x3e
+ 749 009e 0B       		.uleb128 0xb
+ 750 009f 03       		.uleb128 0x3
+ 751 00a0 08       		.uleb128 0x8
+ 752 00a1 00       		.byte	0
+ 753 00a2 00       		.byte	0
+ 754 00a3 0C       		.uleb128 0xc
+ 755 00a4 2E       		.uleb128 0x2e
+ 756 00a5 00       		.byte	0
+ 757 00a6 3F       		.uleb128 0x3f
+ 758 00a7 19       		.uleb128 0x19
+ 759 00a8 3C       		.uleb128 0x3c
+ 760 00a9 19       		.uleb128 0x19
+ 761 00aa 6E       		.uleb128 0x6e
+ 762 00ab 0E       		.uleb128 0xe
+ 763 00ac 03       		.uleb128 0x3
+ 764 00ad 0E       		.uleb128 0xe
+ 765 00ae 3A       		.uleb128 0x3a
+ 766 00af 0B       		.uleb128 0xb
+ 767 00b0 3B       		.uleb128 0x3b
+ 768 00b1 0B       		.uleb128 0xb
+ 769 00b2 00       		.byte	0
+ 770 00b3 00       		.byte	0
+ 771 00b4 00       		.byte	0
+ 772              		.section	.debug_aranges,"",%progbits
+ 773 0000 24000000 		.4byte	0x24
+ 774 0004 0200     		.2byte	0x2
+ 775 0006 00000000 		.4byte	.Ldebug_info0
+ 776 000a 04       		.byte	0x4
+ 777 000b 00       		.byte	0
+ 778 000c 0000     		.2byte	0
+ 779 000e 0000     		.2byte	0
+ 780 0010 00000000 		.4byte	.LFB1
+ 781 0014 30000000 		.4byte	.LFE1-.LFB1
+ 782 0018 00000000 		.4byte	.LFB0
+ 783 001c 14010000 		.4byte	.LFE0-.LFB0
+ 784 0020 00000000 		.4byte	0
+ 785 0024 00000000 		.4byte	0
+ 786              		.section	.debug_ranges,"",%progbits
+ 787              	.Ldebug_ranges0:
+ 788 0000 00000000 		.4byte	.LFB1
+ 789 0004 30000000 		.4byte	.LFE1
+ 790 0008 00000000 		.4byte	.LFB0
+ 791 000c 14010000 		.4byte	.LFE0
+ 792 0010 00000000 		.4byte	0
+ 793 0014 00000000 		.4byte	0
+ 794              		.section	.debug_line,"",%progbits
+ 795              	.Ldebug_line0:
+ 796 0000 94000000 		.section	.debug_str,"MS",%progbits,1
+ 796      02005000 
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccyCzakR.s 			page 17
+
+
+ 796      00000201 
+ 796      FB0E0D00 
+ 796      01010101 
+ 797              	.LASF21:
+ 798 0000 745F5744 		.ascii	"t_WDT_ISR\000"
+ 798      545F4953 
+ 798      5200
+ 799              	.LASF12:
+ 800 000a 745F5744 		.ascii	"t_WDT_SetMode\000"
+ 800      545F5365 
+ 800      744D6F64 
+ 800      6500
+ 801              	.LASF20:
+ 802 0018 443A5C44 		.ascii	"D:\\Development\\AESD\\WatchDogTimer\\WDT.cydsn\000"
+ 802      6576656C 
+ 802      6F706D65 
+ 802      6E745C41 
+ 802      4553445C 
+ 803              	.LASF1:
+ 804 0044 756E7369 		.ascii	"unsigned char\000"
+ 804      676E6564 
+ 804      20636861 
+ 804      7200
+ 805              	.LASF19:
+ 806 0052 6D61696E 		.ascii	"main.c\000"
+ 806      2E6300
+ 807              	.LASF13:
+ 808 0059 745F5744 		.ascii	"t_WDT_SetMatch\000"
+ 808      545F5365 
+ 808      744D6174 
+ 808      636800
+ 809              	.LASF4:
+ 810 0068 745F5744 		.ascii	"t_WDT_ClearInterrupt\000"
+ 810      545F436C 
+ 810      65617249 
+ 810      6E746572 
+ 810      72757074 
+ 811              	.LASF0:
+ 812 007d 6C6F6E67 		.ascii	"long unsigned int\000"
+ 812      20756E73 
+ 812      69676E65 
+ 812      6420696E 
+ 812      7400
+ 813              	.LASF7:
+ 814 008f 745F436C 		.ascii	"t_ClkWriteSysClkDiv\000"
+ 814      6B577269 
+ 814      74655379 
+ 814      73436C6B 
+ 814      44697600 
+ 815              	.LASF5:
+ 816 00a3 745F436C 		.ascii	"t_ClkWriteImoFreq\000"
+ 816      6B577269 
+ 816      7465496D 
+ 816      6F467265 
+ 816      7100
+ 817              	.LASF17:
+ 818 00b5 494E545F 		.ascii	"INT_Enable\000"
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccyCzakR.s 			page 18
+
+
+ 818      456E6162 
+ 818      6C6500
+ 819              	.LASF2:
+ 820 00c0 745F7265 		.ascii	"t_reg32\000"
+ 820      67333200 
+ 821              	.LASF22:
+ 822 00c8 6D61696E 		.ascii	"main\000"
+ 822      00
+ 823              	.LASF15:
+ 824 00cd 745F5744 		.ascii	"t_WDT_SetCascade\000"
+ 824      545F5365 
+ 824      74436173 
+ 824      63616465 
+ 824      00
+ 825              	.LASF16:
+ 826 00de 745F5744 		.ascii	"t_WDT_Enable\000"
+ 826      545F456E 
+ 826      61626C65 
+ 826      00
+ 827              	.LASF14:
+ 828 00eb 745F5744 		.ascii	"t_WDT_SetClearOnMatch\000"
+ 828      545F5365 
+ 828      74436C65 
+ 828      61724F6E 
+ 828      4D617463 
+ 829              	.LASF18:
+ 830 0101 474E5520 		.ascii	"GNU C11 5.4.1 20160609 (release) [ARM/embedded-5-br"
+ 830      43313120 
+ 830      352E342E 
+ 830      31203230 
+ 830      31363036 
+ 831 0134 616E6368 		.ascii	"anch revision 237715] -mcpu=cortex-m0 -mthumb -g -O"
+ 831      20726576 
+ 831      6973696F 
+ 831      6E203233 
+ 831      37373135 
+ 832 0167 67202D66 		.ascii	"g -ffunction-sections -ffat-lto-objects\000"
+ 832      66756E63 
+ 832      74696F6E 
+ 832      2D736563 
+ 832      74696F6E 
+ 833              	.LASF10:
+ 834 018f 745F4765 		.ascii	"t_GetResetReason\000"
+ 834      74526573 
+ 834      65745265 
+ 834      61736F6E 
+ 834      00
+ 835              	.LASF3:
+ 836 01a0 745F7569 		.ascii	"t_uint32\000"
+ 836      6E743332 
+ 836      00
+ 837              	.LASF9:
+ 838 01a9 494E545F 		.ascii	"INT_Set_ISR_Address\000"
+ 838      5365745F 
+ 838      4953525F 
+ 838      41646472 
+ 838      65737300 
+ARM GAS  C:\Users\mahe\AppData\Local\Temp\ccyCzakR.s 			page 19
+
+
+ 839              	.LASF6:
+ 840 01bd 745F436C 		.ascii	"t_ClkWriteHfclkDirect\000"
+ 840      6B577269 
+ 840      74654866 
+ 840      636C6B44 
+ 840      69726563 
+ 841              	.LASF8:
+ 842 01d3 494E545F 		.ascii	"INT_Disable\000"
+ 842      44697361 
+ 842      626C6500 
+ 843              	.LASF11:
+ 844 01df 745F4465 		.ascii	"t_Delay_ms\000"
+ 844      6C61795F 
+ 844      6D7300
+ 845              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 5.4.1 20160609 (release) [ARM/embedded-5-bran

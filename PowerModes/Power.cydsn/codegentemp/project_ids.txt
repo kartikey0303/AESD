@@ -1,0 +1,6 @@
+D:\Development\AESD\PowerModes\Power.cydsn\Power.cyprj|23fae8ef-590a-4182-93c5-d6fcf241e1da
+C:\Program Files (x86)\Cypress\PSoC Creator\4.2\PSoC Creator\psoc\content\default\CyAnnotationLibrary\CyAnnotationLibrary.cylib\CyAnnotationLibrary.cyprj|4f7feebf-c23a-48fe-a624-e677ea8dec7e
+C:\Users\mahe\Documents\PSoC Creator\4.2\Downloads ( 4.2).cylib\Downloads ( 4.2).cyprj|1c039185-cdb0-4c7c-81df-5bee71632155
+C:\Program Files (x86)\Cypress\PSoC Creator\4.2\PSoC Creator\psoc\content\cycomponentlibraryupdates\CyComponentLibraryUpdates.cylib\CyComponentLibraryUpdates.cyprj|676759c4-1eb0-4fc1-8302-3650b8a67927
+C:\Program Files (x86)\Cypress\PSoC Creator\4.2\PSoC Creator\psoc\content\cycomponentlibrary\CyComponentLibrary.cylib\CyComponentLibrary.cyprj|997dd283-7731-4881-a2f2-89806ba7d3b2
+C:\Program Files (x86)\Cypress\PSoC Creator\4.2\PSoC Creator\psoc\content\cyprimitives\CyPrimitives.cylib\CyPrimitives.cyprj|4f927bcc-5228-49ce-a00d-352ad9b644a1

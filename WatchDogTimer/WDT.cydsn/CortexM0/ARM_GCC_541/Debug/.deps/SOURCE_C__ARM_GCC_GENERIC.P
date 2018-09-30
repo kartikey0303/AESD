@@ -1,0 +1,18 @@
+D:/Development/AESD/WatchDogTimer/WDT.cydsn/CortexM0/ARM_GCC_541/Debug/main.o : D:/Development/AESD/WatchDogTimer/WDT.cydsn/main.c D:/Development/AESD/WatchDogTimer/WDT.cydsn/t_CLOCK.h D:/Development/AESD/WatchDogTimer/WDT.cydsn/t_GPIO.h D:/Development/AESD/WatchDogTimer/WDT.cydsn/t_INTR.h D:/Development/AESD/WatchDogTimer/WDT.cydsn/t_WDT.h D:/Development/AESD/WatchDogTimer/WDT.cydsn/t_udtypes.h 
+
+D:/Development/AESD/WatchDogTimer/WDT.cydsn/main.c : 
+
+D:/Development/AESD/WatchDogTimer/WDT.cydsn/t_CLOCK.h : 
+
+D:/Development/AESD/WatchDogTimer/WDT.cydsn/t_GPIO.h : 
+
+D:/Development/AESD/WatchDogTimer/WDT.cydsn/t_INTR.h : 
+
+D:/Development/AESD/WatchDogTimer/WDT.cydsn/t_WDT.h : 
+
+D:/Development/AESD/WatchDogTimer/WDT.cydsn/t_udtypes.h : 
+
+D:/Development/AESD/WatchDogTimer/WDT.cydsn/CortexM0/ARM_GCC_541/Debug/t_INTR.o : D:/Development/AESD/WatchDogTimer/WDT.cydsn/t_INTR.c D:/Development/AESD/WatchDogTimer/WDT.cydsn/t_INTR.h D:/Development/AESD/WatchDogTimer/WDT.cydsn/t_udtypes.h 
+
+D:/Development/AESD/WatchDogTimer/WDT.cydsn/t_INTR.c : 
+

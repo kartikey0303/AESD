@@ -37,7 +37,11 @@
       <Folder BuildType="STRICT" Path="D:\Development\AESD\Clock\Design01.cydsn">
         <Files Root="D:\Development\AESD\Clock\Design01.cydsn">
           <File BuildType="BUILD" Toolchain="">main.c</File>
+          <File BuildType="BUILD" Toolchain="">t_CLOCK.c</File>
           <File BuildType="BUILD" Toolchain="">cyapicallbacks.h</File>
+          <File BuildType="BUILD" Toolchain="">t_GPIO.h</File>
+          <File BuildType="BUILD" Toolchain="">t_udtypes.h</File>
+          <File BuildType="BUILD" Toolchain="">t_CLOCK.h</File>
         </Files>
       </Folder>
       <Folder BuildType="STRICT" Path="D:\Development\AESD\Clock\Design01.cydsn\Generated_Source\PSoC4">
